@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- OLED True Black Background -->
+  <rect width="512" height="512" fill="#000000"/>
+  <rect width="496" height="496" x="8" y="8" rx="100" fill="none" stroke="#262626" stroke-width="2"/>
+  
+  <!-- Minimalist High-Contrast Monochromatic Shift Indicator -->
+  <!-- 4-On arc (solid hairline white) -->
+  <path d="M 256,76 A 180,180 0 0,1 436,256" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+  <!-- 3-Off arc (neutral grey) -->
+  <path d="M 436,256 A 180,180 0 0,1 256,436" fill="none" stroke="#525252" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- Minimalist Athletic Dumbbell Symbol in Pure White -->
+  <g transform="translate(146, 146) scale(0.43)" fill="#ffffff">
+    <!-- Bar -->
+    <rect x="140" y="236" width="232" height="40" rx="8"/>
+    <!-- Center Grip -->
+    <rect x="226" y="242" width="60" height="28" rx="4" fill="#000000"/>
+    
+    <!-- Left Plates -->
+    <rect x="60" y="140" width="44" height="232" rx="12"/>
+    <rect x="114" y="170" width="26" height="172" rx="8"/>
+    
+    <!-- Right Plates -->
+    <rect x="408" y="140" width="44" height="232" rx="12"/>
+    <rect x="372" y="170" width="26" height="172" rx="8"/>
+  </g>
+  
+  <!-- Minimalist Clean Type -->
+  <text x="256" y="416" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="20" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="4">SHIFTFIT</text>
+</svg>
