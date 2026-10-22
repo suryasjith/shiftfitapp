@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Timer, Plus, Minus, X, Bell } from 'lucide-react';
+import { Timer, Plus, Minus, X } from 'lucide-react';
 import { soundManager } from '../services/audioTimer';
 
 interface FloatingRestTimerProps {
@@ -34,7 +34,6 @@ export const FloatingRestTimer: React.FC<FloatingRestTimerProps> = ({
       return;
     }
 
-    // Audio tick on 3, 2, 1
     if (secondsLeft <= 3 && secondsLeft > 0) {
       soundManager.playTick();
     }
@@ -69,27 +68,27 @@ export const FloatingRestTimer: React.FC<FloatingRestTimerProps> = ({
 
   return (
     <div className="fixed bottom-20 left-4 right-4 z-40 max-w-sm mx-auto animate-slideUp">
-      <div className="bg-dark-900/95 backdrop-blur-xl border border-cyan-500/50 rounded-2xl p-3.5 shadow-2xl shadow-cyan-950/60 relative overflow-hidden">
-        {/* Progress bar background fill */}
+      <div className="bg-neutral-950 border border-neutral-700 rounded-xl p-3.5 shadow-2xl relative overflow-hidden text-left">
+        {/* Subtle monochrome progress line */}
         <div 
-          className="absolute inset-0 bg-gradient-to-r from-cyan-950/30 via-cyan-900/20 to-transparent transition-all duration-1000 -z-0"
+          className="absolute bottom-0 left-0 h-[2px] bg-white transition-all duration-1000"
           style={{ width: `${progressPercent}%` }}
         />
 
-        <div className="relative z-10 flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3">
           {/* Timer Display */}
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center shrink-0">
-              <Timer className="w-6 h-6 text-cyan-400 animate-pulse" />
+            <div className="w-10 h-10 rounded-lg bg-neutral-900 border border-neutral-750 flex items-center justify-center shrink-0">
+              <Timer className="w-5 h-5 text-white" />
             </div>
             <div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="font-mono text-2xl font-black tracking-tight text-white">
+              <div className="flex items-baseline gap-1.5 font-mono">
+                <span className="text-2xl font-black text-white">
                   {formatTime(secondsLeft)}
                 </span>
-                <span className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">REST</span>
+                <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">REST</span>
               </div>
-              <p className="text-[11px] text-slate-400 truncate max-w-[130px]">
+              <p className="text-[11px] text-neutral-400 font-mono truncate max-w-[130px]">
                 {exerciseName || 'Next Set Coming Up'}
               </p>
             </div>
@@ -99,7 +98,7 @@ export const FloatingRestTimer: React.FC<FloatingRestTimerProps> = ({
           <div className="flex items-center gap-1.5">
             <button
               onClick={handleSub30}
-              className="p-2 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 active:scale-95 transition-all text-xs font-semibold"
+              className="p-2 rounded-lg bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-neutral-300 active:scale-95 transition-all text-xs font-mono"
               title="-30s"
             >
               <Minus className="w-3.5 h-3.5" />
@@ -107,7 +106,7 @@ export const FloatingRestTimer: React.FC<FloatingRestTimerProps> = ({
 
             <button
               onClick={handleAdd30}
-              className="p-2 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 active:scale-95 transition-all text-xs font-semibold"
+              className="p-2 rounded-lg bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-neutral-300 active:scale-95 transition-all text-xs font-mono"
               title="+30s"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -115,7 +114,7 @@ export const FloatingRestTimer: React.FC<FloatingRestTimerProps> = ({
 
             <button
               onClick={onCancel}
-              className="p-2 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-400 active:scale-95 transition-all"
+              className="p-2 rounded-lg border border-neutral-800 hover:border-neutral-700 text-neutral-400 hover:text-white active:scale-95 transition-all"
               title="Skip Rest"
             >
               <X className="w-3.5 h-3.5" />

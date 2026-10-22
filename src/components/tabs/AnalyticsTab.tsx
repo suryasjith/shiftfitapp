@@ -8,21 +8,16 @@ import {
   WeeklyAnalyticsReport 
 } from '../../types';
 import { AnalyticsEngine } from '../../services/analyticsEngine';
-import { RotaEngine } from '../../services/rotaEngine';
 import { 
-  TrendingUp, 
   Scale, 
   Flame, 
   Dumbbell, 
   Activity, 
-  CheckCircle2, 
-  AlertTriangle, 
-  Plus, 
   Sparkles,
-  ArrowRight,
-  Info
+  TrendingUp
 } from 'lucide-react';
 import { soundManager } from '../../services/audioTimer';
+import { ContextualHelp } from '../ContextualHelp';
 
 interface AnalyticsTabProps {
   todayStr: string;
@@ -48,10 +43,8 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({
   const [newWeightInput, setNewWeightInput] = useState<string>('76.4');
   const [newDateInput, setNewDateInput] = useState<string>(todayStr);
 
-  // Compute 7-day moving averages
   const computedWeights = AnalyticsEngine.compute7DayMovingAverages(weights);
 
-  // Generate weekly statistical report correlating weight, macros, and volume progression
   const report: WeeklyAnalyticsReport = AnalyticsEngine.generateWeeklyReport(
     todayStr,
     profile,
@@ -74,12 +67,10 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({
     }
   };
 
-  // Prepare chart coordinates for past 14 days
   const sortedDates = Object.keys(computedWeights).sort().slice(-14);
   const minCorridor = profile.targetWeightMinKg; // 75
   const maxCorridor = profile.targetWeightMaxKg; // 78
 
-  // Chart min/max scaling
   const allChartWeights = sortedDates.map(d => computedWeights[d]?.weightKg).filter(Boolean);
   const chartMin = Math.min(74.0, ...allChartWeights);
   const chartMax = Math.max(79.0, ...allChartWeights);
@@ -89,9 +80,8 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({
   };
 
   const chartWidth = 340;
-  const chartHeight = 160;
+  const chartHeight = 150;
 
-  // Generate SVG path for daily weight line and 7-day moving avg line
   let dailyPoints = '';
   let movingAvgPoints = '';
 
@@ -112,142 +102,158 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({
   const corridorBottomY = getYCoord(minCorridor, chartHeight);
 
   return (
-    <div className="space-y-4 pb-28 text-left animate-fadeIn">
-      {/* Dashboard Title Card */}
-      <div className="rounded-2xl bg-dark-900 border border-dark-800 p-4 shadow-xl">
+    <div className="space-y-3.5 pb-28 text-left animate-fadeIn">
+      {/* Title Card */}
+      <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-4 shadow-sm">
         <div className="flex items-center gap-2">
-          <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400">
-            <TrendingUp className="w-5 h-5" />
+          <div className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-750 text-white">
+            <TrendingUp className="w-4 h-4" />
           </div>
           <div>
-            <h2 className="text-base font-black text-white">Weekly Review & Analytics</h2>
-            <p className="text-xs text-slate-400">Correlation Engine: Weight, Macros & Tonnage</p>
+            <div className="flex items-center gap-1.5">
+              <h2 className="text-sm font-bold text-white font-mono uppercase tracking-tight">Weekly Review</h2>
+              <ContextualHelp
+                title="Weekly Review"
+                content="This dashboard analyzes the intersection of your 7-day average bodyweight delta, macro adherence rate, and progressive overload volume to output specific next-week adjustments."
+              />
+            </div>
+            <p className="text-[10px] text-neutral-400 font-mono">Weight, Macros & Tonnage Correlation</p>
           </div>
         </div>
 
-        {/* 4 Statistical Breakdown Metric Tiles */}
-        <div className="grid grid-cols-2 gap-2.5 mt-4">
+        {/* 4 Metric Tiles */}
+        <div className="grid grid-cols-2 gap-2 mt-3.5 font-mono">
           {/* Average Weight */}
-          <div className="p-3 rounded-xl bg-dark-850 border border-dark-750">
+          <div className="p-2.5 rounded-lg bg-neutral-900 border border-neutral-800">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] text-slate-400 uppercase font-semibold">7-Day Avg Weight</span>
-              <Scale className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="text-[9px] text-neutral-500 uppercase font-semibold">7-Day Avg</span>
+              <ContextualHelp
+                title="7-Day Weight Average"
+                content="Filters acute daily water fluctuations caused by 12h shifts, salt intake, or glycogen storage to show your true tissue recomp trend."
+              />
             </div>
-            <div className="mt-1 flex items-baseline gap-1.5">
-              <span className="font-mono text-xl font-black text-white">{report.averageWeightKg}</span>
-              <span className="text-xs text-slate-400 font-mono">kg</span>
+            <div className="mt-1 flex items-baseline gap-1">
+              <span className="text-lg font-black text-white">{report.averageWeightKg}</span>
+              <span className="text-[10px] text-neutral-500">kg</span>
             </div>
-            <div className="mt-1 text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
-              <span>{report.weightDeltaKg >= 0 ? `+${report.weightDeltaKg}` : report.weightDeltaKg} kg</span>
-              <span className="text-slate-400 font-normal text-[10px]">vs prev week</span>
+            <div className="mt-0.5 text-[10px] text-neutral-300">
+              {report.weightDeltaKg >= 0 ? `+${report.weightDeltaKg}` : report.weightDeltaKg} kg <span className="text-neutral-500 text-[9px]">vs prev</span>
             </div>
           </div>
 
           {/* Macro Adherence */}
-          <div className="p-3 rounded-xl bg-dark-850 border border-dark-750">
+          <div className="p-2.5 rounded-lg bg-neutral-900 border border-neutral-800">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] text-slate-400 uppercase font-semibold">Macro Adherence</span>
-              <Flame className="w-3.5 h-3.5 text-brand-orange" />
+              <span className="text-[9px] text-neutral-500 uppercase font-semibold">Adherence</span>
+              <ContextualHelp
+                title="Macro Adherence"
+                content="The percentage of logged days within ±15g of protein and ±200 calories of target."
+              />
             </div>
-            <div className="mt-1 flex items-baseline gap-1.5">
-              <span className="font-mono text-xl font-black text-white">{report.macroAdherenceRatePercent}%</span>
-              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400">
+            <div className="mt-1 flex items-baseline gap-1">
+              <span className="text-lg font-black text-white">{report.macroAdherenceRatePercent}%</span>
+              <span className="text-[9px] font-bold px-1 rounded border border-neutral-700 bg-black text-white">
                 {report.macroAdherenceRatePercent >= 85 ? 'ELITE' : 'STABLE'}
               </span>
             </div>
-            <div className="mt-1 text-[10px] text-slate-400">
-              Target: ±15g Protein / ±200 kcal
+            <div className="mt-0.5 text-[9px] text-neutral-500">
+              Target: ±15g Prot
             </div>
           </div>
 
           {/* Workout Volume Progression */}
-          <div className="p-3 rounded-xl bg-dark-850 border border-dark-750">
+          <div className="p-2.5 rounded-lg bg-neutral-900 border border-neutral-800">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] text-slate-400 uppercase font-semibold">Total Tonnage</span>
-              <Dumbbell className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="text-[9px] text-neutral-500 uppercase font-semibold">Tonnage</span>
+              <ContextualHelp
+                title="Volume Progression"
+                content="Compares total weekly lifting volume (kg) with the previous week to measure hypertrophy progression."
+              />
             </div>
-            <div className="mt-1 flex items-baseline gap-1.5">
-              <span className="font-mono text-lg font-black text-white">{report.totalVolumeTonnageKg.toLocaleString()}</span>
-              <span className="text-xs text-slate-400 font-mono">kg</span>
+            <div className="mt-1 flex items-baseline gap-1">
+              <span className="text-base font-black text-white">{report.totalVolumeTonnageKg.toLocaleString()}</span>
+              <span className="text-[10px] text-neutral-500">kg</span>
             </div>
-            <div className="mt-1 text-[11px] font-semibold text-cyan-400 flex items-center gap-1">
-              <span>+{report.tonnageProgressionPercent}%</span>
-              <span className="text-slate-400 font-normal text-[10px]">volume progression</span>
+            <div className="mt-0.5 text-[10px] text-white">
+              +{report.tonnageProgressionPercent}% <span className="text-neutral-500 text-[9px]">progression</span>
             </div>
           </div>
 
           {/* CNS Strain / Fatigue */}
-          <div className="p-3 rounded-xl bg-dark-850 border border-dark-750">
+          <div className="p-2.5 rounded-lg bg-neutral-900 border border-neutral-800">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] text-slate-400 uppercase font-semibold">Shift CNS Fatigue</span>
-              <Activity className="w-3.5 h-3.5 text-brand-violet" />
+              <span className="text-[9px] text-neutral-500 uppercase font-semibold">Avg Fatigue</span>
+              <ContextualHelp
+                title="CNS Fatigue Load"
+                content="Average daily fatigue logged across your 4-day shift block."
+              />
             </div>
-            <div className="mt-1 flex items-baseline gap-1.5">
-              <span className="font-mono text-xl font-black text-white">{report.avgFatigueScore}</span>
-              <span className="text-xs text-slate-400 font-mono">/ 10</span>
+            <div className="mt-1 flex items-baseline gap-1">
+              <span className="text-lg font-black text-white">{report.avgFatigueScore}</span>
+              <span className="text-[10px] text-neutral-500">/ 10</span>
             </div>
-            <div className="mt-1 text-[10px] text-slate-400">
-              {report.shiftsWorkedCount} Shifts Worked ({report.overtimeHoursWorked}h OT)
+            <div className="mt-0.5 text-[9px] text-neutral-500">
+              {report.shiftsWorkedCount} Shifts ({report.overtimeHoursWorked}h OT)
             </div>
           </div>
         </div>
       </div>
 
       {/* Bodyweight & 7-Day Moving Average Target Corridor Chart */}
-      <div className="rounded-2xl bg-dark-900 border border-dark-800 p-4 shadow-lg text-left">
+      <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-4 shadow-sm text-left">
         <div className="flex items-center justify-between mb-2">
-          <div>
-            <h3 className="text-sm font-bold text-white">Weight Trend vs 75-78kg Target Corridor</h3>
-            <p className="text-[11px] text-slate-400">7-Day moving average filters daily fluid & shift fluctuations</p>
+          <div className="flex items-center gap-1.5">
+            <h3 className="text-xs font-bold text-white font-mono uppercase">75–78kg Target Corridor</h3>
+            <ContextualHelp
+              title="Target Corridor"
+              content="The shaded area represents your target 75.0kg to 78.0kg maintenance corridor. The solid white line plots the 7-day moving average, smoothing daily weigh-in noise."
+            />
           </div>
-          <div className="text-right">
-            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
-              75.0 - 78.0 KG
-            </span>
-          </div>
+          <span className="text-[9px] font-mono font-bold text-white bg-neutral-900 px-2 py-0.5 rounded border border-neutral-750">
+            75.0 – 78.0 KG
+          </span>
         </div>
 
-        {/* SVG Chart */}
-        <div className="mt-3 relative w-full overflow-hidden bg-dark-850 rounded-xl p-2 border border-dark-750">
-          <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="w-full h-44 overflow-visible">
-            {/* Target Corridor Highlight (75kg to 78kg) */}
+        {/* Monochromatic SVG Chart */}
+        <div className="mt-2.5 relative w-full overflow-hidden bg-black rounded-lg p-2 border border-neutral-850">
+          <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="w-full h-40 overflow-visible">
+            {/* Target Corridor (75kg to 78kg) */}
             <rect
               x="0"
               y={corridorTopY}
               width={chartWidth}
               height={Math.max(2, corridorBottomY - corridorTopY)}
-              fill="rgba(16, 185, 129, 0.08)"
-              stroke="rgba(16, 185, 129, 0.25)"
-              strokeDasharray="4 4"
+              fill="rgba(255, 255, 255, 0.05)"
+              stroke="#525252"
+              strokeDasharray="2 2"
+              strokeWidth="0.8"
             />
-            {/* Upper & Lower Corridor Labels */}
-            <text x="12" y={corridorTopY - 4} fill="#10b981" fontSize="9" fontWeight="bold">
-              78.0 kg (Upper Cap)
+            <text x="8" y={corridorTopY - 4} fill="#a3a3a3" fontSize="8" fontFamily="monospace" fontWeight="bold">
+              78.0 KG CAP
             </text>
-            <text x="12" y={corridorBottomY + 12} fill="#10b981" fontSize="9" fontWeight="bold">
-              75.0 kg (Lower Recomp Floor)
+            <text x="8" y={corridorBottomY + 10} fill="#a3a3a3" fontSize="8" fontFamily="monospace" fontWeight="bold">
+              75.0 KG FLOOR
             </text>
 
-            {/* Daily Weight Line (subtle) */}
+            {/* Daily Weight Line */}
             {dailyPoints && (
               <path
                 d={dailyPoints}
                 fill="none"
-                stroke="rgba(148, 163, 184, 0.4)"
-                strokeWidth="1.5"
+                stroke="#525252"
+                strokeWidth="1"
                 strokeDasharray="2 2"
               />
             )}
 
-            {/* 7-Day Moving Average Line (bold Cyan glow) */}
+            {/* 7-Day Moving Average Line (solid white) */}
             {movingAvgPoints && (
               <path
                 d={movingAvgPoints}
                 fill="none"
-                stroke="#06b6d4"
-                strokeWidth="3"
+                stroke="#ffffff"
+                strokeWidth="2.2"
                 strokeLinecap="round"
-                filter="drop-shadow(0 0 6px rgba(6, 182, 212, 0.4))"
               />
             )}
 
@@ -262,38 +268,36 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({
                   key={idx}
                   cx={x}
                   cy={y}
-                  r="3"
-                  fill="#f1f5f9"
-                  stroke="#0c1017"
-                  strokeWidth="1.5"
+                  r="2"
+                  fill="#ffffff"
                 />
               );
             })}
           </svg>
 
           {/* Chart Legend */}
-          <div className="mt-2 pt-2 border-t border-dark-800 flex justify-between items-center text-[10px] text-slate-400">
+          <div className="mt-1 pt-1.5 border-t border-neutral-900 flex justify-between items-center text-[9px] font-mono text-neutral-500">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
-                <span className="w-3 h-0.5 bg-cyan-400 inline-block rounded" />
+                <span className="w-3 h-0.5 bg-white inline-block" />
                 <strong className="text-white">7-Day Moving Avg</strong>
               </span>
               <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-slate-300 inline-block" />
-                <span>Daily Weigh-In</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-neutral-500 inline-block" />
+                <span>Daily Weigh-in</span>
               </span>
             </div>
-            <span className="text-emerald-400 font-semibold">Green zone = Recomp corridor</span>
+            <span>Corridor: 75-78kg</span>
           </div>
         </div>
 
         {/* Quick Weigh-In Adder */}
-        <form onSubmit={handleAddWeight} className="mt-3.5 flex items-center gap-2">
+        <form onSubmit={handleAddWeight} className="mt-3 flex items-center gap-2 font-mono">
           <input
             type="date"
             value={newDateInput}
             onChange={(e) => setNewDateInput(e.target.value)}
-            className="bg-dark-800 border border-dark-700 rounded-xl px-2.5 py-1.5 text-xs text-white font-mono"
+            className="bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1 text-[11px] text-white"
           />
           <div className="relative flex-1">
             <input
@@ -302,37 +306,36 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({
               value={newWeightInput}
               onChange={(e) => setNewWeightInput(e.target.value)}
               placeholder="76.4"
-              className="w-full bg-dark-800 border border-dark-700 rounded-xl px-3 py-1.5 text-xs text-white font-mono"
+              className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1 text-[11px] text-white"
             />
-            <span className="absolute right-2.5 top-2 text-[10px] text-slate-400">kg</span>
+            <span className="absolute right-2 top-1 text-[10px] text-neutral-500">kg</span>
           </div>
           <button
             type="submit"
-            className="px-3 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/40 text-cyan-300 text-xs font-bold active:scale-95 transition-all"
+            className="px-3 py-1 rounded-lg bg-white text-black text-[11px] font-bold active:scale-95 transition-all"
           >
             Log
           </button>
         </form>
       </div>
 
-      {/* Bulleted List of Actionable Improvements for Next Week */}
-      <div className="rounded-2xl bg-dark-900 border border-dark-800 p-4 shadow-xl text-left">
-        <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="w-4 h-4 text-cyan-400" />
-          <h3 className="text-sm font-bold text-white">Actionable Next-Week Improvements</h3>
+      {/* Bulleted List of Actionable Improvements */}
+      <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-4 shadow-sm text-left">
+        <div className="flex items-center gap-1.5 mb-2.5">
+          <h3 className="text-xs font-bold text-white font-mono uppercase">Actionable Next-Week Review</h3>
+          <ContextualHelp
+            title="Actionable Review Engine"
+            content="These bullet points are generated by cross-referencing your weekly tonnage progression, adherence percentage, and 7-day weight trend against body recomp targets."
+          />
         </div>
 
-        <p className="text-xs text-slate-400 mb-3 leading-relaxed">
-          The algorithmic review engine calculated the correlation between your 7-day average bodyweight ({report.averageWeightKg}kg), macro adherence ({report.macroAdherenceRatePercent}%), and workout volume progression (+{report.tonnageProgressionPercent}%):
-        </p>
-
-        <div className="space-y-2.5">
+        <div className="space-y-2">
           {report.actionableInsights.map((insight, idx) => (
             <div 
               key={idx}
-              className="p-3 rounded-xl bg-dark-850/80 border border-dark-750 flex items-start gap-2.5 text-xs leading-relaxed text-slate-200"
+              className="p-2.5 rounded-lg bg-neutral-900 border border-neutral-850 flex items-start gap-2 text-xs leading-relaxed text-neutral-300 font-sans"
             >
-              <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1.5 shrink-0" />
+              <div className="w-1.5 h-1.5 rounded-full bg-white mt-1.5 shrink-0" />
               <div>{insight}</div>
             </div>
           ))}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ExerciseDefinition, ExerciseAlternative } from '../types';
-import { X, ArrowRightLeft, Sparkles, Check } from 'lucide-react';
+import { X, ArrowRightLeft, Check } from 'lucide-react';
 import { soundManager } from '../services/audioTimer';
 
 interface EquipmentTakenModalProps {
@@ -33,59 +33,59 @@ export const EquipmentTakenModal: React.FC<EquipmentTakenModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-md rounded-2xl bg-dark-900 border border-dark-700 shadow-2xl p-5 text-left relative overflow-hidden max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-fadeIn">
+      <div className="w-full max-w-md rounded-xl bg-black border border-neutral-700 shadow-2xl p-5 text-left relative max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-dark-800 shrink-0">
+        <div className="flex items-center justify-between pb-3 border-b border-neutral-800 shrink-0">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400">
-              <ArrowRightLeft className="w-5 h-5" />
+            <div className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-750 text-white">
+              <ArrowRightLeft className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Equipment Taken?</h3>
-              <p className="text-xs text-amber-400 font-medium">Instant Biomechanical Swaps</p>
+              <h3 className="text-sm font-bold text-white font-mono uppercase tracking-tight">Equipment Taken?</h3>
+              <p className="text-[11px] text-neutral-400 font-mono">Biomechanical Swaps</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-dark-800 transition-colors"
+            className="p-1 text-neutral-500 hover:text-white transition-colors"
+            aria-label="Close"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Current Target Muscle Badge */}
-        <div className="mt-3 p-3 rounded-xl bg-dark-800/80 border border-dark-700 shrink-0">
-          <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+        <div className="mt-3 p-3 rounded-lg bg-neutral-950 border border-neutral-800 shrink-0">
+          <div className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-wider">
             Target Muscle Group
           </div>
-          <div className="text-sm font-bold text-cyan-300 mt-0.5">
+          <div className="text-xs font-bold text-white font-mono mt-0.5">
             {exerciseDef.targetMuscle}
           </div>
-          <div className="text-xs text-slate-300 mt-1 flex items-center gap-1">
+          <div className="text-xs text-neutral-400 mt-1 flex items-center gap-1 font-mono">
             <span>Original:</span>
-            <span className="font-semibold text-white">{exerciseDef.name}</span>
+            <span className="text-white font-semibold">{exerciseDef.name}</span>
           </div>
         </div>
 
         {/* Alternatives List */}
-        <div className="mt-3 overflow-y-auto space-y-2.5 pr-1 flex-1 py-1">
-          {/* Option to revert to primary */}
+        <div className="mt-3 overflow-y-auto space-y-2 pr-1 flex-1 py-1">
           {currentSelectedAlternative && (
             <button
               onClick={handleResetToPrimary}
-              className="w-full p-3 rounded-xl border border-dashed border-cyan-500/50 bg-cyan-500/5 hover:bg-cyan-500/10 text-left transition-all active:scale-[0.99] flex items-center justify-between"
+              className="w-full p-2.5 rounded-lg border border-neutral-700 bg-neutral-900 hover:bg-neutral-850 text-left transition-all active:scale-[0.99] flex items-center justify-between text-xs font-mono"
             >
               <div>
-                <div className="text-xs font-bold text-cyan-400">Revert to Original Movement</div>
-                <div className="text-xs text-slate-300">{exerciseDef.name} ({exerciseDef.primaryEquipment})</div>
+                <div className="font-bold text-white">Revert to Original Movement</div>
+                <div className="text-[11px] text-neutral-400">{exerciseDef.name} ({exerciseDef.primaryEquipment})</div>
               </div>
-              <Check className="w-4 h-4 text-cyan-400" />
+              <Check className="w-4 h-4 text-white" />
             </button>
           )}
 
-          <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider pt-1">
-            Matching Resistance Curve Alternatives
+          <div className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-wider pt-1">
+            Matching Resistance Curve Swaps
           </div>
 
           {exerciseDef.alternatives.map((alt, idx) => {
@@ -94,26 +94,33 @@ export const EquipmentTakenModal: React.FC<EquipmentTakenModalProps> = ({
               <button
                 key={idx}
                 onClick={() => handleSelect(alt)}
-                className={`w-full p-3.5 rounded-xl border text-left transition-all active:scale-[0.99] relative ${
+                className={`w-full p-3 rounded-lg border text-left transition-all active:scale-[0.99] ${
                   isSelected
-                    ? 'bg-cyan-950/60 border-cyan-500 text-white shadow-glow-cyan'
-                    : 'bg-dark-800/90 border-dark-700/80 hover:border-dark-600 text-slate-200'
+                    ? 'bg-white text-black border-white'
+                    : 'bg-neutral-950 border-neutral-800 hover:border-neutral-700 text-neutral-200'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <div className="text-sm font-bold text-white flex items-center gap-1.5">
+                    <div className="text-xs font-bold flex items-center gap-1.5 font-mono">
                       <span>{alt.name}</span>
-                      {isSelected && <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500 text-black font-bold">ACTIVE</span>}
+                      {isSelected && (
+                        <span className="text-[9px] px-1.5 py-0.2 rounded bg-black text-white font-bold font-mono">
+                          ACTIVE
+                        </span>
+                      )}
                     </div>
-                    <div className="text-xs text-amber-400 font-medium mt-0.5">
-                      Required Equipment: {alt.equipment}
+                    <div className={`text-[11px] font-mono mt-0.5 ${isSelected ? 'text-neutral-700' : 'text-neutral-400'}`}>
+                      Equipment: {alt.equipment}
                     </div>
                   </div>
-                  <Sparkles className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
                 </div>
-                <div className="mt-2 text-xs text-slate-300 bg-dark-900/60 p-2 rounded-lg border border-dark-800">
-                  <span className="text-slate-400 font-semibold">Biomechanical Cue:</span> {alt.cue}
+                <div className={`mt-2 text-[11px] p-2 rounded border leading-relaxed font-sans ${
+                  isSelected 
+                    ? 'bg-neutral-100 border-neutral-300 text-neutral-800' 
+                    : 'bg-neutral-900 border-neutral-850 text-neutral-300'
+                }`}>
+                  <span className="font-bold font-mono text-[10px] uppercase">Form Cue:</span> {alt.cue}
                 </div>
               </button>
             );
@@ -121,10 +128,10 @@ export const EquipmentTakenModal: React.FC<EquipmentTakenModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="mt-4 pt-3 border-t border-dark-800 flex justify-end shrink-0">
+        <div className="mt-3 pt-3 border-t border-neutral-850 flex justify-end shrink-0">
           <button
             onClick={onClose}
-            className="w-full py-2.5 rounded-xl bg-dark-800 hover:bg-dark-700 text-slate-200 text-xs font-semibold transition-all active:scale-95"
+            className="w-full py-2 rounded-lg border border-neutral-800 hover:border-neutral-700 text-neutral-400 hover:text-white text-xs font-mono transition-all active:scale-95"
           >
             Close
           </button>

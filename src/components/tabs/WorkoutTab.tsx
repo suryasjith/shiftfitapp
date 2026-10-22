@@ -12,19 +12,16 @@ import { EquipmentTakenModal } from '../EquipmentTakenModal';
 import { 
   Dumbbell, 
   Check, 
-  RotateCcw, 
   ArrowRightLeft, 
-  Sparkles, 
-  Clock, 
   Plus, 
   Trash2, 
-  CheckCircle2, 
   Activity, 
   ChevronDown, 
   ChevronUp,
-  Award
+  CheckCircle2
 } from 'lucide-react';
 import { soundManager } from '../../services/audioTimer';
+import { ContextualHelp } from '../ContextualHelp';
 
 interface WorkoutTabProps {
   todayStr: string;
@@ -47,22 +44,20 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
   onStartRestTimer,
   onOpenFatigueModal,
 }) => {
-  // Modal for swapping equipment
   const [activeSwapExerciseIndex, setActiveSwapExerciseIndex] = useState<number | null>(null);
   const [expandedExerciseIndex, setExpandedExerciseIndex] = useState<number | null>(0);
   const [completedCelebration, setCompletedCelebration] = useState<boolean>(false);
 
   if (!workout) {
     return (
-      <div className="p-8 text-center text-slate-400">
-        <Dumbbell className="w-12 h-12 mx-auto text-slate-600 mb-2 animate-bounce" />
-        <p className="font-semibold text-white">No workout loaded for today</p>
-        <p className="text-xs text-slate-400 mt-1">Check the 4-3 Rota calendar or initialize today's session.</p>
+      <div className="p-8 text-center text-neutral-500 font-mono">
+        <Dumbbell className="w-10 h-10 mx-auto text-neutral-700 mb-2" />
+        <p className="font-bold text-white text-xs">NO WORKOUT LOADED</p>
+        <p className="text-[11px] text-neutral-500 mt-1">Check the 4-3 Rota calendar.</p>
       </div>
     );
   }
 
-  // Handle set completion check
   const handleToggleSetComplete = (exIdx: number, setIdx: number) => {
     soundManager.playTap();
     const updatedWorkout: WorkoutSession = JSON.parse(JSON.stringify(workout));
@@ -70,14 +65,12 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
     const willBeComplete = !targetSet.completed;
     targetSet.completed = willBeComplete;
 
-    // If marked complete, auto-start countdown rest timer!
     if (willBeComplete) {
       const restSecs = updatedWorkout.exercises[exIdx].restSecs || 90;
       const exName = updatedWorkout.exercises[exIdx].selectedAlternative || updatedWorkout.exercises[exIdx].exerciseName;
       onStartRestTimer(restSecs, exName);
     }
 
-    // Check if entire workout is completed
     const allSetsComplete = updatedWorkout.exercises.every(ex => 
       ex.sets.every(s => s.completed)
     );
@@ -90,14 +83,12 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
     onSaveWorkout(updatedWorkout);
   };
 
-  // Update weight or reps
   const handleUpdateSetValue = (exIdx: number, setIdx: number, field: 'weightKg' | 'reps', value: number) => {
     const updatedWorkout: WorkoutSession = JSON.parse(JSON.stringify(workout));
     updatedWorkout.exercises[exIdx].sets[setIdx][field] = value;
     onSaveWorkout(updatedWorkout);
   };
 
-  // Add new set
   const handleAddSet = (exIdx: number) => {
     soundManager.playTap();
     const updatedWorkout: WorkoutSession = JSON.parse(JSON.stringify(workout));
@@ -113,20 +104,17 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
     onSaveWorkout(updatedWorkout);
   };
 
-  // Remove set
   const handleRemoveSet = (exIdx: number, setIdx: number) => {
     soundManager.playTap();
     const updatedWorkout: WorkoutSession = JSON.parse(JSON.stringify(workout));
     const ex = updatedWorkout.exercises[exIdx];
     if (ex.sets.length > 1) {
       ex.sets.splice(setIdx, 1);
-      // Re-number
       ex.sets.forEach((s, i) => s.setNumber = i + 1);
       onSaveWorkout(updatedWorkout);
     }
   };
 
-  // Swap alternative
   const handleSelectAlternative = (altName: string) => {
     if (activeSwapExerciseIndex === null) return;
     const updatedWorkout: WorkoutSession = JSON.parse(JSON.stringify(workout));
@@ -141,13 +129,11 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
     onSaveWorkout(updatedWorkout);
   };
 
-  // Active swapping def
   const swapDef: ExerciseDefinition | undefined = 
     activeSwapExerciseIndex !== null 
       ? EXERCISE_DATABASE[workout.exercises[activeSwapExerciseIndex]?.exerciseId]
       : undefined;
 
-  // Calculate total volume tonnage
   let currentTonnage = 0;
   let totalSetsCount = 0;
   let completedSetsCount = 0;
@@ -162,67 +148,77 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
   });
 
   return (
-    <div className="space-y-4 pb-28 text-left animate-fadeIn">
+    <div className="space-y-3.5 pb-28 text-left animate-fadeIn">
       {/* Workout Header Bar */}
-      <div className="rounded-2xl bg-dark-900 border border-dark-800 p-4 shadow-xl">
+      <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-4 shadow-sm">
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-neutral-700 bg-neutral-900 text-neutral-300 uppercase tracking-wider">
                 {workout.intensity}
               </span>
-              <span className="text-xs text-slate-400 font-mono">
+              <span className="text-xs text-neutral-400 font-mono">
                 {workout.category} Focus
               </span>
             </div>
-            <h2 className="text-lg font-black text-white mt-1">
+            <h2 className="text-base font-bold text-white mt-1 font-mono">
               {workout.title}
             </h2>
           </div>
 
-          <button
-            onClick={onOpenFatigueModal}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-dark-800 border border-dark-700 text-xs font-semibold text-slate-200 hover:border-cyan-400 transition-all active:scale-95"
-            title="Auto-Regulate Volume"
-          >
-            <Activity className="w-3.5 h-3.5 text-cyan-400" />
-            <span>RPE {currentFatigue}/10</span>
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={onOpenFatigueModal}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-neutral-750 bg-neutral-900 text-xs font-mono font-medium text-white hover:border-neutral-500 transition-all active:scale-95"
+              title="Auto-Regulate Volume"
+            >
+              <Activity className="w-3.5 h-3.5 text-neutral-400" />
+              <span>RPE {currentFatigue}/10</span>
+            </button>
+            <ContextualHelp
+              title="Fatigue Auto-Regulation"
+              content="If fatigue is high, the engine drops 1-2 accessory sets from this workout automatically to prevent central nervous system collapse while preserving your main strength sets."
+            />
+          </div>
         </div>
 
-        {/* Auto-Adjusted volume banner if fatigue was scaled */}
         {workout.autoAdjustedReason && (
-          <div className="mt-2.5 p-2.5 rounded-xl bg-cyan-950/40 border border-cyan-800/60 text-xs text-cyan-300 flex items-start gap-2">
-            <Sparkles className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-            <span>{workout.autoAdjustedReason}</span>
+          <div className="mt-2.5 p-2 rounded border border-neutral-800 bg-neutral-900 text-xs text-neutral-300 font-mono">
+            {workout.autoAdjustedReason}
           </div>
         )}
 
         {/* Progress & Total Tonnage Bar */}
-        <div className="mt-4 pt-3 border-t border-dark-800 grid grid-cols-3 gap-2 text-center">
-          <div className="bg-dark-850 p-2 rounded-xl border border-dark-750">
-            <div className="text-[10px] text-slate-400 uppercase font-semibold">Sets Done</div>
-            <div className="text-sm font-bold text-white font-mono mt-0.5">
+        <div className="mt-3.5 pt-3 border-t border-neutral-850 grid grid-cols-3 gap-2 text-center font-mono">
+          <div className="bg-neutral-900 p-2 rounded-lg border border-neutral-800">
+            <div className="text-[9px] text-neutral-500 uppercase font-bold">Sets Done</div>
+            <div className="text-xs font-bold text-white mt-0.5">
               {completedSetsCount} / {totalSetsCount}
             </div>
           </div>
-          <div className="bg-dark-850 p-2 rounded-xl border border-dark-750">
-            <div className="text-[10px] text-slate-400 uppercase font-semibold">Tonnage</div>
-            <div className="text-sm font-bold text-cyan-400 font-mono mt-0.5">
-              {Math.round(currentTonnage).toLocaleString()} <span className="text-[10px] text-slate-400">kg</span>
+          <div className="bg-neutral-900 p-2 rounded-lg border border-neutral-800">
+            <div className="flex items-center justify-center gap-1">
+              <span className="text-[9px] text-neutral-500 uppercase font-bold">Tonnage</span>
+              <ContextualHelp
+                title="Tonnage Volume"
+                content="Total work calculated as sets × reps × weight (kg). Progressive overload is tracked by weekly tonnage progression."
+              />
+            </div>
+            <div className="text-xs font-bold text-white mt-0.5">
+              {Math.round(currentTonnage).toLocaleString()} <span className="text-[9px] text-neutral-500">kg</span>
             </div>
           </div>
-          <div className="bg-dark-850 p-2 rounded-xl border border-dark-750">
-            <div className="text-[10px] text-slate-400 uppercase font-semibold">Target Corridor</div>
-            <div className="text-sm font-bold text-emerald-400 font-mono mt-0.5">
-              75-78 <span className="text-[10px] text-slate-400">kg</span>
+          <div className="bg-neutral-900 p-2 rounded-lg border border-neutral-800">
+            <div className="text-[9px] text-neutral-500 uppercase font-bold">Corridor</div>
+            <div className="text-xs font-bold text-neutral-300 mt-0.5">
+              75–78 <span className="text-[9px] text-neutral-500">kg</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Exercises List */}
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {workout.exercises.map((ex, exIdx) => {
           const def = EXERCISE_DATABASE[ex.exerciseId];
           const isExpanded = expandedExerciseIndex === exIdx;
@@ -233,148 +229,145 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
           return (
             <div 
               key={exIdx}
-              className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+              className={`rounded-xl border transition-all duration-150 overflow-hidden ${
                 isDone 
-                  ? 'bg-dark-900/90 border-emerald-500/40' 
+                  ? 'bg-neutral-950 border-neutral-750' 
                   : isExpanded
-                  ? 'bg-dark-900 border-cyan-500/60 shadow-lg'
-                  : 'bg-dark-900/80 border-dark-800'
+                  ? 'bg-neutral-950 border-white shadow-sm'
+                  : 'bg-neutral-950 border-neutral-850'
               }`}
             >
               {/* Exercise Header Accordion */}
               <div 
-                className="p-3.5 flex items-start justify-between cursor-pointer hover:bg-dark-850/60 transition-colors"
+                className="p-3 flex items-start justify-between cursor-pointer hover:bg-neutral-900 transition-colors"
                 onClick={() => setExpandedExerciseIndex(isExpanded ? null : exIdx)}
               >
                 <div className="flex items-start gap-2.5">
-                  <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold font-mono mt-0.5 shrink-0 ${
+                  <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold font-mono mt-0.5 shrink-0 ${
                     isDone 
-                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
-                      : 'bg-dark-800 text-slate-300 border border-dark-700'
+                      ? 'bg-white text-black' 
+                      : 'bg-neutral-900 text-neutral-400 border border-neutral-800'
                   }`}>
-                    {isDone ? <Check className="w-3.5 h-3.5" /> : exIdx + 1}
+                    {isDone ? <Check className="w-3 h-3 stroke-[3]" /> : exIdx + 1}
                   </span>
 
                   <div>
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <h3 className="text-sm font-bold text-white tracking-tight">
+                      <h3 className="text-xs font-bold text-white font-mono tracking-tight">
                         {displayName}
                       </h3>
                       {ex.equipmentTaken && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        <span className="text-[8px] font-mono font-bold px-1 py-0.2 rounded bg-white text-black">
                           SWAPPED
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-cyan-400 font-medium">
+                    <p className="text-[10px] text-neutral-400 font-mono mt-0.5">
                       {ex.targetMuscle} • {ex.restSecs}s Rest
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-xs font-mono font-bold text-slate-400">
+                  <span className="text-xs font-mono font-bold text-neutral-400">
                     {completedCount}/{ex.sets.length}
                   </span>
                   {isExpanded ? (
-                    <ChevronUp className="w-4 h-4 text-slate-400" />
+                    <ChevronUp className="w-4 h-4 text-neutral-500" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-slate-400" />
+                    <ChevronDown className="w-4 h-4 text-neutral-500" />
                   )}
                 </div>
               </div>
 
               {/* Expanded Set Logger */}
               {isExpanded && (
-                <div className="px-3.5 pb-4 pt-1 border-t border-dark-800/80 space-y-3">
-                  {/* Equipment Taken / Swap Trigger & Tips */}
-                  <div className="flex items-center justify-between gap-2 pt-1">
-                    <span className="text-[11px] text-slate-400 truncate max-w-[200px]">
+                <div className="px-3 pb-3 pt-1 border-t border-neutral-850 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2 pt-1 font-mono">
+                    <span className="text-[10px] text-neutral-500 truncate max-w-[180px]">
                       {def?.primaryEquipment}
                     </span>
 
-                    <button
-                      type="button"
-                      onClick={() => setActiveSwapExerciseIndex(exIdx)}
-                      className="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold flex items-center gap-1.5 active:scale-95 transition-all"
-                    >
-                      <ArrowRightLeft className="w-3 h-3 text-amber-400" />
-                      <span>Equipment Taken?</span>
-                    </button>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setActiveSwapExerciseIndex(exIdx)}
+                        className="px-2 py-0.5 rounded border border-neutral-750 bg-neutral-900 hover:border-neutral-600 text-white text-[10px] font-mono flex items-center gap-1 active:scale-95 transition-all"
+                      >
+                        <ArrowRightLeft className="w-3 h-3 text-neutral-400" />
+                        <span>Equipment Taken?</span>
+                      </button>
+                      <ContextualHelp
+                        title="Equipment Taken"
+                        content="Busy gym? Tap to substitute this exercise with an alternative matching the exact same muscle fibers and resistance curve without losing your set logs."
+                      />
+                    </div>
                   </div>
 
                   {def?.tips && (
-                    <p className="text-[11px] text-slate-400 bg-dark-850 p-2 rounded-lg border border-dark-800 leading-relaxed">
-                      💡 <strong className="text-slate-300">Form Cue:</strong> {def.tips}
+                    <p className="text-[11px] text-neutral-300 bg-neutral-900 p-2 rounded border border-neutral-850 leading-relaxed font-sans">
+                      <span className="font-bold text-white font-mono text-[10px] uppercase">Form:</span> {def.tips}
                     </p>
                   )}
 
                   {/* Granular Sets Table */}
-                  <div className="space-y-2">
-                    <div className="grid grid-cols-12 gap-2 text-[10px] uppercase font-bold text-slate-400 px-1">
+                  <div className="space-y-1.5">
+                    <div className="grid grid-cols-12 gap-2 text-[9px] uppercase font-mono font-bold text-neutral-500 px-1">
                       <div className="col-span-2 text-center">Set</div>
                       <div className="col-span-4 text-center">Weight (kg)</div>
                       <div className="col-span-4 text-center">Reps</div>
-                      <div className="col-span-2 text-center">Log</div>
+                      <div className="col-span-2 text-center">Done</div>
                     </div>
 
                     {ex.sets.map((set, setIdx) => {
                       return (
                         <div 
                           key={setIdx}
-                          className={`grid grid-cols-12 gap-2 items-center p-1.5 rounded-xl border transition-all ${
+                          className={`grid grid-cols-12 gap-2 items-center p-1 rounded-lg border transition-all ${
                             set.completed 
-                              ? 'bg-emerald-950/20 border-emerald-500/40 text-emerald-300' 
-                              : 'bg-dark-850 border-dark-750'
+                              ? 'bg-neutral-900 border-neutral-700 text-white' 
+                              : 'bg-neutral-950 border-neutral-850'
                           }`}
                         >
-                          {/* Set number */}
                           <div className="col-span-2 text-center">
-                            <span className="font-mono text-xs font-bold text-slate-300">
+                            <span className="font-mono text-xs font-bold text-neutral-400">
                               {set.setNumber}
                             </span>
                           </div>
 
-                          {/* Weight input */}
                           <div className="col-span-4">
-                            <div className="relative">
-                              <input
-                                type="number"
-                                step="0.5"
-                                value={set.weightKg === 0 ? '' : set.weightKg}
-                                onChange={(e) => handleUpdateSetValue(exIdx, setIdx, 'weightKg', parseFloat(e.target.value) || 0)}
-                                placeholder="32"
-                                className="w-full bg-dark-800 border border-dark-700 rounded-lg px-2 py-1.5 text-center font-mono text-xs font-bold text-white focus:outline-none focus:border-cyan-400 transition-colors"
-                              />
-                            </div>
+                            <input
+                              type="number"
+                              step="0.5"
+                              value={set.weightKg === 0 ? '' : set.weightKg}
+                              onChange={(e) => handleUpdateSetValue(exIdx, setIdx, 'weightKg', parseFloat(e.target.value) || 0)}
+                              placeholder="32"
+                              className="w-full bg-neutral-900 border border-neutral-800 rounded px-2 py-1 text-center font-mono text-xs font-bold text-white focus:outline-none focus:border-white transition-colors"
+                            />
                           </div>
 
-                          {/* Reps input */}
                           <div className="col-span-4">
-                            <div className="relative">
-                              <input
-                                type="number"
-                                step="1"
-                                value={set.reps === 0 ? '' : set.reps}
-                                onChange={(e) => handleUpdateSetValue(exIdx, setIdx, 'reps', parseInt(e.target.value, 10) || 0)}
-                                placeholder="10"
-                                className="w-full bg-dark-800 border border-dark-700 rounded-lg px-2 py-1.5 text-center font-mono text-xs font-bold text-white focus:outline-none focus:border-cyan-400 transition-colors"
-                              />
-                            </div>
+                            <input
+                              type="number"
+                              step="1"
+                              value={set.reps === 0 ? '' : set.reps}
+                              onChange={(e) => handleUpdateSetValue(exIdx, setIdx, 'reps', parseInt(e.target.value, 10) || 0)}
+                              placeholder="10"
+                              className="w-full bg-neutral-900 border border-neutral-800 rounded px-2 py-1 text-center font-mono text-xs font-bold text-white focus:outline-none focus:border-white transition-colors"
+                            />
                           </div>
 
-                          {/* Complete Checkbox Button */}
                           <div className="col-span-2 flex justify-center">
                             <button
                               type="button"
                               onClick={() => handleToggleSetComplete(exIdx, setIdx)}
-                              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 ${
+                              className={`w-7 h-7 rounded flex items-center justify-center transition-all active:scale-90 ${
                                 set.completed
-                                  ? 'bg-emerald-500 text-black font-extrabold shadow-glow-emerald'
-                                  : 'bg-dark-750 border border-dark-600 text-slate-400 hover:border-cyan-400 hover:text-white'
+                                  ? 'bg-white text-black font-black'
+                                  : 'bg-neutral-900 border border-neutral-750 text-neutral-500 hover:text-white hover:border-neutral-500'
                               }`}
                             >
-                              <Check className="w-4 h-4 stroke-[3]" />
+                              <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                             </button>
                           </div>
                         </div>
@@ -382,25 +375,24 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                     })}
                   </div>
 
-                  {/* Add / Remove Set Row */}
-                  <div className="flex justify-between items-center pt-1 text-xs">
+                  <div className="flex justify-between items-center pt-1 text-xs font-mono">
                     <button
                       type="button"
                       onClick={() => handleAddSet(exIdx)}
-                      className="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 active:scale-95"
+                      className="text-neutral-300 hover:text-white font-semibold flex items-center gap-1 active:scale-95"
                     >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Add Extra Set</span>
+                      <Plus className="w-3 h-3" />
+                      <span>Add Set</span>
                     </button>
 
                     {ex.sets.length > 1 && (
                       <button
                         type="button"
                         onClick={() => handleRemoveSet(exIdx, ex.sets.length - 1)}
-                        className="text-slate-500 hover:text-rose-400 text-[11px] font-medium flex items-center gap-1"
+                        className="text-neutral-600 hover:text-neutral-400 text-[10px] flex items-center gap-1"
                       >
                         <Trash2 className="w-3 h-3" />
-                        <span>Remove Last Set</span>
+                        <span>Remove Last</span>
                       </button>
                     )}
                   </div>
@@ -411,18 +403,15 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
         })}
       </div>
 
-      {/* Completion Banner */}
       {completedCelebration && (
-        <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950 to-dark-900 border border-emerald-500/50 shadow-glow-emerald text-center animate-slideUp">
-          <Award className="w-8 h-8 text-emerald-400 mx-auto mb-1 animate-bounce" />
-          <h4 className="text-base font-extrabold text-white">Session Completed!</h4>
-          <p className="text-xs text-slate-300 mt-0.5">
-            Total tonnage logged: <strong className="text-emerald-400 font-mono">{Math.round(currentTonnage).toLocaleString()} kg</strong>. CNS fatigue tracked. Great job staying on track for 75-78kg recomp!
+        <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-700 text-center animate-slideUp font-mono">
+          <h4 className="text-xs font-bold text-white uppercase tracking-wider">Session Completed</h4>
+          <p className="text-[11px] text-neutral-400 mt-1 font-sans">
+            Total tonnage: <strong className="text-white font-mono">{Math.round(currentTonnage).toLocaleString()} kg</strong>. Workout logged and saved to device memory.
           </p>
         </div>
       )}
 
-      {/* Equipment Taken Modal */}
       {swapDef && activeSwapExerciseIndex !== null && (
         <EquipmentTakenModal
           exerciseDef={swapDef}

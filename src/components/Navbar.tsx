@@ -13,7 +13,6 @@ export type NavTab = 'dashboard' | 'schedule' | 'workout' | 'nutrition' | 'analy
 interface NavbarProps {
   currentTab: NavTab;
   onSelectTab: (tab: NavTab) => void;
-  activeWorkoutCount?: number;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -22,7 +21,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const tabs = [
     { id: 'dashboard' as NavTab, label: 'Today', icon: Home },
-    { id: 'schedule' as NavTab, label: '4-3 Rota', icon: Calendar },
+    { id: 'schedule' as NavTab, label: 'Rota', icon: Calendar },
     { id: 'workout' as NavTab, label: 'Train', icon: Dumbbell },
     { id: 'nutrition' as NavTab, label: 'Macros', icon: UtensilsCrossed },
     { id: 'analytics' as NavTab, label: 'Review', icon: TrendingUp },
@@ -30,7 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-dark-950/95 backdrop-blur-xl border-t border-dark-800 pb-[env(safe-area-inset-bottom,12px)] pt-2 px-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-black border-t border-neutral-800 pb-[env(safe-area-inset-bottom,12px)] pt-2 px-2">
       <div className="max-w-md mx-auto grid grid-cols-6 gap-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -39,19 +38,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               key={tab.id}
               onClick={() => onSelectTab(tab.id)}
-              className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all duration-200 relative ${
+              className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-lg transition-all duration-150 relative ${
                 isActive
-                  ? 'text-cyan-400 font-semibold scale-105'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'text-white font-bold'
+                  : 'text-neutral-500 hover:text-neutral-300'
               }`}
             >
               {isActive && (
-                <span className="absolute -top-1 w-6 h-0.5 rounded-full bg-cyan-400 shadow-glow-cyan" />
+                <span className="absolute -top-2 w-5 h-[2px] bg-white rounded-full" />
               )}
-              <div className={`p-1 rounded-lg ${isActive ? 'bg-cyan-500/10' : ''}`}>
-                <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5px]' : 'stroke-[1.8px]'}`} />
+              <div className={`p-1 rounded ${isActive ? 'bg-neutral-850' : ''}`}>
+                <Icon className={`w-4 h-4 ${isActive ? 'stroke-[2.2px]' : 'stroke-[1.6px]'}`} />
               </div>
-              <span className="text-[10px] mt-0.5 tracking-tight truncate max-w-full">
+              <span className="text-[10px] mt-0.5 tracking-tight font-mono truncate max-w-full">
                 {tab.label}
               </span>
             </button>

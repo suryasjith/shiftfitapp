@@ -16,6 +16,7 @@ import { Navbar, NavTab } from './components/Navbar';
 import { FatigueModal } from './components/FatigueModal';
 import { FloatingRestTimer } from './components/FloatingRestTimer';
 import { InstallBanner } from './components/InstallBanner';
+import { OnboardingOverlay } from './components/OnboardingOverlay';
 import { DashboardTab } from './components/tabs/DashboardTab';
 import { ScheduleTab } from './components/tabs/ScheduleTab';
 import { WorkoutTab } from './components/tabs/WorkoutTab';
@@ -27,7 +28,6 @@ export const App: React.FC = () => {
   const [isReady, setIsReady] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState<NavTab>('dashboard');
   
-  // Today's date reference
   const todayStr = RotaEngine.formatDate(new Date());
 
   // Core App State
@@ -41,7 +41,8 @@ export const App: React.FC = () => {
   const [dailyFatigueLogs, setDailyFatigueLogs] = useState<Record<string, number>>({});
   const [currentFatigue, setCurrentFatigue] = useState<number>(3);
 
-  // Modals & Timers
+  // Modals & Contextual Overlays
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(false);
   const [isFatigueModalOpen, setIsFatigueModalOpen] = useState<boolean>(false);
   const [restTimerState, setRestTimerState] = useState<{
     isRunning: boolean;
@@ -53,7 +54,7 @@ export const App: React.FC = () => {
     exerciseName: '',
   });
 
-  // 1. Initial Load
+  // Initial Data & Onboarding Check
   useEffect(() => {
     async function loadData() {
       await storage.init();
@@ -79,9 +80,6 @@ export const App: React.FC = () => {
       const todayFatigue = loadedFatigueAll[todayStr];
       if (todayFatigue !== undefined) {
         setCurrentFatigue(todayFatigue);
-      } else {
-        // Auto prompt fatigue modal on first open if not logged
-        setIsFatigueModalOpen(true);
       }
 
       // Check today's hydration
@@ -99,19 +97,28 @@ export const App: React.FC = () => {
         await storage.saveHydration(initialHydro);
       }
 
+      // First-time onboarding overlay for new sessions (non-nagging)
+      const hasOnboarded = localStorage.getItem('shiftfit_onboarded_v1');
+      if (!hasOnboarded) {
+        setIsOnboardingOpen(true);
+      }
+
       setIsReady(true);
     }
 
     loadData();
   }, [todayStr]);
 
-  // Ensure workout for today exists or is generated dynamically based on Rota + Fatigue
+  const handleDismissOnboarding = () => {
+    setIsOnboardingOpen(false);
+    localStorage.setItem('shiftfit_onboarded_v1', 'true');
+  };
+
   const getTodayWorkout = (): WorkoutSession => {
     const existing = workouts[todayStr];
     if (existing) {
       return existing;
     }
-    // Generate fresh from Rota Engine
     return RotaEngine.generateWorkoutForDate(todayStr, profile, customShifts, currentFatigue);
   };
 
@@ -129,7 +136,6 @@ export const App: React.FC = () => {
     const updated = { ...weights, [entry.date]: entry };
     setWeights(updated);
     await storage.saveWeightEntry(entry);
-    // Update profile current weight if today
     if (entry.date === todayStr) {
       const updatedProfile = { ...profile, currentWeightKg: entry.weightKg };
       setProfile(updatedProfile);
@@ -152,7 +158,6 @@ export const App: React.FC = () => {
     setCustomShifts(updated);
     await storage.saveShift(shift);
 
-    // If shift on selected date changed, recalculate that day's workout
     const recalculated = RotaEngine.generateWorkoutForDate(shift.date, profile, updated, currentFatigue);
     setWorkouts((prev) => ({ ...prev, [shift.date]: recalculated }));
     await storage.saveWorkout(recalculated);
@@ -163,7 +168,6 @@ export const App: React.FC = () => {
     setDailyFatigueLogs((prev) => ({ ...prev, [todayStr]: score }));
     await storage.saveDailyFatigue(todayStr, score);
 
-    // Auto-regulate today's workout sets based on new fatigue score!
     const regenerated = RotaEngine.generateWorkoutForDate(todayStr, profile, customShifts, score);
     setWorkouts((prev) => ({ ...prev, [todayStr]: regenerated }));
     await storage.saveWorkout(regenerated);
@@ -200,16 +204,18 @@ export const App: React.FC = () => {
 
   if (!isReady) {
     return (
-      <div className="min-h-screen bg-dark-950 flex flex-col items-center justify-center text-slate-400">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 animate-pulse mb-3" />
-        <p className="font-bold text-white text-sm">ShiftFit Recomp Engine</p>
-        <p className="text-xs text-slate-500 mt-1">Initializing 4-on/3-off Rota...</p>
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-neutral-500 font-mono">
+        <div className="w-10 h-10 rounded border border-neutral-700 bg-neutral-900 flex items-center justify-center font-bold text-white mb-2">
+          SF
+        </div>
+        <p className="font-bold text-white text-xs">SHIFTFIT</p>
+        <p className="text-[10px] text-neutral-600 mt-0.5">Initializing OLED Engine...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-dark-950 text-slate-100 flex flex-col max-w-lg mx-auto relative select-none">
+    <div className="min-h-screen bg-black text-neutral-100 flex flex-col max-w-lg mx-auto relative select-none">
       {/* Top Header */}
       <Header
         todayStr={todayStr}
@@ -218,10 +224,11 @@ export const App: React.FC = () => {
         currentFatigue={currentFatigue}
         onOpenFatigueModal={() => setIsFatigueModalOpen(true)}
         onOpenSettings={() => setCurrentTab('vault')}
+        onOpenGuide={() => setIsOnboardingOpen(true)}
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 px-4 pt-3 pb-8">
+      <main className="flex-1 px-3 pt-3 pb-8">
         {/* iOS PWA Add to Home Screen Banner */}
         <InstallBanner />
 
@@ -326,6 +333,12 @@ export const App: React.FC = () => {
         isOpen={isFatigueModalOpen}
         onClose={() => setIsFatigueModalOpen(false)}
         onSave={handleSaveFatigue}
+      />
+
+      {/* First-Time Onboarding Overlay */}
+      <OnboardingOverlay
+        isOpen={isOnboardingOpen}
+        onClose={handleDismissOnboarding}
       />
 
       {/* Bottom iOS Navigation Bar */}

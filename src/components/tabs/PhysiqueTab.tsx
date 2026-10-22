@@ -7,20 +7,15 @@ import {
 import { CloudSyncService } from '../../services/cloudSync';
 import { 
   Camera, 
-  Upload, 
   CloudCheck, 
   CloudOff, 
-  Sparkles, 
   ShieldCheck, 
   HardDrive, 
   Layers, 
-  Check, 
-  AlertCircle, 
-  RefreshCw,
-  Download,
-  Info
+  Download
 } from 'lucide-react';
 import { soundManager } from '../../services/audioTimer';
+import { ContextualHelp } from '../ContextualHelp';
 
 interface PhysiqueTabProps {
   todayStr: string;
@@ -46,21 +41,15 @@ export const PhysiqueTab: React.FC<PhysiqueTabProps> = ({
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadStatusMsg, setUploadStatusMsg] = useState<string>('');
   
-  // Cloud settings modal
   const [showCloudConfig, setShowCloudConfig] = useState<boolean>(false);
   const [googleTokenInput, setGoogleTokenInput] = useState<string>(profile.googleDriveAccessToken || '');
   const [supabaseUrlInput, setSupabaseUrlInput] = useState<string>(profile.supabaseUrl || '');
   const [supabaseKeyInput, setSupabaseKeyInput] = useState<string>(profile.supabaseAnonKey || '');
 
-  // Compare mode
-  const [comparePhotoA, setComparePhotoA] = useState<string | null>(null);
-  const [comparePhotoB, setComparePhotoB] = useState<string | null>(null);
-
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const photoList = Object.values(photos).sort((a, b) => b.date.localeCompare(a.date));
 
-  // Handle Photo Selection via Camera or File
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -76,9 +65,9 @@ export const PhysiqueTab: React.FC<PhysiqueTabProps> = ({
 
   const processAndSavePhoto = async (dataUrl: string) => {
     setIsUploading(true);
-    setUploadStatusMsg('Encoding & storing in local offline vault...');
+    setUploadStatusMsg('Encoding & saving to device vault...');
 
-    const weekNum = 42; // Oct 2026 current week
+    const weekNum = 42;
     const photoId = `photo_${Date.now()}`;
     const weightVal = todayWeight?.weightKg || profile.currentWeightKg || 76.4;
 
@@ -93,9 +82,8 @@ export const PhysiqueTab: React.FC<PhysiqueTabProps> = ({
       notes: photoNotes || 'Weekly check-in',
     };
 
-    // Attempt Cloud Sync if Google Drive or Supabase is connected!
     if (profile.googleDriveConnected && profile.googleDriveAccessToken) {
-      setUploadStatusMsg('Securely uploading to Google Drive Vault folder...');
+      setUploadStatusMsg('Uploading to Google Drive ShiftFit_Physique_Vault...');
       const res = await CloudSyncService.uploadToGoogleDrive(
         newPhoto,
         profile.googleDriveAccessToken,
@@ -105,9 +93,9 @@ export const PhysiqueTab: React.FC<PhysiqueTabProps> = ({
         newPhoto.syncedToCloud = true;
         newPhoto.cloudUrl = res.cloudUrl;
         newPhoto.cloudProvider = 'google_drive';
-        setUploadStatusMsg('✓ Uploaded to Google Drive! It will automatically sync to your PC folder via Desktop Client.');
+        setUploadStatusMsg('✓ Uploaded to Google Drive (Desktop will auto-sync to your PC)');
       } else {
-        setUploadStatusMsg(`Cloud upload note: ${res.error || 'Saved locally in IndexedDB'}`);
+        setUploadStatusMsg(`Cloud note: ${res.error || 'Stored safely in local vault'}`);
       }
     } else if (profile.supabaseConnected && profile.supabaseUrl && profile.supabaseAnonKey) {
       setUploadStatusMsg('Uploading to Supabase Storage...');
@@ -120,10 +108,10 @@ export const PhysiqueTab: React.FC<PhysiqueTabProps> = ({
         newPhoto.syncedToCloud = true;
         newPhoto.cloudUrl = res.cloudUrl;
         newPhoto.cloudProvider = 'supabase';
-        setUploadStatusMsg('✓ Uploaded to Supabase Storage.');
+        setUploadStatusMsg('✓ Uploaded to Supabase Storage');
       }
     } else {
-      setUploadStatusMsg('✓ Saved securely to device vault. Connect Google Drive below to sync natively to your PC!');
+      setUploadStatusMsg('✓ Saved to device vault. Link Google Drive below for automatic PC folder sync.');
     }
 
     onSavePhoto(newPhoto);
@@ -148,63 +136,62 @@ export const PhysiqueTab: React.FC<PhysiqueTabProps> = ({
   };
 
   return (
-    <div className="space-y-4 pb-28 text-left animate-fadeIn">
+    <div className="space-y-3.5 pb-28 text-left animate-fadeIn">
       {/* Header Card */}
-      <div className="rounded-2xl bg-dark-900 border border-dark-800 p-4 shadow-xl">
+      <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-4 shadow-sm">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400">
-              <Camera className="w-5 h-5" />
+            <div className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-750 text-white">
+              <Camera className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-base font-black text-white">Physique & Media Vault</h2>
-              <p className="text-xs text-slate-400">Desktop Cloud Sync & Progression</p>
+              <div className="flex items-center gap-1.5">
+                <h2 className="text-sm font-bold text-white font-mono uppercase tracking-tight">Physique Vault</h2>
+                <ContextualHelp
+                  title="Physique Vault"
+                  content="Take weekly check-in photos. When connected, photos automatically upload to your Google Drive 'ShiftFit_Physique_Vault' folder, which Google Drive for Desktop syncs to your PC without needing the PC on during your workout."
+                />
+              </div>
+              <p className="text-[10px] text-neutral-400 font-mono">Desktop Cloud Mirroring</p>
             </div>
           </div>
 
           <button
             onClick={() => setShowCloudConfig(!showCloudConfig)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-dark-800 border border-dark-700 text-xs font-semibold text-slate-300 hover:text-white transition-all active:scale-95"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-neutral-750 bg-neutral-900 text-xs font-mono text-white hover:border-neutral-500 transition-all active:scale-95"
           >
             {profile.googleDriveConnected ? (
-              <CloudCheck className="w-4 h-4 text-cyan-400" />
+              <CloudCheck className="w-3.5 h-3.5 text-white" />
             ) : (
-              <CloudOff className="w-4 h-4 text-slate-400" />
+              <CloudOff className="w-3.5 h-3.5 text-neutral-500" />
             )}
             <span>{profile.googleDriveConnected ? 'Drive Linked' : 'Cloud Setup'}</span>
           </button>
         </div>
 
-        {/* Weekly Prompt Banner */}
-        <div className="mt-3.5 p-3.5 rounded-xl bg-gradient-to-r from-dark-850 to-cyan-950/30 border border-cyan-800/40">
+        {/* Weekly Prompt */}
+        <div className="mt-3.5 p-3 rounded-lg bg-neutral-900 border border-neutral-800 font-mono">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-cyan-300 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-              Weekly Physique Prompt (Week 42)
+            <span className="text-xs font-bold text-white">
+              WEEK 42 PHYSIQUE CHECK-IN
             </span>
-            <span className="text-[10px] font-mono text-slate-400">
+            <span className="text-[10px] text-neutral-400">
               Weight: {todayWeight?.weightKg || '76.4'} kg
             </span>
           </div>
-          <p className="mt-1 text-xs text-slate-300 leading-relaxed">
-            Consistent weekly photos track aesthetic recomp changes (upper chest clavicle flare, lat-to-waist taper) independent of daily water fluctuations.
-          </p>
 
           {/* Pose Selector */}
-          <div className="mt-3">
-            <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
-              Select Pose:
-            </label>
-            <div className="grid grid-cols-3 gap-1.5 text-center">
+          <div className="mt-2.5">
+            <div className="grid grid-cols-3 gap-1 text-center">
               {(['Front Relaxed', 'Front Double Bicep', 'Side Chest', 'Back Lat Spread', 'Waist/Abs'] as const).map((pose) => (
                 <button
                   key={pose}
                   type="button"
                   onClick={() => setSelectedPose(pose)}
-                  className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold transition-all ${
+                  className={`py-1 px-1.5 rounded text-[10px] font-mono transition-all ${
                     selectedPose === pose
-                      ? 'bg-cyan-500 text-black font-bold shadow-glow-cyan'
-                      : 'bg-dark-800 text-slate-300 border border-dark-700 hover:border-dark-600'
+                      ? 'bg-white text-black font-bold'
+                      : 'bg-black text-neutral-400 border border-neutral-800 hover:text-white'
                   }`}
                 >
                   {pose}
@@ -214,7 +201,7 @@ export const PhysiqueTab: React.FC<PhysiqueTabProps> = ({
           </div>
 
           {/* Camera / Upload Action */}
-          <div className="mt-3.5 flex gap-2">
+          <div className="mt-3 flex gap-2">
             <input
               type="file"
               ref={fileInputRef}
@@ -227,166 +214,149 @@ export const PhysiqueTab: React.FC<PhysiqueTabProps> = ({
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs shadow-glow-cyan transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+              className="flex-1 py-2 px-3 rounded-lg bg-white text-black font-mono font-bold text-xs hover:bg-neutral-200 transition-all active:scale-95 flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
-              <Camera className="w-4 h-4" />
-              <span>{isUploading ? 'Uploading...' : 'Capture / Upload Photo'}</span>
+              <Camera className="w-3.5 h-3.5" />
+              <span>{isUploading ? 'SAVING...' : 'CAPTURE / UPLOAD PHOTO'}</span>
             </button>
           </div>
 
           {uploadStatusMsg && (
-            <div className="mt-2.5 p-2 rounded-lg bg-dark-900 border border-cyan-800 text-xs text-cyan-300 animate-fadeIn">
+            <div className="mt-2 p-2 rounded bg-black border border-neutral-800 text-[11px] text-neutral-300 font-mono">
               {uploadStatusMsg}
             </div>
           )}
         </div>
       </div>
 
-      {/* Cloud Sync Setup Modal / Card */}
+      {/* Cloud Sync Setup Card */}
       {showCloudConfig && (
-        <div className="rounded-2xl bg-dark-900 border border-cyan-500/40 p-4 shadow-xl text-left animate-slideUp">
-          <div className="flex items-center justify-between pb-2 border-b border-dark-800">
+        <div className="rounded-xl bg-neutral-950 border border-neutral-700 p-4 shadow-sm text-left animate-slideUp font-mono">
+          <div className="flex items-center justify-between pb-2 border-b border-neutral-850">
             <div className="flex items-center gap-2">
-              <HardDrive className="w-4 h-4 text-cyan-400" />
-              <h3 className="text-sm font-bold text-white">Google Drive Desktop Sync Configuration</h3>
+              <HardDrive className="w-4 h-4 text-white" />
+              <h3 className="text-xs font-bold text-white uppercase">Desktop Cloud Sync Setup</h3>
             </div>
             <button 
               onClick={() => setShowCloudConfig(false)}
-              className="text-slate-400 hover:text-white text-xs"
+              className="text-neutral-500 hover:text-white text-xs"
             >
               ✕
             </button>
           </div>
 
-          <div className="mt-3 space-y-3 text-xs">
-            <div className="p-2.5 rounded-xl bg-dark-850 border border-dark-750 text-slate-300 leading-relaxed">
-              <p className="font-semibold text-cyan-300 flex items-center gap-1.5 mb-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
-                How the Desktop Cloud Sync Works:
-              </p>
-              When linked, photos are uploaded directly to the <code className="text-cyan-300 bg-dark-900 px-1 rounded">ShiftFit_Physique_Vault</code> folder in your Google Drive. 
-              Because it syncs via the cloud, your PC’s local Google Drive folder automatically updates whenever your PC is on — completely independent of whether your PC is powered on during your workout!
+          <div className="mt-3 space-y-2.5 text-xs">
+            <div className="p-2.5 rounded bg-neutral-900 border border-neutral-850 text-neutral-300 font-sans text-[11px] leading-relaxed">
+              <span className="font-bold font-mono text-white block mb-0.5">Desktop Sync Mechanism:</span>
+              Photos upload to Google Drive's <code className="text-white bg-black px-1 rounded font-mono">ShiftFit_Physique_Vault</code> folder. 
+              The Google Drive desktop client mirrors this folder to your PC whenever your PC is on.
             </div>
 
             <div>
-              <label className="text-slate-300 font-semibold block mb-1">
+              <label className="text-neutral-400 text-[11px] block mb-1">
                 Google Drive OAuth2 Access Token:
               </label>
               <input
                 type="password"
                 value={googleTokenInput}
                 onChange={(e) => setGoogleTokenInput(e.target.value)}
-                placeholder="Paste Google Drive OAuth Bearer token (or leave empty for local vault)"
-                className="w-full bg-dark-800 border border-dark-700 rounded-xl px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-cyan-400"
+                placeholder="Paste Bearer token (optional)"
+                className="w-full bg-neutral-900 border border-neutral-800 rounded px-2.5 py-1.5 text-white font-mono text-xs focus:outline-none focus:border-white"
               />
-              <span className="text-[10px] text-slate-400 mt-0.5 block">
-                Can be generated via Google OAuth Playground or client-side PKCE login.
-              </span>
             </div>
 
-            <div className="pt-2 border-t border-dark-800">
-              <div className="text-[11px] font-bold text-slate-400 uppercase mb-1">
-                Or Supabase Storage Option:
-              </div>
-              <div className="space-y-2">
-                <input
-                  type="text"
-                  value={supabaseUrlInput}
-                  onChange={(e) => setSupabaseUrlInput(e.target.value)}
-                  placeholder="https://xyzcompany.supabase.co"
-                  className="w-full bg-dark-800 border border-dark-700 rounded-xl px-3 py-1.5 text-white font-mono text-xs"
-                />
-                <input
-                  type="password"
-                  value={supabaseKeyInput}
-                  onChange={(e) => setSupabaseKeyInput(e.target.value)}
-                  placeholder="Supabase Anon Public API Key"
-                  className="w-full bg-dark-800 border border-dark-700 rounded-xl px-3 py-1.5 text-white font-mono text-xs"
-                />
-              </div>
+            <div className="pt-2 border-t border-neutral-850">
+              <label className="text-neutral-400 text-[11px] block mb-1">
+                Or Supabase Project URL:
+              </label>
+              <input
+                type="text"
+                value={supabaseUrlInput}
+                onChange={(e) => setSupabaseUrlInput(e.target.value)}
+                placeholder="https://xyz.supabase.co"
+                className="w-full bg-neutral-900 border border-neutral-800 rounded px-2.5 py-1.5 text-white font-mono text-xs mb-1.5"
+              />
+              <input
+                type="password"
+                value={supabaseKeyInput}
+                onChange={(e) => setSupabaseKeyInput(e.target.value)}
+                placeholder="Supabase Anon Key"
+                className="w-full bg-neutral-900 border border-neutral-800 rounded px-2.5 py-1.5 text-white font-mono text-xs"
+              />
             </div>
 
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={handleSaveCloudSettings}
-                className="flex-1 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs transition-all active:scale-95"
-              >
-                Save Cloud Configuration
-              </button>
-            </div>
+            <button
+              onClick={handleSaveCloudSettings}
+              className="w-full mt-2 py-2 rounded bg-white text-black font-bold text-xs hover:bg-neutral-200"
+            >
+              Save Configuration
+            </button>
           </div>
         </div>
       )}
 
-      {/* Physique Gallery & Compare Slider */}
-      <div className="rounded-2xl bg-dark-900 border border-dark-800 p-4 shadow-lg text-left">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Layers className="w-4 h-4 text-cyan-400" />
-            <h3 className="text-sm font-bold text-white">Physique Timeline ({photoList.length})</h3>
+      {/* Physique Gallery */}
+      <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-4 shadow-sm text-left">
+        <div className="flex items-center justify-between mb-3 font-mono">
+          <div className="flex items-center gap-1.5">
+            <Layers className="w-3.5 h-3.5 text-white" />
+            <h3 className="text-xs font-bold text-white uppercase">Vault History ({photoList.length})</h3>
+            <ContextualHelp
+              title="Vault Storage"
+              content="Every photo is stored offline in IndexedDB on this device, plus mirrored to the cloud if configured."
+            />
           </div>
 
           <button
             onClick={onExportAllData}
-            className="flex items-center gap-1 text-xs text-cyan-400 hover:underline font-medium"
+            className="flex items-center gap-1 text-[11px] text-neutral-300 hover:text-white"
           >
-            <Download className="w-3.5 h-3.5" />
+            <Download className="w-3 h-3" />
             <span>Export Backup</span>
           </button>
         </div>
 
         {photoList.length === 0 ? (
-          <div className="py-8 text-center text-slate-500 text-xs">
-            No physique photos logged yet. Take your first check-in photo above!
+          <div className="py-8 text-center text-neutral-600 text-xs font-mono">
+            No check-in photos logged yet.
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2.5">
             {photoList.map((photo) => (
               <div 
                 key={photo.id}
-                className="rounded-xl bg-dark-850 border border-dark-750 overflow-hidden group hover:border-cyan-500/50 transition-all"
+                className="rounded-lg bg-neutral-900 border border-neutral-800 overflow-hidden"
               >
-                {/* Photo Image Display */}
-                <div className="relative aspect-[3/4] bg-dark-950 overflow-hidden flex items-center justify-center">
+                <div className="relative aspect-[3/4] bg-black overflow-hidden flex items-center justify-center">
                   <img
                     src={photo.imageDataUrl}
                     alt={photo.pose}
                     className="w-full h-full object-cover"
                   />
 
-                  {/* Sync status badge */}
-                  <div className="absolute top-2 right-2">
+                  <div className="absolute top-1.5 right-1.5">
                     {photo.syncedToCloud ? (
-                      <span className="p-1 rounded-md bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 flex items-center gap-1 text-[9px] font-bold px-1.5" title="Synced to Cloud Vault">
-                        <CloudCheck className="w-3 h-3" />
-                        <span>SYNCED</span>
+                      <span className="px-1 py-0.2 rounded bg-black/80 border border-neutral-700 text-white text-[8px] font-mono font-bold">
+                        SYNCED
                       </span>
                     ) : (
-                      <span className="p-1 rounded-md bg-dark-900/80 border border-dark-700 text-slate-400 flex items-center gap-1 text-[9px] font-medium px-1.5" title="Stored safely in Local Vault">
-                        <HardDrive className="w-3 h-3" />
-                        <span>LOCAL</span>
+                      <span className="px-1 py-0.2 rounded bg-black/80 border border-neutral-800 text-neutral-400 text-[8px] font-mono">
+                        LOCAL
                       </span>
                     )}
                   </div>
 
-                  {/* Weight overlay tag */}
-                  <div className="absolute bottom-2 left-2 bg-black/75 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold text-white border border-white/10">
+                  <div className="absolute bottom-1.5 left-1.5 bg-black/90 px-1 py-0.2 rounded text-[9px] font-mono text-white border border-neutral-800">
                     {photo.weightKgAtTime || '76.4'} kg
                   </div>
                 </div>
 
-                {/* Details */}
-                <div className="p-2.5">
-                  <div className="text-xs font-bold text-white truncate">{photo.pose}</div>
-                  <div className="flex items-center justify-between text-[10px] text-slate-400 mt-0.5">
-                    <span>Week {photo.weekNumber}</span>
-                    <span className="font-mono">{photo.date}</span>
+                <div className="p-2 font-mono">
+                  <div className="text-[11px] font-bold text-white truncate">{photo.pose}</div>
+                  <div className="flex items-center justify-between text-[9px] text-neutral-500 mt-0.5">
+                    <span>Wk {photo.weekNumber}</span>
+                    <span>{photo.date}</span>
                   </div>
-                  {photo.notes && (
-                    <p className="text-[10px] text-slate-400 mt-1 line-clamp-1 italic">
-                      "{photo.notes}"
-                    </p>
-                  )}
                 </div>
               </div>
             ))}

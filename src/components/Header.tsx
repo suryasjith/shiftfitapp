@@ -1,7 +1,8 @@
 import React from 'react';
 import { UserProfile, ShiftDay } from '../types';
 import { RotaEngine } from '../services/rotaEngine';
-import { Activity, CloudCheck, CloudOff, Flame, Moon, Sun, AlertTriangle } from 'lucide-react';
+import { Activity, CloudCheck, CloudOff, Sun, Moon, HelpCircle } from 'lucide-react';
+import { ContextualHelp } from './ContextualHelp';
 
 interface HeaderProps {
   todayStr: string;
@@ -10,6 +11,7 @@ interface HeaderProps {
   currentFatigue: number;
   onOpenFatigueModal: () => void;
   onOpenSettings: () => void;
+  onOpenGuide: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -19,87 +21,97 @@ export const Header: React.FC<HeaderProps> = ({
   currentFatigue,
   onOpenFatigueModal,
   onOpenSettings,
+  onOpenGuide,
 }) => {
   const dayInfo = RotaEngine.getDayInfo(todayStr, profile, customShifts);
 
-  const getFatigueColor = (score: number) => {
-    if (score <= 4) return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30';
-    if (score <= 7) return 'bg-amber-500/15 text-amber-400 border-amber-500/30';
-    return 'bg-rose-500/15 text-rose-400 border-rose-500/30';
-  };
-
   return (
-    <header className="sticky top-0 z-40 bg-dark-950/90 backdrop-blur-md border-b border-dark-800 px-4 pt-safe pb-3">
+    <header className="sticky top-0 z-40 bg-black border-b border-neutral-800 px-4 pt-safe pb-3">
       <div className="flex items-center justify-between">
-        {/* Logo and Brand */}
+        {/* Brand & Date */}
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-600 to-violet-600 flex items-center justify-center shadow-glow-cyan">
-            <Flame className="w-5 h-5 text-white" />
+          <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-700 flex items-center justify-center font-black font-mono text-sm text-white">
+            SF
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-base tracking-tight text-white">ShiftFit</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-cyan-950 border border-cyan-800 text-cyan-300 font-mono font-semibold">
-                75-78kg RECOMP
+              <span className="font-bold text-sm tracking-tight text-white font-mono">SHIFTFIT</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded border border-neutral-700 bg-neutral-900 text-neutral-300 font-mono">
+                75–78kg
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-medium">
+            <p className="text-[11px] text-neutral-400 font-mono">
               {new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
             </p>
           </div>
         </div>
 
-        {/* Right Status Actions */}
-        <div className="flex items-center gap-2">
-          {/* Fatigue / CNS Regulation Button */}
+        {/* Action Controls */}
+        <div className="flex items-center gap-1.5">
+          {/* Guide / Onboarding Trigger */}
           <button
-            onClick={onOpenFatigueModal}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-all active:scale-95 ${getFatigueColor(currentFatigue)}`}
-            title="Adjust Today's Fatigue / CNS Auto-Regulation"
+            onClick={onOpenGuide}
+            className="flex items-center gap-1 px-2 py-1.5 rounded-lg border border-neutral-800 bg-neutral-950 text-neutral-300 hover:text-white hover:border-neutral-600 text-xs font-mono transition-all active:scale-95"
+            title="Open ShiftFit Architecture Guide"
           >
-            <Activity className="w-3.5 h-3.5" />
-            <span>CNS: {currentFatigue}/10</span>
+            <HelpCircle className="w-3.5 h-3.5" />
+            <span className="text-[11px]">Guide</span>
           </button>
+
+          {/* CNS Fatigue Badge with discrete ? */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={onOpenFatigueModal}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-neutral-700 bg-neutral-900 text-white text-xs font-mono font-medium hover:border-neutral-500 transition-all active:scale-95"
+              title="Adjust Daily Fatigue / CNS Scale"
+            >
+              <Activity className="w-3.5 h-3.5 text-neutral-300" />
+              <span>CNS: {currentFatigue}/10</span>
+            </button>
+            <ContextualHelp
+              title="Daily CNS Fatigue"
+              content="Rates your central nervous system fatigue on a 1-10 scale. If fatigue is high (8-10), the engine automatically cuts working volume by 30-50% and replaces high-axial spinal loads with safe alternatives."
+              placement="bottom"
+            />
+          </div>
 
           {/* Cloud Sync Status */}
           <button
             onClick={onOpenSettings}
-            className="p-2 rounded-lg bg-dark-900 border border-dark-800 text-slate-300 hover:text-white transition-all active:scale-95"
-            title={profile.googleDriveConnected ? "Google Drive Cloud Sync Active" : "Local Vault (Tap to configure Cloud)"}
+            className="p-1.5 rounded-lg border border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all active:scale-95"
+            title={profile.googleDriveConnected ? "Google Drive Synced" : "Local Vault (Tap for Cloud Setup)"}
           >
             {profile.googleDriveConnected ? (
-              <CloudCheck className="w-4 h-4 text-cyan-400" />
+              <CloudCheck className="w-4 h-4 text-white" />
             ) : (
-              <CloudOff className="w-4 h-4 text-slate-400" />
+              <CloudOff className="w-4 h-4 text-neutral-500" />
             )}
           </button>
         </div>
       </div>
 
-      {/* Rota Shift & Focus Sub-Bar */}
-      <div className="mt-2.5 flex items-center justify-between px-3 py-1.5 rounded-lg bg-dark-900/90 border border-dark-800 text-xs">
-        <div className="flex items-center gap-2">
+      {/* Sub-Bar: Rota Shift Status */}
+      <div className="mt-2.5 flex items-center justify-between px-3 py-1.5 rounded-lg border border-neutral-850 bg-neutral-950 text-xs font-mono">
+        <div className="flex items-center gap-1.5">
           {dayInfo.isOvertime ? (
-            <span className="flex items-center gap-1 text-amber-400 font-semibold">
-              <AlertTriangle className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-              Overtime 12h Shift
+            <span className="text-white font-bold flex items-center gap-1">
+              [!] 12H OVERTIME
             </span>
           ) : dayInfo.isShiftDay ? (
-            <span className="flex items-center gap-1 text-cyan-300 font-medium">
-              <Sun className="w-3.5 h-3.5 text-amber-400" />
-              12h Shift (Day {dayInfo.shiftIndex + 1} of 4)
+            <span className="text-neutral-300 flex items-center gap-1">
+              <Sun className="w-3 h-3 text-neutral-400" />
+              SHIFT ({dayInfo.shiftIndex + 1}/4)
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-emerald-300 font-medium">
-              <Moon className="w-3.5 h-3.5 text-emerald-400" />
-              Off Day (Day {dayInfo.offIndex + 1} of 3)
+            <span className="text-white font-semibold flex items-center gap-1">
+              <Moon className="w-3 h-3 text-neutral-300" />
+              OFF-DAY ({dayInfo.offIndex + 1}/3)
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-1 text-slate-300">
-          <span className="text-[11px] text-slate-400">Prescription:</span>
-          <span className="font-semibold text-white truncate max-w-[170px] text-right">
+        <div className="flex items-center gap-1 text-neutral-400">
+          <span className="text-white font-semibold truncate max-w-[170px] text-right">
             {dayInfo.workoutTitle.split(':')[0]}
           </span>
         </div>
