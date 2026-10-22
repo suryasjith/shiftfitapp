@@ -12,6 +12,8 @@ import {
 const DB_NAME = 'ShiftFit_DB_v1';
 const DB_VERSION = 1;
 
+import { ROTA_PRESETS } from './rotaEngine';
+
 interface StorageSchema {
   profile: UserProfile;
   shifts: Record<string, ShiftDay>; // keyed by YYYY-MM-DD
@@ -30,15 +32,13 @@ export const DEFAULT_PROFILE: UserProfile = {
   targetWeightMaxKg: 78.0,
   currentWeightKg: 76.4,
   heightCm: 178,
+  fitnessGoal: 'body_recomposition',
   dailyWaterTargetMl: 3800,
-  // Rota configuration: 4-on / 3-off 12-hour shifts
-  // Anchor date: 4 days on starting Monday of current cycle
-  rotaStartDate: '2026-10-19', // Monday
+  // 2-Week Rolling Rota Configuration (14 days sequence)
+  rotaStartDate: '2026-10-19', // Monday anchor
   shiftDurationHours: 12,
   shiftStartTime: '07:00',
-  shiftPatternDays: 7,
-  onDaysCount: 4,
-  offDaysCount: 3,
+  twoWeekTemplate: ROTA_PRESETS.fourOnThreeOff,
   // Macros
   offDayMacros: {
     proteinGrams: 185,

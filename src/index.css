@@ -4,10 +4,11 @@
 
 @layer utilities {
   .pt-safe {
-    padding-top: max(env(safe-area-inset-top, 0px), 12px);
+    /* Generous iOS safe area spacing with 48px baseline for dynamic island & notch clearance */
+    padding-top: max(env(safe-area-inset-top, 48px), 48px);
   }
   .pb-safe {
-    padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+    padding-bottom: max(env(safe-area-inset-bottom, 20px), 20px);
   }
 }
 

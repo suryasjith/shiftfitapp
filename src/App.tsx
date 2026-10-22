@@ -6,7 +6,8 @@ import {
   NutritionLog, 
   HydrationLog, 
   BodyweightEntry, 
-  PhysiquePhoto 
+  PhysiquePhoto,
+  ShiftType 
 } from './types';
 import { storage, DEFAULT_PROFILE } from './services/storage';
 import { initializeSeedDataIfEmpty } from './services/seedData';
@@ -76,13 +77,11 @@ export const App: React.FC = () => {
       setPhotos(loadedPhotos);
       setDailyFatigueLogs(loadedFatigueAll);
 
-      // Check today's fatigue
       const todayFatigue = loadedFatigueAll[todayStr];
       if (todayFatigue !== undefined) {
         setCurrentFatigue(todayFatigue);
       }
 
-      // Check today's hydration
       const todayHydro = await storage.getHydrationByDate(todayStr);
       if (todayHydro) {
         setHydration(todayHydro);
@@ -97,8 +96,8 @@ export const App: React.FC = () => {
         await storage.saveHydration(initialHydro);
       }
 
-      // First-time onboarding overlay for new sessions (non-nagging)
-      const hasOnboarded = localStorage.getItem('shiftfit_onboarded_v1');
+      // First-time onboarding overlay check
+      const hasOnboarded = localStorage.getItem('shiftfit_onboarded_v2');
       if (!hasOnboarded) {
         setIsOnboardingOpen(true);
       }
@@ -111,7 +110,7 @@ export const App: React.FC = () => {
 
   const handleDismissOnboarding = () => {
     setIsOnboardingOpen(false);
-    localStorage.setItem('shiftfit_onboarded_v1', 'true');
+    localStorage.setItem('shiftfit_onboarded_v2', 'true');
   };
 
   const getTodayWorkout = (): WorkoutSession => {
@@ -163,6 +162,17 @@ export const App: React.FC = () => {
     await storage.saveWorkout(recalculated);
   };
 
+  const handleUpdateTemplate = async (newTemplate: ShiftType[]) => {
+    const updatedProfile = { ...profile, twoWeekTemplate: newTemplate };
+    setProfile(updatedProfile);
+    await storage.saveProfile(updatedProfile);
+
+    // Recalculate today's workout
+    const recalculated = RotaEngine.generateWorkoutForDate(todayStr, updatedProfile, customShifts, currentFatigue);
+    setWorkouts((prev) => ({ ...prev, [todayStr]: recalculated }));
+    await storage.saveWorkout(recalculated);
+  };
+
   const handleSaveFatigue = async (score: number) => {
     setCurrentFatigue(score);
     setDailyFatigueLogs((prev) => ({ ...prev, [todayStr]: score }));
@@ -181,6 +191,11 @@ export const App: React.FC = () => {
   const handleUpdateProfile = async (p: UserProfile) => {
     setProfile(p);
     await storage.saveProfile(p);
+
+    // Recalculate today's workout with new profile / goal
+    const recalculated = RotaEngine.generateWorkoutForDate(todayStr, p, customShifts, currentFatigue);
+    setWorkouts((prev) => ({ ...prev, [todayStr]: recalculated }));
+    await storage.saveWorkout(recalculated);
   };
 
   const handleStartRestTimer = (seconds: number, exerciseName: string) => {
@@ -216,7 +231,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-neutral-100 flex flex-col max-w-lg mx-auto relative select-none">
-      {/* Top Header */}
+      {/* Top Header - Spacious with Dynamic Island Clearance */}
       <Header
         todayStr={todayStr}
         profile={profile}
@@ -228,8 +243,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 px-3 pt-3 pb-8">
-        {/* iOS PWA Add to Home Screen Banner */}
+      <main className="flex-1 px-3 pt-2.5 pb-8">
         <InstallBanner />
 
         {currentTab === 'dashboard' && (
@@ -263,6 +277,7 @@ export const App: React.FC = () => {
             profile={profile}
             customShifts={customShifts}
             onSaveShift={handleSaveShift}
+            onUpdateTemplate={handleUpdateTemplate}
             onNavigateTab={setCurrentTab}
           />
         )}
@@ -335,9 +350,11 @@ export const App: React.FC = () => {
         onSave={handleSaveFatigue}
       />
 
-      {/* First-Time Onboarding Overlay */}
+      {/* First-Time Onboarding & Profile Setup Overlay */}
       <OnboardingOverlay
         isOpen={isOnboardingOpen}
+        profile={profile}
+        onSaveProfile={handleUpdateProfile}
         onClose={handleDismissOnboarding}
       />
 

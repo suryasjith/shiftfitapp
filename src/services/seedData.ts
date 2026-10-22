@@ -76,7 +76,7 @@ export async function initializeSeedDataIfEmpty(): Promise<void> {
 
     // Sample completed workouts for off days
     if (!isShift && i > 0) {
-      if (dayInfo.offIndex === 0) {
+      if (dayInfo.recommendedWorkoutCategory === 'Push') {
         const wk = BASE_WORKOUT_TEMPLATES.offDay1_push(dateStr, fatigue);
         wk.completed = true;
         wk.exercises.forEach(ex => {
@@ -87,7 +87,7 @@ export async function initializeSeedDataIfEmpty(): Promise<void> {
           });
         });
         sampleWorkouts[dateStr] = wk;
-      } else if (dayInfo.offIndex === 1) {
+      } else if (dayInfo.recommendedWorkoutCategory === 'Legs') {
         const wk = BASE_WORKOUT_TEMPLATES.offDay2_legs(dateStr, fatigue);
         wk.completed = true;
         wk.exercises.forEach(ex => {
@@ -98,7 +98,7 @@ export async function initializeSeedDataIfEmpty(): Promise<void> {
           });
         });
         sampleWorkouts[dateStr] = wk;
-      } else if (dayInfo.offIndex === 2) {
+      } else {
         const wk = BASE_WORKOUT_TEMPLATES.offDay3_pull(dateStr, fatigue);
         wk.completed = true;
         wk.exercises.forEach(ex => {

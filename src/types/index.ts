@@ -1,12 +1,12 @@
 // ShiftFit Core Type Definitions
 
 export type ShiftType = 
-  | 'day_12h'      // 12-Hour Day Shift (e.g. 07:00 - 19:00)
-  | 'night_12h'    // 12-Hour Night Shift (e.g. 19:00 - 07:00)
-  | 'overtime_day' // Overtime 12-Hour Day Shift
+  | 'day_12h'        // 12-Hour Day Shift (e.g. 07:00 - 19:00)
+  | 'night_12h'      // 12-Hour Night Shift (e.g. 19:00 - 07:00)
+  | 'overtime_day'   // Overtime 12-Hour Day Shift
   | 'overtime_night' // Overtime 12-Hour Night Shift
-  | 'off'          // Scheduled Off Day
-  | 'custom_shift'; // Custom shift
+  | 'off'            // Scheduled Off Day
+  | 'custom_shift';  // Custom shift
 
 export interface ShiftDay {
   date: string; // YYYY-MM-DD
@@ -42,9 +42,9 @@ export interface ExerciseDefinition {
   targetMuscle: MuscleGroup;
   primaryEquipment: string;
   mechanics: 'Compound' | 'Isolation';
-  cnsLoad: 'High' | 'Moderate' | 'Low'; // For fatigue scaling
+  cnsLoad: 'High' | 'Moderate' | 'Low';
   defaultSets: number;
-  defaultReps: string; // e.g. "8-10" or "10-12"
+  defaultReps: string;
   defaultRestSecs: number;
   tips: string;
   alternatives: ExerciseAlternative[];
@@ -96,6 +96,18 @@ export interface MacroGoals {
   calories: number;
 }
 
+export interface LoggedFoodItem {
+  id: string;
+  name: string;
+  brand?: string;
+  servingGrams: number;
+  calories: number;
+  proteinGrams: number;
+  fatsGrams: number;
+  carbsGrams: number;
+  timeLogged: string;
+}
+
 export interface NutritionLog {
   date: string; // YYYY-MM-DD
   proteinGrams: number;
@@ -106,6 +118,7 @@ export interface NutritionLog {
   targetFats: number;
   targetCarbs: number;
   targetCalories: number;
+  foods?: LoggedFoodItem[];
   notes?: string;
 }
 
@@ -138,24 +151,32 @@ export interface PhysiquePhoto {
   notes?: string;
 }
 
+export type FitnessGoal = 
+  | 'body_recomposition' // Maintain 75-78kg, strength compounds + hypertrophy backoffs
+  | 'muscle_mass'        // Building Muscle Mass: surplus calories, 8-12 reps, 90-120s rest
+  | 'lean_muscle';       // Lean Muscle: high-density hypertrophy, 10-15 reps, 60-75s rest
+
 export interface UserProfile {
   name: string;
+  // User Profiling & Physics Engine
+  heightCm: number;
+  currentWeightKg: number;
   targetWeightMinKg: number; // 75
   targetWeightMaxKg: number; // 78
-  currentWeightKg: number;
-  heightCm: number;
+  fitnessGoal: FitnessGoal;
   dailyWaterTargetMl: number;
-  // Rota configuration
-  rotaStartDate: string; // Anchor date when the 4-on/3-off cycle begins
+  
+  // Dynamic 2-Week Rolling Rota Configuration
+  rotaStartDate: string; // Anchor date when Day 1 of the 14-day cycle begins
   shiftDurationHours: number; // 12
   shiftStartTime: string; // "07:00"
-  shiftPatternDays: number; // 7 (4 on, 3 off)
-  onDaysCount: number; // 4
-  offDaysCount: number; // 3
-  // Macro configuration
+  twoWeekTemplate: ShiftType[]; // 14 days pattern that loops infinitely
+  
+  // Macros
   offDayMacros: MacroGoals;
   shiftDayMacros: MacroGoals;
-  // Cloud sync config
+  
+  // Cloud sync
   googleDriveFolderId?: string;
   googleDriveAccessToken?: string;
   googleDriveConnected: boolean;
