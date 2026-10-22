@@ -54,7 +54,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
   const [searchResults, setSearchResults] = useState<FoodSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [selectedFood, setSelectedFood] = useState<FoodSearchResult | null>(null);
-  const [servingGrams, setServingGrams] = useState<number>(150);
+  const [servingGramsStr, setServingGramsStr] = useState<string>('150');
   const [showFoodSearch, setShowFoodSearch] = useState<boolean>(false);
 
   // Debounced search
@@ -77,7 +77,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
   const handleSelectFoodResult = (food: FoodSearchResult) => {
     soundManager.playTap();
     setSelectedFood(food);
-    setServingGrams(food.defaultServingG || 100);
+    setServingGramsStr(String(food.defaultServingG || 100));
     setSearchResults([]);
   };
 
@@ -85,7 +85,8 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
     if (!selectedFood) return;
     soundManager.playTap();
 
-    const loggedItem = FoodApiService.calculateServingMacros(selectedFood, servingGrams);
+    const g = parseFloat(servingGramsStr) || 100;
+    const loggedItem = FoodApiService.calculateServingMacros(selectedFood, g);
     const updatedFoods = [...loggedFoods, loggedItem];
     const newProt = Math.round((currentProtein + loggedItem.proteinGrams) * 10) / 10;
     const newFats = Math.round((currentFats + loggedItem.fatsGrams) * 10) / 10;
@@ -346,9 +347,11 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 <label className="text-[9px] text-neutral-400 uppercase block mb-0.5">Portion (Grams):</label>
                 <input
                   type="number"
-                  value={servingGrams}
-                  onChange={(e) => setServingGrams(parseFloat(e.target.value) || 100)}
-                  className="w-full bg-black border border-neutral-750 rounded px-2 py-1 text-xs text-white"
+                  step="any"
+                  value={servingGramsStr}
+                  onChange={(e) => setServingGramsStr(e.target.value)}
+                  placeholder="100"
+                  className="w-full bg-black border border-neutral-750 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-white transition-colors"
                 />
               </div>
               <div className="flex gap-1 mt-3">
@@ -356,9 +359,9 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                   <button
                     key={g}
                     type="button"
-                    onClick={() => setServingGrams(g)}
+                    onClick={() => setServingGramsStr(String(g))}
                     className={`px-1.5 py-1 rounded text-[10px] border ${
-                      servingGrams === g ? 'bg-white text-black border-white' : 'bg-black text-neutral-400 border-neutral-800'
+                      servingGramsStr === String(g) ? 'bg-white text-black border-white' : 'bg-black text-neutral-400 border-neutral-800'
                     }`}
                   >
                     {g}g
@@ -368,24 +371,29 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
             </div>
 
             {/* Auto-filled Macronutrient breakdown */}
-            <div className="grid grid-cols-4 gap-1 p-2 rounded bg-black border border-neutral-800 text-center text-[10px]">
-              <div>
-                <div className="text-neutral-500 uppercase">Kcal</div>
-                <div className="font-bold text-white">{Math.round(selectedFood.caloriesPer100g * (servingGrams / 100))}</div>
-              </div>
-              <div>
-                <div className="text-neutral-500 uppercase">Prot</div>
-                <div className="font-bold text-white">{Math.round(selectedFood.proteinPer100g * (servingGrams / 100) * 10) / 10}g</div>
-              </div>
-              <div>
-                <div className="text-neutral-500 uppercase">Fats</div>
-                <div className="font-bold text-white">{Math.round(selectedFood.fatsPer100g * (servingGrams / 100) * 10) / 10}g</div>
-              </div>
-              <div>
-                <div className="text-neutral-500 uppercase">Carbs</div>
-                <div className="font-bold text-white">{Math.round(selectedFood.carbsPer100g * (servingGrams / 100) * 10) / 10}g</div>
-              </div>
-            </div>
+            {(() => {
+              const g = parseFloat(servingGramsStr) || 0;
+              return (
+                <div className="grid grid-cols-4 gap-1 p-2 rounded bg-black border border-neutral-800 text-center text-[10px]">
+                  <div>
+                    <div className="text-neutral-500 uppercase">Kcal</div>
+                    <div className="font-bold text-white">{Math.round(selectedFood.caloriesPer100g * (g / 100))}</div>
+                  </div>
+                  <div>
+                    <div className="text-neutral-500 uppercase">Prot</div>
+                    <div className="font-bold text-white">{Math.round(selectedFood.proteinPer100g * (g / 100) * 10) / 10}g</div>
+                  </div>
+                  <div>
+                    <div className="text-neutral-500 uppercase">Fats</div>
+                    <div className="font-bold text-white">{Math.round(selectedFood.fatsPer100g * (g / 100) * 10) / 10}g</div>
+                  </div>
+                  <div>
+                    <div className="text-neutral-500 uppercase">Carbs</div>
+                    <div className="font-bold text-white">{Math.round(selectedFood.carbsPer100g * (g / 100) * 10) / 10}g</div>
+                  </div>
+                </div>
+              );
+            })()}
 
             <button
               onClick={handleAddCalculatedFood}

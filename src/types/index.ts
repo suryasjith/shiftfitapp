@@ -156,11 +156,15 @@ export type FitnessGoal =
   | 'muscle_mass'        // Building Muscle Mass: surplus calories, 8-12 reps, 90-120s rest
   | 'lean_muscle';       // Lean Muscle: high-density hypertrophy, 10-15 reps, 60-75s rest
 
+export type Gender = 'male' | 'female';
+
 export interface UserProfile {
   name: string;
   // User Profiling & Physics Engine
+  gender: Gender;
   heightCm: number;
   currentWeightKg: number;
+  desiredWeightKg: number;
   targetWeightMinKg: number; // 75
   targetWeightMaxKg: number; // 78
   fitnessGoal: FitnessGoal;

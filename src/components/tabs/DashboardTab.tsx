@@ -19,7 +19,8 @@ import {
   Plus, 
   Check, 
   ArrowUpRight,
-  Target
+  AlertTriangle,
+  Clock
 } from 'lucide-react';
 import { soundManager } from '../../services/audioTimer';
 import { ContextualHelp } from '../ContextualHelp';
@@ -54,17 +55,27 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   onAddWater,
 }) => {
   const dayInfo = RotaEngine.getDayInfo(todayStr, profile, customShifts);
-  const [quickWeight, setQuickWeight] = useState<string>(todayWeight?.weightKg ? String(todayWeight.weightKg) : '76.4');
+
+  // Fully editable string state - zero undeletable digits or rigid masks
+  const [quickWeight, setQuickWeight] = useState<string>(
+    todayWeight?.weightKg ? String(todayWeight.weightKg) : ''
+  );
   const [weightSaved, setWeightSaved] = useState<boolean>(false);
 
-  // BMI Engine calculations
-  const bmiReport = PhysicsEngine.getBmiReport(profile.currentWeightKg || 76.4, profile.heightCm || 178);
+  // BMI & Timeline Physics Engine
+  const gender = profile.gender || 'male';
+  const currentWeight = profile.currentWeightKg || 76.4;
+  const desiredWeight = profile.desiredWeightKg || profile.targetWeightMinKg || 76.5;
+  const heightCm = profile.heightCm || 178;
+
+  const bmiReport = PhysicsEngine.getBmiReport(currentWeight, heightCm, gender);
+  const timeline = PhysicsEngine.getTimelineProjection(currentWeight, desiredWeight, gender);
   const goalParams = PhysicsEngine.getGoalParameters(profile.fitnessGoal || 'body_recomposition');
 
   const handleQuickWeightSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const val = parseFloat(quickWeight);
-    if (!isNaN(val) && val > 40 && val < 150) {
+    if (!isNaN(val) && val > 30 && val < 250) {
       soundManager.playTap();
       onSaveWeight(val);
       setWeightSaved(true);
@@ -77,12 +88,10 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
     onAddWater(ml);
   };
 
-  // Water calculation
   const currentWater = todayHydration?.currentMl || 0;
   const targetWater = todayHydration?.targetMl || profile.dailyWaterTargetMl || 3800;
   const waterPercent = Math.min(100, Math.round((currentWater / targetWater) * 100));
 
-  // Nutrition calculation
   const targetMacros = dayInfo.isShiftDay ? profile.shiftDayMacros : profile.offDayMacros;
   const currentProtein = todayNutrition?.proteinGrams || 0;
   const targetProtein = targetMacros.proteinGrams;
@@ -101,29 +110,29 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   }
 
   return (
-    <div className="space-y-3.5 pb-24 text-left animate-fadeIn">
+    <div className="space-y-3 pb-24 text-left animate-fadeIn font-mono">
       {/* Rota Shift Hero Card - Monochrome OLED */}
       <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-4 shadow-sm">
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-1.5 flex-wrap">
               {dayInfo.isOvertime ? (
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-white text-black border border-white">
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-white text-black border border-white">
                   OVERTIME 12H
                 </span>
               ) : dayInfo.isShiftDay ? (
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium border border-neutral-700 bg-neutral-900 text-neutral-200 flex items-center gap-1">
+                <span className="px-2 py-0.5 rounded text-[10px] font-medium border border-neutral-700 bg-neutral-900 text-neutral-200 flex items-center gap-1">
                   <Sun className="w-3 h-3 text-neutral-400" />
                   12H SHIFT
                 </span>
               ) : (
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-white text-black flex items-center gap-1">
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-white text-black flex items-center gap-1">
                   <Moon className="w-3 h-3 text-black" />
                   OFF-DAY
                 </span>
               )}
 
-              <span className="text-[10px] text-neutral-400 font-mono">
+              <span className="text-[10px] text-neutral-400">
                 {dayInfo.dayOfWeek} (Wk {dayInfo.weekNumberInCycle})
               </span>
 
@@ -133,12 +142,12 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
               />
             </div>
 
-            <h2 className="mt-2 text-lg font-bold text-white tracking-tight font-mono">
+            <h2 className="mt-2 text-base font-bold text-white tracking-tight">
               {dayInfo.isShiftDay ? '12h Shift CNS Protection' : 'Aesthetic Hypertrophy Day'}
             </h2>
-            <p className="text-xs text-neutral-400 mt-0.5">
+            <p className="text-xs text-neutral-400 font-sans mt-0.5">
               {dayInfo.isShiftDay 
-                ? 'Managing spinal and central nervous system fatigue between long shifts.' 
+                ? 'Spinal decompression and central nervous system recovery between 12h shifts.' 
                 : `Goal: ${goalParams.label}. High-volume off-day targeted at V-taper & quad sweep.`}
             </p>
           </div>
@@ -149,14 +158,14 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             title="Update CNS Fatigue"
           >
             <Activity className="w-3.5 h-3.5 text-neutral-300 mb-0.5" />
-            <span className="text-[9px] text-neutral-500 font-mono uppercase">Fatigue</span>
-            <span className="text-xs font-bold font-mono text-white">{currentFatigue}<span className="text-[10px] text-neutral-500">/10</span></span>
+            <span className="text-[9px] text-neutral-500 uppercase">Fatigue</span>
+            <span className="text-xs font-bold text-white">{currentFatigue}<span className="text-[10px] text-neutral-500">/10</span></span>
           </button>
         </div>
 
         {/* 14-Day Cycle Strip */}
         <div className="mt-3.5 pt-3 border-t border-neutral-850">
-          <div className="flex justify-between items-center text-[10px] font-mono font-semibold text-neutral-400 mb-1.5">
+          <div className="flex justify-between items-center text-[10px] font-semibold text-neutral-400 mb-1.5">
             <span>2-WEEK ROLLING ROTA</span>
             <span className="text-white">DAY {dayInfo.cycleDayIndex + 1} OF 14</span>
           </div>
@@ -182,25 +191,25 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         </div>
       </div>
 
-      {/* Physics Engine & BMI Status Card */}
-      <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3.5 shadow-sm font-mono text-left">
+      {/* Physics Engine & Optimal BMI Card */}
+      <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3.5 shadow-sm text-left">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-bold text-neutral-400 uppercase">Physics & BMI Engine</span>
+            <span className="text-[10px] font-bold text-neutral-400 uppercase">BMI & Optimal Physics</span>
             <ContextualHelp
-              title="BMI & Recomp Physics"
-              content="Calculates body mass index based on height and current weight. Displays optimal athletic BMI (22.0 - 24.5) to keep you inside the 75-78kg recomp target."
+              title="Optimal BMI Engine"
+              content="Calculates body mass index from your height and gender. Displays the optimal athletic BMI corridor (Males: 21.5-24.5, Females: 20.0-23.5) and target weight boundaries."
             />
           </div>
-          <span className="text-[9px] px-1.5 py-0.2 rounded bg-neutral-900 border border-neutral-750 text-neutral-300">
-            {profile.heightCm} CM / {profile.currentWeightKg} KG
+          <span className="text-[9px] px-1.5 py-0.2 rounded bg-neutral-900 border border-neutral-750 text-neutral-300 uppercase">
+            {gender} • {heightCm} CM
           </span>
         </div>
 
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div className="p-2 rounded bg-neutral-900 border border-neutral-800">
             <div className="text-[9px] text-neutral-500 uppercase">Current BMI</div>
-            <div className="text-base font-bold text-white mt-0.5">
+            <div className="text-sm font-bold text-white mt-0.5">
               {bmiReport.currentBmi} <span className="text-[9px] text-neutral-500 font-normal">kg/m²</span>
             </div>
             <div className="text-[9px] text-neutral-400 mt-0.5 truncate">{bmiReport.classification}</div>
@@ -208,11 +217,72 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
 
           <div className="p-2 rounded bg-neutral-900 border border-neutral-800">
             <div className="text-[9px] text-neutral-500 uppercase">Optimal Weight</div>
-            <div className="text-base font-bold text-white mt-0.5">
+            <div className="text-sm font-bold text-white mt-0.5">
               {bmiReport.optimalWeightMinKg}–{bmiReport.optimalWeightMaxKg} <span className="text-[9px] text-neutral-500 font-normal">kg</span>
             </div>
-            <div className="text-[9px] text-neutral-400 mt-0.5 truncate">BMI: 22.0–24.5 Zone</div>
+            <div className="text-[9px] text-neutral-400 mt-0.5 truncate">BMI: {bmiReport.optimalBmiMin}–{bmiReport.optimalBmiMax}</div>
           </div>
+        </div>
+      </div>
+
+      {/* Timeline Projection & Discipline Warning Card */}
+      <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3.5 shadow-sm text-left space-y-2.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-white" />
+            <span className="text-[10px] font-bold text-white uppercase">Goal Timeline Projection</span>
+            <ContextualHelp
+              title="Timeline Projection Engine"
+              content="Calculates timelines using biological rates of 0.5kg/week (Average) and 1.0kg/week (Very Optimal). Optimal progress requires strict adherence to macros and training."
+            />
+          </div>
+          <span className="text-[9px] text-neutral-400">
+            {currentWeight}kg &rarr; {desiredWeight}kg
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 text-left">
+          {/* Average Timeline */}
+          <div className="p-2.5 rounded bg-neutral-900 border border-neutral-800">
+            <div className="text-[9px] text-neutral-500 uppercase font-bold">Average Timeline</div>
+            <div className="text-sm font-black text-white mt-0.5">
+              {timeline.mode === 'maintenance' ? '0 Weeks' : `~${timeline.averageWeeks} Wks`}
+            </div>
+            <div className="text-[9px] text-neutral-400 mt-0.5">
+              {timeline.averageRateKgPerWeek} kg / wk
+            </div>
+            <div className="text-[8px] text-neutral-500 mt-1 pt-1 border-t border-neutral-800 truncate">
+              {timeline.averageTargetDate}
+            </div>
+          </div>
+
+          {/* Very Optimal Timeline */}
+          <div className="p-2.5 rounded bg-neutral-900 border border-neutral-750">
+            <div className="text-[9px] text-white uppercase font-bold flex items-center justify-between">
+              <span>Very Optimal</span>
+              <span className="text-[8px] bg-white text-black px-1 rounded">FAST</span>
+            </div>
+            <div className="text-sm font-black text-white mt-0.5">
+              {timeline.mode === 'maintenance' ? '0 Weeks' : `~${timeline.optimalWeeks} Wks`}
+            </div>
+            <div className="text-[9px] text-neutral-300 mt-0.5">
+              {timeline.optimalRateKgPerWeek} kg / wk
+            </div>
+            <div className="text-[8px] text-neutral-400 mt-1 pt-1 border-t border-neutral-800 truncate">
+              {timeline.optimalTargetDate}
+            </div>
+          </div>
+        </div>
+
+        {/* PROMINENT DISCIPLINE WARNING BOX */}
+        <div className="p-2.5 rounded-lg bg-black border border-neutral-700 text-left space-y-1">
+          <div className="flex items-center gap-1.5 text-white font-bold text-[10px] uppercase">
+            <AlertTriangle className="w-3.5 h-3.5 text-white shrink-0" />
+            <span>DISCIPLINE WARNING</span>
+          </div>
+          <p className="text-[10px] text-neutral-300 font-sans leading-relaxed">
+            WARNING: The optimal timeline is strictly theoretical and is only achievable with absolute discipline, zero missed sessions, and perfect macro adherence.
+          </p>
         </div>
       </div>
 
@@ -225,7 +295,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] uppercase font-mono font-semibold text-neutral-400">
+                <span className="text-[10px] uppercase font-semibold text-neutral-400">
                   {todayWorkout?.category || dayInfo.recommendedWorkoutCategory} PROGRAM
                 </span>
                 <ContextualHelp
@@ -233,19 +303,19 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                   content="This workout was tailored for your goal and current shift fatigue level. Compound reps and rest intervals are auto-regulated."
                 />
               </div>
-              <h3 className="text-xs font-bold text-white font-mono">
+              <h3 className="text-xs font-bold text-white">
                 {todayWorkout?.title || dayInfo.workoutTitle}
               </h3>
             </div>
           </div>
 
-          <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded border border-neutral-700 bg-neutral-900 text-neutral-300">
+          <span className="text-[10px] font-semibold px-2 py-0.5 rounded border border-neutral-700 bg-neutral-900 text-neutral-300">
             {todayWorkout?.completed ? 'DONE' : `${todayWorkout?.targetDurationMin || 50} MIN`}
           </span>
         </div>
 
         {todayWorkout?.autoAdjustedReason && (
-          <div className="mt-2.5 p-2 rounded border border-neutral-800 bg-neutral-900 text-[11px] text-neutral-300 font-mono">
+          <div className="mt-2.5 p-2 rounded border border-neutral-800 bg-neutral-900 text-[11px] text-neutral-300">
             {todayWorkout.autoAdjustedReason}
           </div>
         )}
@@ -253,7 +323,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         {/* Exercises Preview */}
         <div className="mt-3 divide-y divide-neutral-850 bg-neutral-900 rounded-lg p-2 border border-neutral-800">
           {(todayWorkout?.exercises || []).slice(0, 3).map((ex, idx) => (
-            <div key={idx} className="py-1.5 flex items-center justify-between text-xs font-mono">
+            <div key={idx} className="py-1.5 flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <span className="w-4 h-4 rounded bg-neutral-800 text-neutral-300 flex items-center justify-center text-[10px]">
                   {idx + 1}
@@ -267,24 +337,19 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
               </span>
             </div>
           ))}
-          {(todayWorkout?.exercises.length || 0) > 3 && (
-            <div className="pt-1.5 text-center text-[10px] text-neutral-500 font-mono">
-              +{(todayWorkout?.exercises.length || 0) - 3} MORE MOVEMENTS
-            </div>
-          )}
         </div>
 
         {/* CTA Button */}
         <button
           onClick={() => onNavigateTab('workout')}
-          className="mt-3 w-full py-2.5 px-4 rounded-lg bg-white text-black font-mono font-bold text-xs tracking-tight transition-all active:scale-98 flex items-center justify-center gap-1.5 hover:bg-neutral-200"
+          className="mt-3 w-full py-2.5 px-4 rounded-lg bg-white text-black font-bold text-xs tracking-tight transition-all active:scale-98 flex items-center justify-center gap-1.5 hover:bg-neutral-200"
         >
           <span>{todayWorkout?.completed ? 'VIEW WORKOUT LOG' : completedSets > 0 ? 'RESUME WORKOUT' : 'START WORKOUT'}</span>
           <ChevronRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      {/* Morning Weight Prompt Card (Target: 75-78kg) */}
+      {/* Morning Weight Prompt Card (Fully Editable Standard Input) */}
       <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-4 shadow-sm text-left">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
@@ -293,30 +358,30 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <h3 className="text-xs font-bold text-white font-mono uppercase">Morning Weigh-In</h3>
+                <h3 className="text-xs font-bold text-white uppercase">Morning Weigh-In</h3>
                 <ContextualHelp
                   title="75-78kg Recomp Target"
-                  content="Log your weight once upon waking. The system computes a 7-day moving average to filter fluid retention and maintain your 75.0-78.0kg target corridor."
+                  content="Log your weight once upon waking. The system computes a 7-day moving average to filter fluid retention and maintain your target corridor."
                 />
               </div>
-              <p className="text-[10px] text-neutral-400 font-mono">Corridor: {profile.targetWeightMinKg} – {profile.targetWeightMaxKg} kg</p>
+              <p className="text-[10px] text-neutral-400">Target: {desiredWeight} kg</p>
             </div>
           </div>
           {todayWeight?.weightKg && (
-            <span className="text-[10px] font-mono font-bold text-white bg-neutral-900 px-2 py-0.5 rounded border border-neutral-700">
+            <span className="text-[10px] font-bold text-white bg-neutral-900 px-2 py-0.5 rounded border border-neutral-700">
               {todayWeight.weightKg} kg logged
             </span>
           )}
         </div>
 
-        <form onSubmit={handleQuickWeightSubmit} className="mt-2 flex items-center gap-2 font-mono">
+        <form onSubmit={handleQuickWeightSubmit} className="mt-2 flex items-center gap-2">
           <div className="relative flex-1">
             <input
               type="number"
-              step="0.1"
+              step="any"
               value={quickWeight}
               onChange={(e) => setQuickWeight(e.target.value)}
-              placeholder="76.4"
+              placeholder="e.g. 76.4"
               className="w-full bg-neutral-900 border border-neutral-750 rounded px-3 py-1.5 text-white text-xs focus:outline-none focus:border-white transition-colors"
             />
             <span className="absolute right-3 top-1.5 text-xs text-neutral-500">kg</span>
@@ -330,7 +395,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           </button>
         </form>
 
-        <div className="mt-2 flex items-center justify-between text-[10px] text-neutral-400 font-mono pt-1">
+        <div className="mt-2 flex items-center justify-between text-[10px] text-neutral-400 pt-1">
           <span>7-Day Moving Avg: <strong className="text-white">{todayWeight?.movingAverage7Day || '76.4'} kg</strong></span>
           <button 
             onClick={() => onNavigateTab('analytics')}
@@ -342,8 +407,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
       </div>
 
       {/* Nutrition & Hydration Dual Grid */}
-      <div className="grid grid-cols-2 gap-2.5 text-left font-mono">
-        {/* Macros Card */}
+      <div className="grid grid-cols-2 gap-2 text-left">
         <div 
           onClick={() => onNavigateTab('nutrition')}
           className="rounded-xl bg-neutral-950 border border-neutral-800 p-3 cursor-pointer hover:border-neutral-700 transition-all active:scale-98"
@@ -370,7 +434,6 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           </div>
         </div>
 
-        {/* Hydration Card */}
         <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase text-white">Water</span>

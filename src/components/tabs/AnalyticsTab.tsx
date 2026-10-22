@@ -8,13 +8,16 @@ import {
   WeeklyAnalyticsReport 
 } from '../../types';
 import { AnalyticsEngine } from '../../services/analyticsEngine';
+import { PhysicsEngine } from '../../services/physicsEngine';
 import { 
   Scale, 
   Flame, 
   Dumbbell, 
   Activity, 
   Sparkles,
-  TrendingUp
+  TrendingUp,
+  Clock,
+  AlertTriangle
 } from 'lucide-react';
 import { soundManager } from '../../services/audioTimer';
 import { ContextualHelp } from '../ContextualHelp';
@@ -40,10 +43,15 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({
   fatigueLogs,
   onSaveWeight,
 }) => {
-  const [newWeightInput, setNewWeightInput] = useState<string>('76.4');
+  const [newWeightInput, setNewWeightInput] = useState<string>('');
   const [newDateInput, setNewDateInput] = useState<string>(todayStr);
 
   const computedWeights = AnalyticsEngine.compute7DayMovingAverages(weights);
+
+  const currentWeight = profile.currentWeightKg || 76.4;
+  const desiredWeight = profile.desiredWeightKg || profile.targetWeightMinKg || 76.5;
+  const gender = profile.gender || 'male';
+  const timeline = PhysicsEngine.getTimelineProjection(currentWeight, desiredWeight, gender);
 
   const report: WeeklyAnalyticsReport = AnalyticsEngine.generateWeeklyReport(
     todayStr,
@@ -58,12 +66,13 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({
   const handleAddWeight = (e: React.FormEvent) => {
     e.preventDefault();
     const val = parseFloat(newWeightInput);
-    if (!isNaN(val) && val > 40 && val < 160) {
+    if (!isNaN(val) && val > 30 && val < 250) {
       soundManager.playCompleteChime();
       onSaveWeight({
         date: newDateInput,
         weightKg: val,
       });
+      setNewWeightInput('');
     }
   };
 
@@ -291,32 +300,91 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({
           </div>
         </div>
 
-        {/* Quick Weigh-In Adder */}
+        {/* Quick Weigh-In Adder - Standard Fully Editable Number Input */}
         <form onSubmit={handleAddWeight} className="mt-3 flex items-center gap-2 font-mono">
           <input
             type="date"
             value={newDateInput}
             onChange={(e) => setNewDateInput(e.target.value)}
-            className="bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1 text-[11px] text-white"
+            className="bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1.5 text-[11px] text-white"
           />
           <div className="relative flex-1">
             <input
               type="number"
-              step="0.1"
+              step="any"
               value={newWeightInput}
               onChange={(e) => setNewWeightInput(e.target.value)}
-              placeholder="76.4"
-              className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1 text-[11px] text-white"
+              placeholder="e.g. 76.4"
+              className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2.5 py-1.5 text-[11px] text-white focus:outline-none focus:border-white transition-colors"
             />
-            <span className="absolute right-2 top-1 text-[10px] text-neutral-500">kg</span>
+            <span className="absolute right-2 top-1.5 text-[10px] text-neutral-500">kg</span>
           </div>
           <button
             type="submit"
-            className="px-3 py-1 rounded-lg bg-white text-black text-[11px] font-bold active:scale-95 transition-all"
+            className="px-3 py-1.5 rounded-lg bg-white text-black text-[11px] font-bold active:scale-95 transition-all"
           >
             Log
           </button>
         </form>
+      </div>
+
+      {/* Timeline Projection & Discipline Warning Section */}
+      <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-4 shadow-sm text-left font-mono space-y-2.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-white" />
+            <h3 className="text-xs font-bold text-white uppercase">Recomp Timeline Projections</h3>
+            <ContextualHelp
+              title="Biological Timeline Projection"
+              content="Models two timelines based on standard biological rates: Average (0.5kg/week change) and Very Optimal (1.0kg/week change)."
+            />
+          </div>
+          <span className="text-[10px] text-neutral-400">
+            {currentWeight}kg &rarr; {desiredWeight}kg
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 text-left">
+          <div className="p-2.5 rounded bg-neutral-900 border border-neutral-800">
+            <div className="text-[9px] text-neutral-500 uppercase font-bold">Average Timeline</div>
+            <div className="text-sm font-black text-white mt-0.5">
+              {timeline.mode === 'maintenance' ? '0 Weeks' : `~${timeline.averageWeeks} Wks`}
+            </div>
+            <div className="text-[9px] text-neutral-400 mt-0.5">
+              {timeline.averageRateKgPerWeek} kg / wk
+            </div>
+            <div className="text-[8px] text-neutral-500 mt-1 pt-1 border-t border-neutral-800 truncate">
+              Target: {timeline.averageTargetDate}
+            </div>
+          </div>
+
+          <div className="p-2.5 rounded bg-neutral-900 border border-neutral-750">
+            <div className="text-[9px] text-white uppercase font-bold flex items-center justify-between">
+              <span>Very Optimal</span>
+              <span className="text-[8px] bg-white text-black px-1 rounded">FAST</span>
+            </div>
+            <div className="text-sm font-black text-white mt-0.5">
+              {timeline.mode === 'maintenance' ? '0 Weeks' : `~${timeline.optimalWeeks} Wks`}
+            </div>
+            <div className="text-[9px] text-neutral-300 mt-0.5">
+              {timeline.optimalRateKgPerWeek} kg / wk
+            </div>
+            <div className="text-[8px] text-neutral-400 mt-1 pt-1 border-t border-neutral-800 truncate">
+              Target: {timeline.optimalTargetDate}
+            </div>
+          </div>
+        </div>
+
+        {/* PROMINENT DISCIPLINE WARNING BOX */}
+        <div className="p-3 rounded-lg bg-black border border-neutral-700 text-left space-y-1">
+          <div className="flex items-center gap-1.5 text-white font-bold text-[10px] uppercase">
+            <AlertTriangle className="w-3.5 h-3.5 text-white shrink-0" />
+            <span>DISCIPLINE WARNING</span>
+          </div>
+          <p className="text-[11px] text-neutral-200 font-sans leading-relaxed">
+            WARNING: The optimal timeline is strictly theoretical and is only achievable with absolute discipline, zero missed sessions, and perfect macro adherence.
+          </p>
+        </div>
       </div>
 
       {/* Bulleted List of Actionable Improvements */}

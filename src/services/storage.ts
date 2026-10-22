@@ -28,9 +28,11 @@ interface StorageSchema {
 // Default initial user profile (target 75-78kg recomp)
 export const DEFAULT_PROFILE: UserProfile = {
   name: 'Alex',
+  gender: 'male',
   targetWeightMinKg: 75.0,
   targetWeightMaxKg: 78.0,
   currentWeightKg: 76.4,
+  desiredWeightKg: 76.5,
   heightCm: 178,
   fitnessGoal: 'body_recomposition',
   dailyWaterTargetMl: 3800,

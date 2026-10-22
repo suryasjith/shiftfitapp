@@ -338,7 +338,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                           <div className="col-span-4">
                             <input
                               type="number"
-                              step="0.5"
+                              step="any"
                               value={set.weightKg === 0 ? '' : set.weightKg}
                               onChange={(e) => handleUpdateSetValue(exIdx, setIdx, 'weightKg', parseFloat(e.target.value) || 0)}
                               placeholder="32"
