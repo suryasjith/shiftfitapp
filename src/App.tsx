@@ -6,12 +6,14 @@ import {
   NutritionLog, 
   HydrationLog, 
   BodyweightEntry, 
-  PhysiquePhoto,
+  ActivityEntry,
+  DailyStepsEntry,
   ShiftType 
 } from './types';
 import { storage, DEFAULT_PROFILE } from './services/storage';
 import { initializeSeedDataIfEmpty } from './services/seedData';
 import { RotaEngine } from './services/rotaEngine';
+import { ActivityEngine } from './services/activityEngine';
 import { Header } from './components/Header';
 import { Navbar, NavTab } from './components/Navbar';
 import { FatigueModal } from './components/FatigueModal';
@@ -21,9 +23,9 @@ import { OnboardingOverlay } from './components/OnboardingOverlay';
 import { DashboardTab } from './components/tabs/DashboardTab';
 import { ScheduleTab } from './components/tabs/ScheduleTab';
 import { WorkoutTab } from './components/tabs/WorkoutTab';
+import { ActivityTab } from './components/tabs/ActivityTab';
 import { NutritionTab } from './components/tabs/NutritionTab';
 import { AnalyticsTab } from './components/tabs/AnalyticsTab';
-import { PhysiqueTab } from './components/tabs/PhysiqueTab';
 
 export const App: React.FC = () => {
   const [isReady, setIsReady] = useState<boolean>(false);
@@ -38,7 +40,8 @@ export const App: React.FC = () => {
   const [nutritions, setNutritions] = useState<Record<string, NutritionLog>>({});
   const [hydration, setHydration] = useState<HydrationLog | null>(null);
   const [weights, setWeights] = useState<Record<string, BodyweightEntry>>({});
-  const [photos, setPhotos] = useState<Record<string, PhysiquePhoto>>({});
+  const [activities, setActivities] = useState<ActivityEntry[]>([]);
+  const [dailySteps, setDailySteps] = useState<DailyStepsEntry | null>(null);
   const [dailyFatigueLogs, setDailyFatigueLogs] = useState<Record<string, number>>({});
   const [currentFatigue, setCurrentFatigue] = useState<number>(3);
 
@@ -66,7 +69,8 @@ export const App: React.FC = () => {
       const loadedWorkouts = await storage.getWorkouts();
       const loadedNutrition = await storage.getNutrition();
       const loadedWeight = await storage.getWeightHistory();
-      const loadedPhotos = await storage.getPhysiquePhotos();
+      const loadedActivities = await storage.getActivitiesByDate(todayStr);
+      const loadedSteps = await storage.getStepsByDate(todayStr);
       const loadedFatigueAll = await storage.getAll<number>('dailyFatigue');
 
       setProfile(loadedProfile);
@@ -74,7 +78,8 @@ export const App: React.FC = () => {
       setWorkouts(loadedWorkouts);
       setNutritions(loadedNutrition);
       setWeights(loadedWeight);
-      setPhotos(loadedPhotos);
+      setActivities(loadedActivities);
+      setDailySteps(loadedSteps);
       setDailyFatigueLogs(loadedFatigueAll);
 
       const todayFatigue = loadedFatigueAll[todayStr];
@@ -124,6 +129,12 @@ export const App: React.FC = () => {
   const todayWorkout = isReady ? getTodayWorkout() : null;
   const todayNutrition = nutritions[todayStr] || null;
   const todayWeight = weights[todayStr] || null;
+
+  // Active Burn Calculation (Steps + Cardio Activities)
+  const currentEffectiveWeightKg = todayWeight?.weightKg || profile.currentWeightKg || 76.4;
+  const stepBurn = ActivityEngine.calculateStepCalories(dailySteps?.stepCount || 0, currentEffectiveWeightKg).activeStepCalories;
+  const cardioBurn = activities.reduce((acc, a) => acc + (a.caloriesBurned || 0), 0);
+  const totalActiveBurn = stepBurn + cardioBurn;
 
   // Handlers
   const handleSaveWorkout = async (w: WorkoutSession) => {
@@ -183,9 +194,24 @@ export const App: React.FC = () => {
     await storage.saveWorkout(regenerated);
   };
 
-  const handleSavePhoto = async (photo: PhysiquePhoto) => {
-    setPhotos((prev) => ({ ...prev, [photo.id]: photo }));
-    await storage.savePhysiquePhoto(photo);
+  const handleSaveActivity = async (activity: ActivityEntry) => {
+    const updated = await storage.saveActivity(activity);
+    setActivities(updated);
+  };
+
+  const handleDeleteActivity = async (id: string) => {
+    const updated = await storage.deleteActivity(id, todayStr);
+    setActivities(updated);
+  };
+
+  const handleClearActivities = async () => {
+    await storage.clearActivitiesForDate(todayStr);
+    setActivities([]);
+  };
+
+  const handleSaveSteps = async (entry: DailyStepsEntry) => {
+    await storage.saveSteps(entry);
+    setDailySteps(entry);
   };
 
   const handleUpdateProfile = async (p: UserProfile) => {
@@ -212,7 +238,7 @@ export const App: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `ShiftFit_Backup_${todayStr}.json`;
+    a.download = `ShiftFit_Offline_Backup_${todayStr}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -224,7 +250,7 @@ export const App: React.FC = () => {
           SF
         </div>
         <p className="font-bold text-white text-xs">SHIFTFIT</p>
-        <p className="text-[10px] text-neutral-600 mt-0.5">Initializing OLED Engine...</p>
+        <p className="text-[10px] text-neutral-600 mt-0.5">Initializing Offline IndexedDB Engine...</p>
       </div>
     );
   }
@@ -238,7 +264,7 @@ export const App: React.FC = () => {
         customShifts={customShifts}
         currentFatigue={currentFatigue}
         onOpenFatigueModal={() => setIsFatigueModalOpen(true)}
-        onOpenSettings={() => setCurrentTab('vault')}
+        onExportBackup={handleExportBackup}
         onOpenGuide={() => setIsOnboardingOpen(true)}
       />
 
@@ -255,10 +281,13 @@ export const App: React.FC = () => {
             todayNutrition={todayNutrition}
             todayHydration={hydration}
             todayWeight={todayWeight}
+            dailySteps={dailySteps}
+            activities={activities}
             currentFatigue={currentFatigue}
             onOpenFatigueModal={() => setIsFatigueModalOpen(true)}
             onNavigateTab={setCurrentTab}
             onSaveWeight={(val) => handleSaveWeight({ date: todayStr, weightKg: val })}
+            onSaveSteps={handleSaveSteps}
             onAddWater={(ml) => {
               const current = hydration?.currentMl || 0;
               handleSaveHydration({
@@ -295,6 +324,20 @@ export const App: React.FC = () => {
           />
         )}
 
+        {currentTab === 'activity' && (
+          <ActivityTab
+            todayStr={todayStr}
+            profile={profile}
+            todayWeight={todayWeight}
+            activities={activities}
+            dailySteps={dailySteps}
+            onSaveActivity={handleSaveActivity}
+            onDeleteActivity={handleDeleteActivity}
+            onClearActivities={handleClearActivities}
+            onSaveSteps={handleSaveSteps}
+          />
+        )}
+
         {currentTab === 'nutrition' && (
           <NutritionTab
             todayStr={todayStr}
@@ -302,6 +345,7 @@ export const App: React.FC = () => {
             customShifts={customShifts}
             nutrition={todayNutrition}
             hydration={hydration}
+            activeExpenditureCalories={totalActiveBurn}
             onSaveNutrition={handleSaveNutrition}
             onSaveHydration={handleSaveHydration}
           />
@@ -317,18 +361,6 @@ export const App: React.FC = () => {
             shifts={customShifts}
             fatigueLogs={dailyFatigueLogs}
             onSaveWeight={handleSaveWeight}
-          />
-        )}
-
-        {currentTab === 'vault' && (
-          <PhysiqueTab
-            todayStr={todayStr}
-            profile={profile}
-            photos={photos}
-            todayWeight={todayWeight}
-            onSavePhoto={handleSavePhoto}
-            onUpdateProfile={handleUpdateProfile}
-            onExportAllData={handleExportBackup}
           />
         )}
       </main>

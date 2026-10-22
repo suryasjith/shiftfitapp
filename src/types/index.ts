@@ -84,8 +84,9 @@ export interface WorkoutSession {
   autoAdjustedReason?: string;
   exercises: ExerciseLog[];
   completed: boolean;
-  startTime?: string;
-  endTime?: string;
+  startTime?: string; // e.g. "14:30"
+  endTime?: string;   // e.g. "15:45"
+  actualDurationMin?: number; // duration in minutes
   totalTonnageKg?: number;
 }
 
@@ -137,18 +138,39 @@ export interface BodyweightEntry {
   notes?: string;
 }
 
-export interface PhysiquePhoto {
+// Activity & Cardio Tracking (MET Formula Engine)
+export type ActivityType = 
+  | 'running_moderate'     // Running (Moderate, ~8.5 km/h) - MET 8.3
+  | 'running_vigorous'     // Running (Vigorous, ~10.5 km/h) - MET 11.0
+  | 'walking_moderate'     // Walking (Casual, ~5.0 km/h) - MET 3.5
+  | 'walking_brisk'        // Walking (Brisk, ~6.0 km/h) - MET 4.8
+  | 'treadmill_incline'    // Incline Treadmill (12% Incline, 3mph) - MET 6.0
+  | 'swimming_moderate'    // Lap Swimming (Moderate Freestyle) - MET 7.0
+  | 'swimming_vigorous'    // Lap Swimming (Vigorous Freestyle / Intervals) - MET 9.8
+  | 'cycling_moderate'     // Cycling (Stationary / Commute, ~20 km/h) - MET 7.5
+  | 'rowing_machine'       // Rowing Machine (Moderate effort) - MET 7.0
+  | 'hiit_circuit';        // HIIT / Functional Circuit - MET 8.0
+
+export interface ActivityEntry {
   id: string;
   date: string; // YYYY-MM-DD
-  weekNumber: number;
-  imageDataUrl: string; // local preview
-  thumbnailUrl?: string;
-  pose: 'Front Relaxed' | 'Front Double Bicep' | 'Side Chest' | 'Back Lat Spread' | 'Waist/Abs';
-  weightKgAtTime?: number;
-  syncedToCloud: boolean;
-  cloudUrl?: string;
-  cloudProvider?: 'google_drive' | 'supabase';
+  activityType: ActivityType;
+  title: string;
+  category: 'Running' | 'Walking' | 'Swimming' | 'Cycling' | 'Treadmill' | 'Rowing' | 'HIIT';
+  met: number;
+  durationMinutes: number;
+  caloriesBurned: number;
+  distanceKm?: number;
+  timeLogged: string; // e.g. "14:30"
   notes?: string;
+}
+
+export interface DailyStepsEntry {
+  date: string; // YYYY-MM-DD
+  stepCount: number;
+  estimatedCaloriesBurned: number;
+  activeCaloriesBurned: number;
+  lastUpdated: string;
 }
 
 export type FitnessGoal = 
@@ -176,17 +198,9 @@ export interface UserProfile {
   shiftStartTime: string; // "07:00"
   twoWeekTemplate: ShiftType[]; // 14 days pattern that loops infinitely
   
-  // Macros
+  // Base Macros
   offDayMacros: MacroGoals;
   shiftDayMacros: MacroGoals;
-  
-  // Cloud sync
-  googleDriveFolderId?: string;
-  googleDriveAccessToken?: string;
-  googleDriveConnected: boolean;
-  supabaseUrl?: string;
-  supabaseAnonKey?: string;
-  supabaseConnected: boolean;
 }
 
 export interface WeeklyAnalyticsReport {

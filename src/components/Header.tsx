@@ -1,6 +1,6 @@
 import React from 'react';
 import { UserProfile, ShiftDay } from '../types';
-import { Activity, CloudCheck, CloudOff, HelpCircle } from 'lucide-react';
+import { Activity, Database, HelpCircle } from 'lucide-react';
 import { ContextualHelp } from './ContextualHelp';
 
 interface HeaderProps {
@@ -9,7 +9,7 @@ interface HeaderProps {
   customShifts: Record<string, ShiftDay>;
   currentFatigue: number;
   onOpenFatigueModal: () => void;
-  onOpenSettings: () => void;
+  onExportBackup: () => void;
   onOpenGuide: () => void;
 }
 
@@ -18,7 +18,7 @@ export const Header: React.FC<HeaderProps> = ({
   profile,
   currentFatigue,
   onOpenFatigueModal,
-  onOpenSettings,
+  onExportBackup,
   onOpenGuide,
 }) => {
   return (
@@ -71,18 +71,22 @@ export const Header: React.FC<HeaderProps> = ({
             />
           </div>
 
-          {/* Cloud Sync Status */}
-          <button
-            onClick={onOpenSettings}
-            className="p-1 rounded border border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all active:scale-95"
-            title={profile.googleDriveConnected ? "Google Drive Synced" : "Local Vault (Tap for Cloud Setup)"}
-          >
-            {profile.googleDriveConnected ? (
-              <CloudCheck className="w-4 h-4 text-white" />
-            ) : (
-              <CloudOff className="w-4 h-4 text-neutral-500" />
-            )}
-          </button>
+          {/* Offline IndexedDB Engine Status & Backup */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={onExportBackup}
+              className="flex items-center gap-1 px-2 py-1 rounded border border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white hover:border-neutral-700 text-[11px] font-mono transition-all active:scale-95"
+              title="100% Offline IndexedDB Engine Active. Tap to Export Local Backup."
+            >
+              <Database className="w-3.5 h-3.5 text-neutral-300" />
+              <span className="text-[10px]">Offline DB</span>
+            </button>
+            <ContextualHelp
+              title="Offline IndexedDB Database"
+              content="All workout history, nutrition logs, steps, and bodyweight metrics are aggressively saved to the device's local IndexedDB with redundant LocalStorage sync. 100% offline access."
+              placement="bottom"
+            />
+          </div>
         </div>
       </div>
     </header>

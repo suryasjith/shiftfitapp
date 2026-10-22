@@ -3,12 +3,12 @@ import {
   Home, 
   Calendar, 
   Dumbbell, 
+  Flame, 
   UtensilsCrossed, 
-  TrendingUp, 
-  Camera 
+  TrendingUp 
 } from 'lucide-react';
 
-export type NavTab = 'dashboard' | 'schedule' | 'workout' | 'nutrition' | 'analytics' | 'vault';
+export type NavTab = 'dashboard' | 'schedule' | 'workout' | 'activity' | 'nutrition' | 'analytics';
 
 interface NavbarProps {
   currentTab: NavTab;
@@ -23,9 +23,9 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'dashboard' as NavTab, label: 'Today', icon: Home },
     { id: 'schedule' as NavTab, label: 'Rota', icon: Calendar },
     { id: 'workout' as NavTab, label: 'Train', icon: Dumbbell },
+    { id: 'activity' as NavTab, label: 'Cardio', icon: Flame },
     { id: 'nutrition' as NavTab, label: 'Macros', icon: UtensilsCrossed },
     { id: 'analytics' as NavTab, label: 'Review', icon: TrendingUp },
-    { id: 'vault' as NavTab, label: 'Vault', icon: Camera },
   ];
 
   return (

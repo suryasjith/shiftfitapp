@@ -6,11 +6,12 @@ import {
   NutritionLog, 
   HydrationLog, 
   BodyweightEntry, 
-  PhysiquePhoto 
+  ActivityEntry,
+  DailyStepsEntry
 } from '../types';
 
-const DB_NAME = 'ShiftFit_DB_v1';
-const DB_VERSION = 1;
+const DB_NAME = 'ShiftFit_DB_v2';
+const DB_VERSION = 2;
 
 import { ROTA_PRESETS } from './rotaEngine';
 
@@ -21,8 +22,9 @@ interface StorageSchema {
   nutrition: Record<string, NutritionLog>; // keyed by date YYYY-MM-DD
   hydration: Record<string, HydrationLog>; // keyed by date YYYY-MM-DD
   weight: Record<string, BodyweightEntry>; // keyed by date YYYY-MM-DD
-  physique: Record<string, PhysiquePhoto>; // keyed by photo ID
   dailyFatigue: Record<string, number>; // date -> 1-10
+  activities: Record<string, ActivityEntry[]>; // keyed by date YYYY-MM-DD
+  steps: Record<string, DailyStepsEntry>; // keyed by date YYYY-MM-DD
 }
 
 // Default initial user profile (target 75-78kg recomp)
@@ -41,7 +43,7 @@ export const DEFAULT_PROFILE: UserProfile = {
   shiftDurationHours: 12,
   shiftStartTime: '07:00',
   twoWeekTemplate: ROTA_PRESETS.fourOnThreeOff,
-  // Macros
+  // Base Macros
   offDayMacros: {
     proteinGrams: 185,
     fatsGrams: 65,
@@ -54,15 +56,10 @@ export const DEFAULT_PROFILE: UserProfile = {
     carbsGrams: 200,
     calories: 2170,
   },
-  // Cloud sync
-  googleDriveConnected: false,
-  googleDriveFolderId: '',
-  supabaseConnected: false,
 };
 
 class StorageService {
   private db: IDBDatabase | null = null;
-  private memoryCache: Partial<StorageSchema> = {};
 
   async init(): Promise<void> {
     return new Promise((resolve) => {
@@ -76,7 +73,17 @@ class StorageService {
 
       request.onupgradeneeded = (event: any) => {
         const db = event.target.result as IDBDatabase;
-        const stores = ['profile', 'shifts', 'workouts', 'nutrition', 'hydration', 'weight', 'physique', 'dailyFatigue'];
+        const stores = [
+          'profile', 
+          'shifts', 
+          'workouts', 
+          'nutrition', 
+          'hydration', 
+          'weight', 
+          'dailyFatigue', 
+          'activities', 
+          'steps'
+        ];
         for (const store of stores) {
           if (!db.objectStoreNames.contains(store)) {
             db.createObjectStore(store);
@@ -118,9 +125,8 @@ class StorageService {
     return this.getFromLocalStorage(storeName, key, fallbackDefault);
   }
 
-  // Generic setter
+  // Generic setter with dual-write to LocalStorage for bulletproof offline redundancy
   async set<T>(storeName: string, key: string, value: T): Promise<void> {
-    // Save to localStorage as quick sync
     try {
       localStorage.setItem(`shiftfit_${storeName}_${key}`, JSON.stringify(value));
     } catch (e) {
@@ -133,6 +139,27 @@ class StorageService {
           const transaction = this.db!.transaction(storeName, 'readwrite');
           const store = transaction.objectStore(storeName);
           const request = store.put(value, key);
+          request.onsuccess = () => resolve();
+          request.onerror = () => resolve();
+        } catch (e) {
+          resolve();
+        }
+      });
+    }
+  }
+
+  // Generic delete
+  async delete(storeName: string, key: string): Promise<void> {
+    try {
+      localStorage.removeItem(`shiftfit_${storeName}_${key}`);
+    } catch {}
+
+    if (this.db) {
+      return new Promise((resolve) => {
+        try {
+          const transaction = this.db!.transaction(storeName, 'readwrite');
+          const store = transaction.objectStore(storeName);
+          const request = store.delete(key);
           request.onsuccess = () => resolve();
           request.onerror = () => resolve();
         } catch (e) {
@@ -257,14 +284,6 @@ class StorageService {
     await this.set('weight', entry.date, entry);
   }
 
-  async getPhysiquePhotos(): Promise<Record<string, PhysiquePhoto>> {
-    return this.getAll<PhysiquePhoto>('physique');
-  }
-
-  async savePhysiquePhoto(photo: PhysiquePhoto): Promise<void> {
-    await this.set('physique', photo.id, photo);
-  }
-
   async getDailyFatigue(date: string): Promise<number | null> {
     return this.get<number>('dailyFatigue', date);
   }
@@ -273,26 +292,70 @@ class StorageService {
     await this.set('dailyFatigue', date, score);
   }
 
-  // Export full JSON backup
+  // Activity & Cardio Storage
+  async getActivitiesByDate(date: string): Promise<ActivityEntry[]> {
+    const list = await this.get<ActivityEntry[]>('activities', date);
+    return list || [];
+  }
+
+  async saveActivity(activity: ActivityEntry): Promise<ActivityEntry[]> {
+    const current = await this.getActivitiesByDate(activity.date);
+    const updated = [...current.filter(a => a.id !== activity.id), activity];
+    await this.set('activities', activity.date, updated);
+    return updated;
+  }
+
+  async deleteActivity(id: string, date: string): Promise<ActivityEntry[]> {
+    const current = await this.getActivitiesByDate(date);
+    const updated = current.filter(a => a.id !== id);
+    await this.set('activities', date, updated);
+    return updated;
+  }
+
+  async clearActivitiesForDate(date: string): Promise<void> {
+    await this.set('activities', date, []);
+  }
+
+  async getAllActivities(): Promise<Record<string, ActivityEntry[]>> {
+    return this.getAll<ActivityEntry[]>('activities');
+  }
+
+  // Daily Steps Storage
+  async getStepsByDate(date: string): Promise<DailyStepsEntry | null> {
+    return this.get<DailyStepsEntry>('steps', date);
+  }
+
+  async saveSteps(entry: DailyStepsEntry): Promise<void> {
+    await this.set('steps', entry.date, entry);
+  }
+
+  async getAllSteps(): Promise<Record<string, DailyStepsEntry>> {
+    return this.getAll<DailyStepsEntry>('steps');
+  }
+
+  // Export full JSON offline backup
   async exportFullData(): Promise<string> {
     const profile = await this.getProfile();
     const shifts = await this.getShifts();
     const workouts = await this.getWorkouts();
     const nutrition = await this.getNutrition();
     const weight = await this.getWeightHistory();
-    const photos = await this.getPhysiquePhotos();
     const fatigue = await this.getAll<number>('dailyFatigue');
+    const activities = await this.getAllActivities();
+    const steps = await this.getAllSteps();
 
     const backup = {
-      version: 1,
+      version: 2,
+      database: 'ShiftFit_DB_v2',
       exportedAt: new Date().toISOString(),
       profile,
       shifts,
       workouts,
       nutrition,
       weight,
-      photos,
       fatigue,
+      activities,
+      steps,
     };
     return JSON.stringify(backup, null, 2);
   }
@@ -314,8 +377,11 @@ class StorageService {
       if (data.weight) {
         for (const [k, v] of Object.entries(data.weight)) await this.set('weight', k, v);
       }
-      if (data.photos) {
-        for (const [k, v] of Object.entries(data.photos)) await this.set('physique', k, v);
+      if (data.activities) {
+        for (const [k, v] of Object.entries(data.activities)) await this.set('activities', k, v);
+      }
+      if (data.steps) {
+        for (const [k, v] of Object.entries(data.steps)) await this.set('steps', k, v);
       }
       return true;
     } catch (e) {

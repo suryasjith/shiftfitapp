@@ -5,10 +5,13 @@ import {
   WorkoutSession, 
   NutritionLog, 
   HydrationLog, 
-  BodyweightEntry 
+  BodyweightEntry,
+  DailyStepsEntry,
+  ActivityEntry
 } from '../../types';
 import { RotaEngine } from '../../services/rotaEngine';
 import { PhysicsEngine } from '../../services/physicsEngine';
+import { ActivityEngine } from '../../services/activityEngine';
 import { 
   Dumbbell, 
   Scale, 
@@ -20,7 +23,10 @@ import {
   Check, 
   ArrowUpRight,
   AlertTriangle,
-  Clock
+  Clock,
+  Footprints,
+  Flame,
+  TrendingUp
 } from 'lucide-react';
 import { soundManager } from '../../services/audioTimer';
 import { ContextualHelp } from '../ContextualHelp';
@@ -33,11 +39,14 @@ interface DashboardTabProps {
   todayNutrition: NutritionLog | null;
   todayHydration: HydrationLog | null;
   todayWeight: BodyweightEntry | null;
+  dailySteps: DailyStepsEntry | null;
+  activities: ActivityEntry[];
   currentFatigue: number;
   onOpenFatigueModal: () => void;
   onNavigateTab: (tab: any) => void;
   onSaveWeight: (weight: number) => void;
   onAddWater: (amountMl: number) => void;
+  onSaveSteps: (steps: DailyStepsEntry) => void;
 }
 
 export const DashboardTab: React.FC<DashboardTabProps> = ({
@@ -48,11 +57,14 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   todayNutrition,
   todayHydration,
   todayWeight,
+  dailySteps,
+  activities,
   currentFatigue,
   onOpenFatigueModal,
   onNavigateTab,
   onSaveWeight,
   onAddWater,
+  onSaveSteps,
 }) => {
   const dayInfo = RotaEngine.getDayInfo(todayStr, profile, customShifts);
 
@@ -61,6 +73,13 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
     todayWeight?.weightKg ? String(todayWeight.weightKg) : ''
   );
   const [weightSaved, setWeightSaved] = useState<boolean>(false);
+
+  // Daily Steps state - string based for backspace safety
+  const currentStepCount = dailySteps?.stepCount || 0;
+  const [stepInputStr, setStepInputStr] = useState<string>(
+    currentStepCount > 0 ? String(currentStepCount) : ''
+  );
+  const [stepSavedNotice, setStepSavedNotice] = useState<boolean>(false);
 
   // BMI & Timeline Physics Engine
   const gender = profile.gender || 'male';
@@ -71,6 +90,18 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   const bmiReport = PhysicsEngine.getBmiReport(currentWeight, heightCm, gender);
   const timeline = PhysicsEngine.getTimelineProjection(currentWeight, desiredWeight, gender);
   const goalParams = PhysicsEngine.getGoalParameters(profile.fitnessGoal || 'body_recomposition');
+
+  // Active energy expenditure calculation (Cardio + Steps)
+  const stepCalc = ActivityEngine.calculateStepCalories(currentStepCount, currentWeight);
+  const totalCardioBurn = activities.reduce((acc, a) => acc + (a.caloriesBurned || 0), 0);
+  const totalActiveBurn = stepCalc.activeStepCalories + totalCardioBurn;
+
+  // Dynamic macros
+  const baseMacros = dayInfo.isShiftDay ? profile.shiftDayMacros : profile.offDayMacros;
+  const dynamicMacros = ActivityEngine.calculateDynamicMacros(baseMacros, totalActiveBurn);
+  const effectiveTargetCals = dynamicMacros.dynamicCalories;
+  const effectiveTargetProtein = dynamicMacros.dynamicProtein;
+  const effectiveTargetCarbs = dynamicMacros.dynamicCarbs;
 
   const handleQuickWeightSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,6 +114,56 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
     }
   };
 
+  const handleStepsSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const count = parseInt(stepInputStr, 10);
+    const validCount = isNaN(count) || count < 0 ? 0 : count;
+
+    soundManager.playTap();
+    const calc = ActivityEngine.calculateStepCalories(validCount, currentWeight);
+    const updated: DailyStepsEntry = {
+      date: todayStr,
+      stepCount: validCount,
+      estimatedCaloriesBurned: calc.totalStepCalories,
+      activeCaloriesBurned: calc.activeStepCalories,
+      lastUpdated: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    onSaveSteps(updated);
+    setStepSavedNotice(true);
+    setTimeout(() => setStepSavedNotice(false), 2000);
+  };
+
+  const handleAddStepIncrement = (increment: number) => {
+    soundManager.playTap();
+    const newCount = Math.max(0, currentStepCount + increment);
+    setStepInputStr(String(newCount));
+    const calc = ActivityEngine.calculateStepCalories(newCount, currentWeight);
+    const updated: DailyStepsEntry = {
+      date: todayStr,
+      stepCount: newCount,
+      estimatedCaloriesBurned: calc.totalStepCalories,
+      activeCaloriesBurned: calc.activeStepCalories,
+      lastUpdated: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+    };
+    onSaveSteps(updated);
+    setStepSavedNotice(true);
+    setTimeout(() => setStepSavedNotice(false), 2000);
+  };
+
+  const handleResetSteps = () => {
+    soundManager.playTap();
+    setStepInputStr('');
+    const updated: DailyStepsEntry = {
+      date: todayStr,
+      stepCount: 0,
+      estimatedCaloriesBurned: 0,
+      activeCaloriesBurned: 0,
+      lastUpdated: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+    };
+    onSaveSteps(updated);
+  };
+
   const handleWaterTap = (ml: number) => {
     soundManager.playTap();
     onAddWater(ml);
@@ -92,13 +173,10 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   const targetWater = todayHydration?.targetMl || profile.dailyWaterTargetMl || 3800;
   const waterPercent = Math.min(100, Math.round((currentWater / targetWater) * 100));
 
-  const targetMacros = dayInfo.isShiftDay ? profile.shiftDayMacros : profile.offDayMacros;
   const currentProtein = todayNutrition?.proteinGrams || 0;
-  const targetProtein = targetMacros.proteinGrams;
-  const proteinPercent = Math.min(100, Math.round((currentProtein / targetProtein) * 100));
+  const proteinPercent = Math.min(100, Math.round((currentProtein / effectiveTargetProtein) * 100));
 
   const currentCals = todayNutrition?.calories || 0;
-  const targetCals = targetMacros.calories;
 
   let totalSets = 0;
   let completedSets = 0;
@@ -406,6 +484,148 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         </div>
       </div>
 
+      {/* Manual Daily Steps Input Card (iOS PWA HealthKit Bypass) */}
+      <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-4 shadow-sm text-left">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white">
+              <Footprints className="w-3.5 h-3.5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h3 className="text-xs font-bold text-white uppercase">Total Daily Steps</h3>
+                <ContextualHelp
+                  title="Manual Steps Override"
+                  content="Since iOS PWAs cannot natively pull Apple HealthKit steps, enter your daily total steps here. Active steps above 3,500 automatically increase your daily calorie & carb budget."
+                />
+              </div>
+              <p className="text-[10px] text-neutral-400">Pedometer manual override</p>
+            </div>
+          </div>
+
+          {currentStepCount > 0 && (
+            <span className="text-[10px] font-bold text-white bg-neutral-900 px-2 py-0.5 rounded border border-neutral-700">
+              {currentStepCount.toLocaleString()} steps
+            </span>
+          )}
+        </div>
+
+        <form onSubmit={handleStepsSubmit} className="mt-2 flex items-center gap-2">
+          <div className="relative flex-1">
+            <input
+              type="number"
+              step="100"
+              min="0"
+              max="100000"
+              value={stepInputStr}
+              onChange={(e) => setStepInputStr(e.target.value)}
+              placeholder="e.g. 8500"
+              className="w-full bg-neutral-900 border border-neutral-750 rounded px-3 py-1.5 text-white text-xs font-bold focus:outline-none focus:border-white transition-colors"
+            />
+            <span className="absolute right-3 top-1.5 text-xs text-neutral-500">steps</span>
+          </div>
+
+          <button
+            type="submit"
+            className="px-4 py-1.5 rounded bg-neutral-850 hover:bg-neutral-800 border border-neutral-750 text-white font-bold text-xs transition-all active:scale-95 flex items-center gap-1.5"
+          >
+            {stepSavedNotice ? <Check className="w-3.5 h-3.5 text-white" /> : <Plus className="w-3.5 h-3.5 text-white" />}
+            <span>{stepSavedNotice ? 'SAVED' : 'LOG'}</span>
+          </button>
+        </form>
+
+        {/* Quick Increment Pill Buttons */}
+        <div className="mt-2.5 flex items-center gap-1.5 flex-wrap">
+          <span className="text-[9px] text-neutral-500 uppercase font-bold mr-1">Quick Add:</span>
+          <button
+            type="button"
+            onClick={() => handleAddStepIncrement(1000)}
+            className="px-2 py-1 rounded bg-neutral-900 hover:bg-neutral-850 text-white text-[10px] font-bold border border-neutral-800 active:scale-95"
+          >
+            +1,000
+          </button>
+          <button
+            type="button"
+            onClick={() => handleAddStepIncrement(2500)}
+            className="px-2 py-1 rounded bg-neutral-900 hover:bg-neutral-850 text-white text-[10px] font-bold border border-neutral-800 active:scale-95"
+          >
+            +2,500
+          </button>
+          <button
+            type="button"
+            onClick={() => handleAddStepIncrement(5000)}
+            className="px-2 py-1 rounded bg-neutral-900 hover:bg-neutral-850 text-white text-[10px] font-bold border border-neutral-800 active:scale-95"
+          >
+            +5,000
+          </button>
+          {currentStepCount > 0 && (
+            <button
+              type="button"
+              onClick={handleResetSteps}
+              className="ml-auto text-[10px] text-neutral-500 hover:text-neutral-300 font-mono"
+            >
+              Reset
+            </button>
+          )}
+        </div>
+
+        <div className="mt-2 flex items-center justify-between text-[10px] text-neutral-400 pt-1">
+          <span>Active Step Burn (&gt;3.5k): <strong className="text-white">+{stepCalc.activeStepCalories} kcal</strong></span>
+          <button 
+            onClick={() => onNavigateTab('activity')}
+            className="text-neutral-300 hover:text-white flex items-center gap-0.5 uppercase font-semibold"
+          >
+            Cardio Tab <ArrowUpRight className="w-3 h-3" />
+          </button>
+        </div>
+      </div>
+
+      {/* Dynamic Caloric Expenditure & Macro Adjustment Card */}
+      <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-4 shadow-sm text-left space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <Flame className="w-4 h-4 text-white" />
+            <h3 className="text-xs font-bold text-white uppercase">Dynamic Calorie Expenditure</h3>
+            <ContextualHelp
+              title="Dynamic Calorie Engine"
+              content="Your base shift/off-day calorie target is dynamically updated with actual energy expended from your steps and cardio workouts."
+            />
+          </div>
+
+          <span className="text-[10px] font-bold text-white bg-neutral-900 px-2 py-0.5 rounded border border-neutral-750">
+            +{totalActiveBurn} kcal active burn
+          </span>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 pt-1 text-center">
+          <div className="p-2 rounded bg-neutral-900 border border-neutral-800">
+            <span className="text-[9px] text-neutral-500 uppercase font-bold block">Base Target</span>
+            <span className="text-xs font-bold text-neutral-300 mt-0.5 block">{baseMacros.calories} kcal</span>
+          </div>
+
+          <div className="p-2 rounded bg-neutral-900 border border-neutral-800">
+            <span className="text-[9px] text-neutral-500 uppercase font-bold block">Steps + Cardio</span>
+            <span className="text-xs font-bold text-white mt-0.5 block">+{totalActiveBurn} kcal</span>
+          </div>
+
+          <div className="p-2 rounded bg-neutral-900 border border-neutral-750">
+            <span className="text-[9px] text-white uppercase font-bold block">Dynamic Target</span>
+            <span className="text-xs font-black text-white mt-0.5 block">{effectiveTargetCals} kcal</span>
+          </div>
+        </div>
+
+        <div className="pt-1 flex items-center justify-between text-[10px] text-neutral-400">
+          <span>Carbs adjusted: <strong className="text-white">{effectiveTargetCarbs}g (+{dynamicMacros.extraCarbsGrams}g)</strong></span>
+          <button
+            onClick={() => onNavigateTab('activity')}
+            className="text-neutral-300 hover:text-white flex items-center gap-1 font-semibold"
+          >
+            <span>Log Cardio</span>
+            <ChevronRight className="w-3 h-3" />
+          </button>
+        </div>
+      </div>
+
       {/* Nutrition & Hydration Dual Grid */}
       <div className="grid grid-cols-2 gap-2 text-left">
         <div 
@@ -420,7 +640,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           <div className="mt-2">
             <div className="flex items-baseline gap-1">
               <span className="text-lg font-black text-white">{currentProtein}</span>
-              <span className="text-[10px] text-neutral-500">/ {targetProtein}g</span>
+              <span className="text-[10px] text-neutral-500">/ {effectiveTargetProtein}g</span>
             </div>
             <div className="mt-1 w-full bg-neutral-850 rounded-full h-1 overflow-hidden">
               <div 
@@ -429,7 +649,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
               />
             </div>
             <p className="mt-1 text-[9px] text-neutral-500">
-              {currentCals} / {targetCals} kcal
+              {currentCals} / {effectiveTargetCals} kcal
             </p>
           </div>
         </div>

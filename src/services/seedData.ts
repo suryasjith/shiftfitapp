@@ -1,6 +1,6 @@
 // Seed Realistic Sample Data for Aesthetic Recomp 75-78kg & 4-3 Rota
 import { storage, DEFAULT_PROFILE } from './storage';
-import { BodyweightEntry, NutritionLog, HydrationLog, WorkoutSession, PhysiquePhoto } from '../types';
+import { BodyweightEntry, NutritionLog, HydrationLog, WorkoutSession, ActivityEntry, DailyStepsEntry } from '../types';
 import { RotaEngine } from './rotaEngine';
 import { BASE_WORKOUT_TEMPLATES } from '../data/recompPrograms';
 
@@ -130,33 +130,29 @@ export async function initializeSeedDataIfEmpty(): Promise<void> {
     await storage.saveWorkout(v);
   }
 
-  // Sample physique check-ins
-  const photo1: PhysiquePhoto = {
-    id: 'photo_wk41',
-    date: '2026-10-15',
-    weekNumber: 41,
-    imageDataUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600"><rect fill="%23111722" width="400" height="600"/><circle cx="200" cy="120" r="50" fill="%23233044"/><path d="M140,200 L260,200 L240,360 L160,360 Z" fill="%2306b6d4" opacity="0.4"/><rect x="170" y="370" width="25" height="180" rx="8" fill="%23334460"/><rect x="205" y="370" width="25" height="180" rx="8" fill="%23334460"/><text x="200" y="300" fill="%23ffffff" font-size="16" text-anchor="middle" font-family="sans-serif">Week 41 (76.6 kg)</text></svg>',
-    pose: 'Front Relaxed',
-    weightKgAtTime: 76.6,
-    syncedToCloud: true,
-    cloudProvider: 'google_drive',
-    cloudUrl: 'https://drive.google.com/file/d/sample1/view',
-    notes: 'Good upper chest fullness; waist tight.'
+  // Sample activities (e.g. swim & incline walk)
+  const todayStr = RotaEngine.formatDate(today);
+  const sampleActivity: ActivityEntry = {
+    id: `act_${Date.now()}`,
+    date: todayStr,
+    activityType: 'swimming_moderate',
+    title: 'Swimming (Lap Freestyle, Moderate)',
+    category: 'Swimming',
+    met: 7.0,
+    durationMinutes: 30,
+    caloriesBurned: 267,
+    timeLogged: '07:30',
+    notes: 'Morning recovery laps. Smooth rhythm, spinal decompression.',
   };
+  await storage.saveActivity(sampleActivity);
 
-  const photo2: PhysiquePhoto = {
-    id: 'photo_wk42',
-    date: '2026-10-22',
-    weekNumber: 42,
-    imageDataUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600"><rect fill="%23111722" width="400" height="600"/><circle cx="200" cy="120" r="50" fill="%23233044"/><path d="M135,195 L265,195 L235,360 L165,360 Z" fill="%2310b981" opacity="0.45"/><rect x="170" y="370" width="25" height="180" rx="8" fill="%23334460"/><rect x="205" y="370" width="25" height="180" rx="8" fill="%23334460"/><text x="200" y="300" fill="%23ffffff" font-size="16" text-anchor="middle" font-family="sans-serif">Week 42 (76.4 kg)</text></svg>',
-    pose: 'Front Double Bicep',
-    weightKgAtTime: 76.4,
-    syncedToCloud: true,
-    cloudProvider: 'google_drive',
-    cloudUrl: 'https://drive.google.com/file/d/sample2/view',
-    notes: 'Deltoid striations more prominent; maintain current macros.'
+  // Sample Daily Steps (e.g. 8,420 steps today)
+  const sampleSteps: DailyStepsEntry = {
+    date: todayStr,
+    stepCount: 8420,
+    estimatedCaloriesBurned: 343,
+    activeCaloriesBurned: 201, // steps above 3,500 baseline
+    lastUpdated: '16:45',
   };
-
-  await storage.savePhysiquePhoto(photo1);
-  await storage.savePhysiquePhoto(photo2);
+  await storage.saveSteps(sampleSteps);
 }

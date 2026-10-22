@@ -18,7 +18,9 @@ import {
   Activity, 
   ChevronDown, 
   ChevronUp,
-  CheckCircle2
+  RotateCcw,
+  Clock,
+  AlertCircle
 } from 'lucide-react';
 import { soundManager } from '../../services/audioTimer';
 import { ContextualHelp } from '../ContextualHelp';
@@ -47,6 +49,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
   const [activeSwapExerciseIndex, setActiveSwapExerciseIndex] = useState<number | null>(null);
   const [expandedExerciseIndex, setExpandedExerciseIndex] = useState<number | null>(0);
   const [completedCelebration, setCompletedCelebration] = useState<boolean>(false);
+  const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
 
   if (!workout) {
     return (
@@ -129,6 +132,56 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
     onSaveWorkout(updatedWorkout);
   };
 
+  // Timing inputs
+  const handleUpdateTiming = (
+    field: 'startTime' | 'endTime' | 'actualDurationMin',
+    value: any
+  ) => {
+    const updatedWorkout: WorkoutSession = JSON.parse(JSON.stringify(workout));
+    (updatedWorkout as any)[field] = value;
+
+    // Auto-calculate duration if both start and end time are present
+    const start = field === 'startTime' ? value : updatedWorkout.startTime;
+    const end = field === 'endTime' ? value : updatedWorkout.endTime;
+
+    if (start && end && field !== 'actualDurationMin') {
+      const [sh, sm] = start.split(':').map(Number);
+      const [eh, em] = end.split(':').map(Number);
+      if (!isNaN(sh) && !isNaN(sm) && !isNaN(eh) && !isNaN(em)) {
+        let diff = (eh * 60 + em) - (sh * 60 + sm);
+        if (diff < 0) diff += 24 * 60; // crossed midnight
+        updatedWorkout.actualDurationMin = diff;
+      }
+    }
+
+    onSaveWorkout(updatedWorkout);
+  };
+
+  const handleSetTimeToNow = (field: 'startTime' | 'endTime') => {
+    soundManager.playTap();
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    handleUpdateTiming(field, timeStr);
+  };
+
+  // Start fresh - reset session
+  const handleStartFreshWorkout = () => {
+    soundManager.playTap();
+    const resetWorkout: WorkoutSession = JSON.parse(JSON.stringify(workout));
+    resetWorkout.completed = false;
+    resetWorkout.startTime = '';
+    resetWorkout.endTime = '';
+    resetWorkout.actualDurationMin = undefined;
+    resetWorkout.totalTonnageKg = 0;
+    resetWorkout.exercises.forEach((ex) => {
+      ex.sets.forEach((s) => {
+        s.completed = false;
+      });
+    });
+    onSaveWorkout(resetWorkout);
+    setShowResetConfirm(false);
+  };
+
   const swapDef: ExerciseDefinition | undefined = 
     activeSwapExerciseIndex !== null 
       ? EXERCISE_DATABASE[workout.exercises[activeSwapExerciseIndex]?.exerciseId]
@@ -166,21 +219,61 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
             </h2>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
+            {/* Start Fresh Button */}
+            <button
+              onClick={() => setShowResetConfirm(true)}
+              className="flex items-center gap-1 px-2 py-1.5 rounded-lg border border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-white text-xs font-mono transition-all active:scale-95"
+              title="Reset all inputs for a new session"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-neutral-400" />
+              <span>Start Fresh</span>
+            </button>
+            <ContextualHelp
+              title="Start Fresh Session"
+              content="Clears all completed checkmarks, resets session timestamps, and zeroes out logs so you can run a completely clean session."
+            />
+
+            {/* Fatigue auto-regulation badge */}
             <button
               onClick={onOpenFatigueModal}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-neutral-750 bg-neutral-900 text-xs font-mono font-medium text-white hover:border-neutral-500 transition-all active:scale-95"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-neutral-750 bg-neutral-900 text-xs font-mono font-medium text-white hover:border-neutral-500 transition-all active:scale-95 ml-1"
               title="Auto-Regulate Volume"
             >
               <Activity className="w-3.5 h-3.5 text-neutral-400" />
               <span>RPE {currentFatigue}/10</span>
             </button>
-            <ContextualHelp
-              title="Fatigue Auto-Regulation"
-              content="If fatigue is high, the engine drops 1-2 accessory sets from this workout automatically to prevent central nervous system collapse while preserving your main strength sets."
-            />
           </div>
         </div>
+
+        {/* Start Fresh Confirmation Banner */}
+        {showResetConfirm && (
+          <div className="mt-3 p-3 rounded-lg bg-neutral-900 border border-neutral-700 space-y-2 animate-fadeIn font-mono">
+            <div className="flex items-center gap-1.5 text-xs text-white font-bold">
+              <AlertCircle className="w-3.5 h-3.5 text-neutral-300" />
+              <span>Reset today's workout to start fresh?</span>
+            </div>
+            <p className="text-[10px] text-neutral-400 font-sans">
+              This will uncheck all completed sets and clear session start/end timestamps.
+            </p>
+            <div className="flex justify-end gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setShowResetConfirm(false)}
+                className="px-3 py-1 rounded border border-neutral-750 text-neutral-300 text-xs hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleStartFreshWorkout}
+                className="px-3 py-1 rounded bg-white text-black font-bold text-xs hover:bg-neutral-200"
+              >
+                Confirm Reset
+              </button>
+            </div>
+          </div>
+        )}
 
         {workout.autoAdjustedReason && (
           <div className="mt-2.5 p-2 rounded border border-neutral-800 bg-neutral-900 text-xs text-neutral-300 font-mono">
@@ -212,6 +305,89 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
             <div className="text-[9px] text-neutral-500 uppercase font-bold">Corridor</div>
             <div className="text-xs font-bold text-neutral-300 mt-0.5">
               75–78 <span className="text-[9px] text-neutral-500">kg</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Workout Timestamp & Duration Logger */}
+        <div className="mt-3.5 pt-3 border-t border-neutral-850">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-white">
+              <Clock className="w-3.5 h-3.5 text-white" />
+              <span className="uppercase">Session Timing & Duration</span>
+              <ContextualHelp
+                title="Session Timing"
+                content="Track exact start and end times and total session duration for training density insights."
+              />
+            </div>
+            {workout.actualDurationMin ? (
+              <span className="text-[10px] font-mono text-white bg-neutral-900 px-2 py-0.5 rounded border border-neutral-750">
+                {workout.actualDurationMin} min logged
+              </span>
+            ) : null}
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            <div>
+              <label className="text-[9px] uppercase font-mono font-bold text-neutral-500 block mb-1">
+                Start Time
+              </label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="time"
+                  value={workout.startTime || ''}
+                  onChange={(e) => handleUpdateTiming('startTime', e.target.value)}
+                  className="w-full bg-neutral-900 border border-neutral-750 rounded px-2 py-1 text-xs font-mono text-white focus:outline-none focus:border-white"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleSetTimeToNow('startTime')}
+                  className="px-1.5 py-1 text-[9px] font-mono rounded bg-neutral-850 hover:bg-neutral-800 text-neutral-300 hover:text-white border border-neutral-750 active:scale-95 shrink-0"
+                  title="Set to current time"
+                >
+                  Now
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[9px] uppercase font-mono font-bold text-neutral-500 block mb-1">
+                End Time
+              </label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="time"
+                  value={workout.endTime || ''}
+                  onChange={(e) => handleUpdateTiming('endTime', e.target.value)}
+                  className="w-full bg-neutral-900 border border-neutral-750 rounded px-2 py-1 text-xs font-mono text-white focus:outline-none focus:border-white"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleSetTimeToNow('endTime')}
+                  className="px-1.5 py-1 text-[9px] font-mono rounded bg-neutral-850 hover:bg-neutral-800 text-neutral-300 hover:text-white border border-neutral-750 active:scale-95 shrink-0"
+                  title="Set to current time"
+                >
+                  Now
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[9px] uppercase font-mono font-bold text-neutral-500 block mb-1">
+                Duration (min)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="300"
+                value={workout.actualDurationMin !== undefined && workout.actualDurationMin !== null ? workout.actualDurationMin : ''}
+                onChange={(e) => {
+                  const val = e.target.value === '' ? undefined : parseInt(e.target.value, 10);
+                  handleUpdateTiming('actualDurationMin', isNaN(val as number) ? undefined : val);
+                }}
+                placeholder="e.g. 55"
+                className="w-full bg-neutral-900 border border-neutral-750 rounded px-2 py-1 text-xs font-mono font-bold text-white focus:outline-none focus:border-white"
+              />
             </div>
           </div>
         </div>
