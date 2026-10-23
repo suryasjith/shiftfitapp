@@ -42,8 +42,8 @@ export const EquipmentTakenModal: React.FC<EquipmentTakenModalProps> = ({
               <ArrowRightLeft className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white font-mono uppercase tracking-tight">Equipment Taken?</h3>
-              <p className="text-[11px] text-neutral-400 font-mono">Biomechanical Swaps</p>
+              <h3 className="text-sm font-bold text-white font-mono uppercase tracking-tight">Swap Exercise</h3>
+              <p className="text-[11px] text-neutral-400 font-sans">Equipment taken? Pick an identical alternative</p>
             </div>
           </div>
           <button 

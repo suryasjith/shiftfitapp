@@ -15,13 +15,15 @@ import {
   Plus,
   Trash2,
   Utensils,
-  Check,
   ChevronDown,
+  ChevronUp,
   AlertCircle,
-  TrendingUp
+  TrendingUp,
+  Droplets,
+  PieChart,
+  Info
 } from 'lucide-react';
 import { soundManager } from '../../services/audioTimer';
-import { ContextualHelp } from '../ContextualHelp';
 
 interface NutritionTabProps {
   todayStr: string;
@@ -47,28 +49,31 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
   const dayInfo = RotaEngine.getDayInfo(todayStr, profile, customShifts);
   const baseMacros = dayInfo.isShiftDay ? profile.shiftDayMacros : profile.offDayMacros;
 
-  // Dynamic Macro Target Calculation based on Cardio & Steps Active Burn
+  // Dynamic Macro Target Calculation
   const dynamicMacros = ActivityEngine.calculateDynamicMacros(baseMacros, activeExpenditureCalories);
   const effectiveTargetCalories = dynamicMacros.dynamicCalories;
   const effectiveTargetProtein = dynamicMacros.dynamicProtein;
   const effectiveTargetCarbs = dynamicMacros.dynamicCarbs;
   const effectiveTargetFats = dynamicMacros.dynamicFats;
 
-  // Active nutrition values
+  // Active values
   const currentProtein = nutrition?.proteinGrams || 0;
   const currentFats = nutrition?.fatsGrams || 0;
   const currentCarbs = nutrition?.carbsGrams || 0;
   const currentCalories = nutrition?.calories || (currentProtein * 4 + currentFats * 9 + currentCarbs * 4);
   const loggedFoods = nutrition?.foods || [];
 
-  // OpenFoodFacts search state
+  // Search & Form states (All inputs completely empty by default)
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchResults, setSearchResults] = useState<FoodSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [selectedFood, setSelectedFood] = useState<FoodSearchResult | null>(null);
-  const [servingGramsStr, setServingGramsStr] = useState<string>('150');
-  const [showFoodSearch, setShowFoodSearch] = useState<boolean>(false);
+  const [servingGramsStr, setServingGramsStr] = useState<string>('');
   const [showClearConfirm, setShowClearConfirm] = useState<boolean>(false);
+  
+  // Progressive disclosure: detailed macros collapsed by default
+  const [showMacroBreakdown, setShowMacroBreakdown] = useState<boolean>(false);
+  const [showFixedMeals, setShowFixedMeals] = useState<boolean>(false);
 
   // Debounced search
   useEffect(() => {
@@ -90,7 +95,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
   const handleSelectFoodResult = (food: FoodSearchResult) => {
     soundManager.playTap();
     setSelectedFood(food);
-    setServingGramsStr(String(food.defaultServingG || 100));
+    setServingGramsStr(''); // empty by default
     setSearchResults([]);
   };
 
@@ -98,7 +103,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
     if (!selectedFood) return;
     soundManager.playTap();
 
-    const g = parseFloat(servingGramsStr) || 100;
+    const g = parseFloat(servingGramsStr) || selectedFood.defaultServingG || 100;
     const loggedItem = FoodApiService.calculateServingMacros(selectedFood, g);
     const updatedFoods = [...loggedFoods, loggedItem];
     const newProt = Math.round((currentProtein + loggedItem.proteinGrams) * 10) / 10;
@@ -121,6 +126,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
     onSaveNutrition(updated);
     setSelectedFood(null);
     setSearchQuery('');
+    setServingGramsStr('');
   };
 
   const handleAddFixedShiftMeal = (meal: typeof FIXED_SHIFT_MEALS[0]) => {
@@ -195,7 +201,6 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
     onSaveNutrition(updated);
   };
 
-  // Start fresh - reset today's nutrition log
   const handleStartFreshNutrition = () => {
     soundManager.playTap();
     const resetLog: NutritionLog = {
@@ -214,6 +219,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
     setShowClearConfirm(false);
   };
 
+  // Water handlers
   const currentWater = hydration?.currentMl || 0;
   const targetWater = hydration?.targetMl || profile.dailyWaterTargetMl || 3800;
 
@@ -243,95 +249,68 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
     onSaveHydration(updated);
   };
 
-  const getMacroStatus = (current: number, target: number) => {
-    const ratio = current / target;
-    if (ratio >= 0.95 && ratio <= 1.08) {
-      return { label: 'TARGET MET', isMet: true };
-    }
-    if (ratio < 0.95) {
-      return { label: `${Math.round(target - current)}g REMAINING`, isMet: false };
-    }
-    return { label: `+${Math.round(current - target)}g EXCEEDED`, isMet: false };
-  };
-
-  const protStatus = getMacroStatus(currentProtein, effectiveTargetProtein);
-  const fatsStatus = getMacroStatus(currentFats, effectiveTargetFats);
-  const carbsStatus = getMacroStatus(currentCarbs, effectiveTargetCarbs);
-
+  const remainingCalories = Math.max(0, effectiveTargetCalories - currentCalories);
+  const caloriesPercent = Math.min(100, Math.round((currentCalories / effectiveTargetCalories) * 100));
   const waterPercent = Math.min(100, Math.round((currentWater / targetWater) * 100));
 
   return (
-    <div className="space-y-3.5 pb-28 text-left animate-fadeIn">
-      {/* Header Card */}
-      <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-4 shadow-sm font-mono">
+    <div className="space-y-4 pb-28 text-left animate-fadeIn font-sans">
+      {/* 1. Primary Header Card: Calories & Fuel Overview */}
+      <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4">
         <div className="flex items-start justify-between">
           <div>
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded border border-neutral-700 bg-neutral-900 text-neutral-300">
+            <div className="flex items-center gap-2 flex-wrap mb-1">
+              <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-neutral-700 bg-neutral-900 text-neutral-300">
                 {dayInfo.isShiftDay ? '12H SHIFT MACROS' : 'OFF-DAY MACROS'}
               </span>
               {activeExpenditureCalories > 0 && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-white text-black flex items-center gap-1">
+                <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-white text-black flex items-center gap-1">
                   <TrendingUp className="w-3 h-3 text-black" />
-                  +{activeExpenditureCalories} KCAL ACTIVE BURN
+                  +{activeExpenditureCalories} KCAL EXPENDED
                 </span>
               )}
-              <ContextualHelp
-                title="Dynamic Macro Target"
-                content="Off-days feature higher carbohydrates to replenish glycogen for heavy lifting sessions. Active burn from steps & cardio dynamically increases your caloric allowance and carbohydrate allocation."
-              />
             </div>
-            <h2 className="text-sm font-bold text-white mt-1 uppercase tracking-tight">
-              Macro & Calorie Fuel
+            <h2 className="text-xl font-bold text-white tracking-tight mt-1">
+              Daily Fuel & Calories
             </h2>
+            <p className="text-xs text-neutral-400 mt-0.5">
+              Target: <strong className="text-white font-mono">{effectiveTargetCalories} kcal</strong> • Consumed: <strong className="text-white font-mono">{currentCalories} kcal</strong>
+            </p>
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
-            {/* Start Fresh Button */}
-            <button
-              onClick={() => setShowClearConfirm(true)}
-              className="flex items-center gap-1 px-2 py-1.5 rounded-lg border border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-white text-xs font-mono transition-all active:scale-95"
-              title="Reset all logged nutrition items for today"
-            >
-              <RotateCcw className="w-3.5 h-3.5 text-neutral-400" />
-              <span>Start Fresh</span>
-            </button>
-            <ContextualHelp
-              title="Start Fresh Nutrition"
-              content="Clears all logged meals, foods, and calculated macros for today so you can restart your intake log."
-            />
-
-            <div className="p-2 rounded bg-neutral-900 border border-neutral-800 text-right ml-1">
-              <span className="text-[9px] text-neutral-500 uppercase font-semibold">Calories</span>
-              <div className="text-sm font-bold text-white">
-                {currentCalories} <span className="text-[10px] text-neutral-500 font-normal">/ {effectiveTargetCalories}</span>
-              </div>
-            </div>
-          </div>
+          {/* Start Fresh Button */}
+          <button
+            onClick={() => setShowClearConfirm(true)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-white text-xs font-medium transition-all active:scale-95 shrink-0"
+            title="Clear all logged meals for today"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-neutral-400" />
+            <span>Start Fresh</span>
+          </button>
         </div>
 
-        {/* Start Fresh Confirmation Overlay */}
+        {/* Start Fresh Confirmation Dialog */}
         {showClearConfirm && (
-          <div className="mt-3 p-3 rounded-lg bg-neutral-900 border border-neutral-700 space-y-2 animate-fadeIn font-mono">
-            <div className="flex items-center gap-1.5 text-xs text-white font-bold">
-              <AlertCircle className="w-3.5 h-3.5 text-neutral-300" />
-              <span>Reset today's nutrition log to start fresh?</span>
+          <div className="p-3.5 rounded-xl bg-neutral-900 border border-neutral-700 space-y-2 animate-fadeIn font-sans">
+            <div className="flex items-center gap-2 text-xs text-white font-bold">
+              <AlertCircle className="w-4 h-4 text-neutral-300" />
+              <span>Clear today's logged meals and reset macros?</span>
             </div>
-            <p className="text-[10px] text-neutral-400 font-sans">
-              This will remove all logged foods and zero out today's macros.
+            <p className="text-xs text-neutral-400">
+              This will remove all logged foods and reset calorie intake to zero.
             </p>
             <div className="flex justify-end gap-2 pt-1">
               <button
                 type="button"
                 onClick={() => setShowClearConfirm(false)}
-                className="px-3 py-1 rounded border border-neutral-750 text-neutral-300 text-xs hover:text-white"
+                className="px-3 py-1.5 rounded-lg border border-neutral-750 text-neutral-300 text-xs hover:text-white"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleStartFreshNutrition}
-                className="px-3 py-1 rounded bg-white text-black font-bold text-xs hover:bg-neutral-200"
+                className="px-3 py-1.5 rounded-lg bg-white text-black font-bold text-xs hover:bg-neutral-200"
               >
                 Confirm Reset
               </button>
@@ -339,121 +318,176 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
           </div>
         )}
 
-        {/* Total Calories Bar */}
-        <div className="mt-3">
-          <div className="w-full bg-neutral-900 h-1.5 rounded-full overflow-hidden border border-neutral-850">
+        {/* Big Calories Progress Bar */}
+        <div>
+          <div className="flex justify-between text-xs mb-1.5">
+            <span className="text-neutral-400 font-medium">
+              {remainingCalories > 0 ? (
+                <><strong>{remainingCalories} kcal</strong> remaining to reach goal</>
+              ) : (
+                <strong className="text-white">Daily Calorie Target Met ✓</strong>
+              )}
+            </span>
+            <span className="text-white font-mono font-bold">{caloriesPercent}%</span>
+          </div>
+          <div className="w-full bg-neutral-900 h-2.5 rounded-full overflow-hidden border border-neutral-850">
             <div 
               className="h-full rounded-full bg-white transition-all duration-300"
-              style={{ width: `${Math.min(100, Math.round((currentCalories / effectiveTargetCalories) * 100))}%` }}
+              style={{ width: `${caloriesPercent}%` }}
             />
           </div>
         </div>
-
-        {activeExpenditureCalories > 0 && (
-          <div className="mt-2 text-[10px] text-neutral-400 flex items-center justify-between">
-            <span>Base: {baseMacros.calories} kcal</span>
-            <span>+ Cardio/Steps: {activeExpenditureCalories} kcal</span>
-            <span className="text-white font-bold">= {effectiveTargetCalories} kcal Dynamic Target</span>
-          </div>
-        )}
       </div>
 
-      {/* OpenFoodFacts Food Search & Quick Log Section */}
-      <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3.5 shadow-sm font-mono">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-1.5">
-            <Utensils className="w-3.5 h-3.5 text-white" />
-            <span className="text-xs font-bold text-white uppercase">Food API Database (OpenFoodFacts)</span>
-            <ContextualHelp
-              title="OpenFoodFacts API"
-              content="Type any food or brand to query live nutritional values. Selecting an item auto-calculates Calories, Protein, Fats, and Carbs for your chosen gram portion."
-            />
+      {/* 2. Hydration Checklist Card */}
+      <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white shrink-0">
+              <Droplets className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block font-bold">
+                Hydration Tracker
+              </span>
+              <h3 className="text-base font-bold text-white tracking-tight">
+                {(currentWater / 1000).toFixed(1)}L <span className="text-xs text-neutral-500 font-normal">/ {(targetWater / 1000).toFixed(1)}L</span>
+              </h3>
+            </div>
           </div>
+
           <button
-            onClick={() => setShowFoodSearch(!showFoodSearch)}
-            className="text-[10px] text-neutral-400 hover:text-white underline"
+            onClick={handleResetWater}
+            className="text-xs text-neutral-500 hover:text-neutral-300 flex items-center gap-1 font-mono p-1"
+            title="Reset today's water"
           >
-            {showFoodSearch ? 'Hide Search' : '+ Search Foods'}
+            <RotateCcw className="w-3 h-3" />
+            <span>Reset</span>
           </button>
         </div>
 
-        {/* Search input with live dropdown */}
-        {(showFoodSearch || searchQuery) && (
-          <div className="relative mt-2">
-            <div className="flex items-center gap-1.5 bg-neutral-900 border border-neutral-750 rounded-lg px-2.5 py-1.5">
-              <Search className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search food (e.g. Chicken breast, Oats, Greek yogurt...)"
-                className="w-full bg-transparent text-xs text-white placeholder-neutral-500 focus:outline-none"
-              />
-              {isSearching && <span className="text-[9px] text-neutral-500">Searching...</span>}
-            </div>
+        {/* Water Progress Bar */}
+        <div className="w-full bg-neutral-900 h-2 rounded-full overflow-hidden border border-neutral-850">
+          <div 
+            className="bg-white h-full rounded-full transition-all duration-300"
+            style={{ width: `${waterPercent}%` }}
+          />
+        </div>
 
-            {/* Dropdown Results */}
-            {searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 z-30 mt-1 bg-black border border-neutral-700 rounded-lg shadow-2xl overflow-hidden max-h-56 overflow-y-auto divide-y divide-neutral-850">
-                {searchResults.map((food) => (
-                  <button
-                    key={food.id}
-                    type="button"
-                    onClick={() => handleSelectFoodResult(food)}
-                    className="w-full text-left p-2 hover:bg-neutral-900 transition-colors flex items-center justify-between"
-                  >
-                    <div>
-                      <div className="text-xs font-bold text-white truncate max-w-[200px]">
-                        {food.name}
-                      </div>
-                      <div className="text-[10px] text-neutral-400">
-                        {food.brand ? `${food.brand} • ` : ''}100g: {food.caloriesPer100g} kcal
-                      </div>
-                    </div>
-                    <div className="text-[10px] font-mono text-neutral-400 text-right">
-                      {food.proteinPer100g}g P • {food.carbsPer100g}g C • {food.fatsPer100g}g F
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
+        {/* 1-Tap Quick Addition Buttons */}
+        <div className="grid grid-cols-4 gap-2 pt-1 font-sans">
+          {[
+            { label: '+250ml', ml: 250, desc: 'Glass' },
+            { label: '+500ml', ml: 500, desc: 'Bottle' },
+            { label: '+750ml', ml: 750, desc: 'Shaker' },
+            { label: '+1000ml', ml: 1000, desc: '1 Litre' },
+          ].map((btn, idx) => (
+            <button
+              key={idx}
+              onClick={() => handleAddWater(btn.ml)}
+              className="py-2 px-1 rounded-xl bg-neutral-900 hover:bg-neutral-850 border border-neutral-750 text-white font-bold text-xs active:scale-95 transition-all text-center"
+            >
+              <div>{btn.label}</div>
+              <span className="text-[9px] text-neutral-500 font-normal block">{btn.desc}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 3. OpenFoodFacts Search & Quick Food Logger */}
+      <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-xl bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white shrink-0">
+            <Utensils className="w-4 h-4 text-white" />
           </div>
-        )}
+          <div>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block font-bold">
+              Database Search
+            </span>
+            <h3 className="text-base font-bold text-white tracking-tight">
+              Log Meal or Food
+            </h3>
+          </div>
+        </div>
 
-        {/* Portion Selector for selected food */}
+        {/* Search Input Field (Novice-Proof Placeholder) */}
+        <div className="relative">
+          <div className="flex items-center gap-2 bg-neutral-900 border border-neutral-750 rounded-xl px-3 py-2.5">
+            <Search className="w-4 h-4 text-neutral-400 shrink-0" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search food (e.g. Chicken breast, Oats, Greek yogurt...)"
+              className="w-full bg-transparent text-xs text-white placeholder-neutral-500 focus:outline-none"
+            />
+            {isSearching && <span className="text-[10px] text-neutral-500 font-mono">Searching...</span>}
+          </div>
+
+          {/* Search Dropdown Results */}
+          {searchResults.length > 0 && (
+            <div className="absolute top-full left-0 right-0 z-30 mt-1 bg-black border border-neutral-700 rounded-xl shadow-2xl overflow-hidden max-h-56 overflow-y-auto divide-y divide-neutral-850">
+              {searchResults.map((food) => (
+                <button
+                  key={food.id}
+                  type="button"
+                  onClick={() => handleSelectFoodResult(food)}
+                  className="w-full text-left p-3 hover:bg-neutral-900 transition-colors flex items-center justify-between"
+                >
+                  <div>
+                    <div className="text-xs font-bold text-white truncate max-w-[200px]">
+                      {food.name}
+                    </div>
+                    <div className="text-[10px] text-neutral-400">
+                      {food.brand ? `${food.brand} • ` : ''}100g: {food.caloriesPer100g} kcal
+                    </div>
+                  </div>
+                  <div className="text-[10px] font-mono text-neutral-300 text-right">
+                    {food.proteinPer100g}g P • {food.carbsPer100g}g C • {food.fatsPer100g}g F
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Portion Selector Card if Food Selected */}
         {selectedFood && (
-          <div className="mt-3 p-3 rounded-lg bg-neutral-900 border border-neutral-750 space-y-2">
+          <div className="p-4 rounded-xl bg-neutral-900 border border-neutral-750 space-y-3 animate-fadeIn">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs font-bold text-white">{selectedFood.name}</span>
-                <span className="text-[10px] text-neutral-400 block">{selectedFood.brand}</span>
+                <span className="text-xs font-bold text-white block">{selectedFood.name}</span>
+                <span className="text-[10px] text-neutral-400 block">{selectedFood.brand || 'Standard item'}</span>
               </div>
               <button 
                 onClick={() => setSelectedFood(null)}
-                className="text-[10px] text-neutral-500 hover:text-white"
+                className="text-xs text-neutral-400 hover:text-white"
               >
                 Cancel
               </button>
             </div>
 
             <div className="flex items-center gap-2">
-              <label className="text-[10px] text-neutral-400">Portion (grams):</label>
+              <label className="text-xs text-neutral-300">Portion Size:</label>
               <input
                 type="number"
                 step="5"
+                min="1"
+                max="2000"
                 value={servingGramsStr}
                 onChange={(e) => setServingGramsStr(e.target.value)}
-                className="w-24 bg-neutral-950 border border-neutral-700 rounded px-2 py-1 text-xs font-bold text-white text-center focus:outline-none focus:border-white"
+                placeholder="Grams (e.g. 150)"
+                className="flex-1 bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-1.5 text-xs font-bold text-white placeholder-neutral-600 focus:outline-none focus:border-white text-center"
               />
-              <span className="text-[10px] text-neutral-400">g</span>
+              <span className="text-xs text-neutral-400 font-mono">grams</span>
             </div>
 
             {/* Calculated Macros Preview */}
             {(() => {
-              const g = parseFloat(servingGramsStr) || 0;
+              const g = parseFloat(servingGramsStr) || selectedFood.defaultServingG || 100;
               const preview = FoodApiService.calculateServingMacros(selectedFood, g);
               return (
-                <div className="grid grid-cols-4 gap-1 p-2 bg-neutral-950 rounded border border-neutral-800 text-center text-[10px]">
+                <div className="grid grid-cols-4 gap-1 p-2.5 bg-neutral-950 rounded-lg border border-neutral-800 text-center text-xs font-mono">
                   <div>
                     <span className="text-neutral-500 text-[9px] block">CALS</span>
                     <strong className="text-white">{preview.calories}</strong>
@@ -476,303 +510,224 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
 
             <button
               onClick={handleAddCalculatedFood}
-              className="w-full py-1.5 rounded bg-white text-black font-bold text-xs hover:bg-neutral-200 transition-all active:scale-95 flex items-center justify-center gap-1"
+              className="w-full py-3 rounded-xl bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-[0.98] flex items-center justify-center gap-1.5"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Log to Today's Macros</span>
+              <Plus className="w-4 h-4" />
+              <span>Log Food to Today's Diary</span>
             </button>
           </div>
         )}
 
-        {/* Fixed 12h Shift Meals Presets */}
-        <div className="mt-3 pt-2.5 border-t border-neutral-850">
-          <div className="text-[10px] uppercase font-bold text-neutral-400 mb-1.5 flex items-center justify-between">
-            <span>Fixed 12h Shift Meals (1-Tap):</span>
-            <ContextualHelp
-              title="Fixed Shift Meals"
-              content="Pre-configured sports nutrition meals common for 12h shift workers. Tap to add instantly without typing."
-            />
-          </div>
-          <div className="space-y-1">
-            {FIXED_SHIFT_MEALS.map((meal, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => handleAddFixedShiftMeal(meal)}
-                className="w-full p-2 rounded bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-left transition-all active:scale-[0.99] flex items-center justify-between"
-              >
-                <div>
-                  <div className="text-[11px] font-bold text-white">{meal.title}</div>
-                  <div className="text-[9px] text-neutral-500">{meal.desc}</div>
-                </div>
-                <div className="text-[10px] text-right text-neutral-300 shrink-0 font-mono">
-                  +{meal.proteinGrams}g P • {meal.calories} kcal
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Collapsible Quick 12h Shift Meals (Progressive Disclosure) */}
+        <div className="pt-2 border-t border-neutral-850">
+          <button
+            type="button"
+            onClick={() => setShowFixedMeals(!showFixedMeals)}
+            className="w-full flex items-center justify-between text-left text-xs font-bold text-neutral-300 hover:text-white"
+          >
+            <span>Quick 12h Shift Meals (1-Tap Presets)</span>
+            {showFixedMeals ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
 
-        {/* Logged Foods List */}
-        {loggedFoods.length > 0 && (
-          <div className="mt-3 pt-2.5 border-t border-neutral-850">
-            <div className="text-[10px] uppercase font-bold text-neutral-400 mb-1.5 flex items-center justify-between">
-              <span>Today's Logged Items:</span>
-              <button
-                type="button"
-                onClick={() => setShowClearConfirm(true)}
-                className="text-[10px] text-neutral-500 hover:text-white underline font-mono"
-              >
-                Clear all
-              </button>
-            </div>
-            <div className="space-y-1 max-h-36 overflow-y-auto">
-              {loggedFoods.map((f) => (
-                <div key={f.id} className="p-1.5 rounded bg-neutral-900 border border-neutral-850 flex items-center justify-between text-[10px]">
-                  <div className="truncate max-w-[190px]">
-                    <span className="text-white font-bold">{f.name}</span>
-                    {f.servingGrams > 1 && <span className="text-neutral-500"> ({f.servingGrams}g)</span>}
+          {showFixedMeals && (
+            <div className="mt-3 space-y-2 animate-fadeIn">
+              {FIXED_SHIFT_MEALS.map((meal, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleAddFixedShiftMeal(meal)}
+                  className="w-full p-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-left transition-all active:scale-[0.99] flex items-center justify-between"
+                >
+                  <div>
+                    <div className="text-xs font-bold text-white">{meal.title}</div>
+                    <div className="text-[10px] text-neutral-400">{meal.desc}</div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-neutral-300 font-mono">{f.proteinGrams}g P • {f.calories} kcal</span>
-                    <button
-                      onClick={() => handleRemoveLoggedFood(f.id)}
-                      className="text-neutral-600 hover:text-white p-0.5"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
+                  <div className="text-xs text-right text-neutral-300 shrink-0 font-mono">
+                    +{meal.proteinGrams}g P • {meal.calories} kcal
                   </div>
-                </div>
+                </button>
               ))}
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* 4. PROGRESSIVE DISCLOSURE: Detailed Macro Breakdown (Collapsed by Default) */}
+      <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4">
+        <button
+          type="button"
+          onClick={() => setShowMacroBreakdown(!showMacroBreakdown)}
+          className="w-full flex items-center justify-between text-left"
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white shrink-0">
+              <PieChart className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <span className="text-xs font-bold text-white uppercase tracking-wider block">
+                Detailed Macro Breakdown
+              </span>
+              <span className="text-[11px] text-neutral-400 font-normal">
+                Protein, Carbohydrates, and Dietary Fats
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1 text-xs text-neutral-400 font-mono">
+            <span>{showMacroBreakdown ? 'Hide' : 'Expand'}</span>
+            {showMacroBreakdown ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </div>
+        </button>
+
+        {showMacroBreakdown && (
+          <div className="space-y-3.5 pt-3 border-t border-neutral-850 animate-fadeIn font-mono">
+            {/* Protein Card */}
+            <div className="p-3.5 rounded-xl bg-neutral-900 border border-neutral-800 space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-bold text-white uppercase block">Protein</span>
+                  <span className="text-[10px] text-neutral-400">Preserves muscle during shift stress</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-sm font-bold text-white">{currentProtein}</span>
+                  <span className="text-[10px] text-neutral-500"> / {effectiveTargetProtein}g</span>
+                </div>
+              </div>
+              <div className="w-full bg-neutral-950 h-2 rounded-full overflow-hidden">
+                <div 
+                  className="bg-white h-full rounded-full transition-all"
+                  style={{ width: `${Math.min(100, (currentProtein / effectiveTargetProtein) * 100)}%` }}
+                />
+              </div>
+              <div className="flex justify-end gap-1.5 pt-1">
+                <button
+                  onClick={() => handleAdjustMacro('proteinGrams', 5)}
+                  className="px-2 py-1 rounded bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
+                >
+                  +5g
+                </button>
+                <button
+                  onClick={() => handleAdjustMacro('proteinGrams', 25)}
+                  className="px-2.5 py-1 rounded bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
+                >
+                  +25g Shake
+                </button>
+              </div>
+            </div>
+
+            {/* Carbohydrates Card */}
+            <div className="p-3.5 rounded-xl bg-neutral-900 border border-neutral-800 space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-bold text-white uppercase block">Carbohydrates</span>
+                  <span className="text-[10px] text-neutral-400">Replenishes muscle glycogen</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-sm font-bold text-white">{currentCarbs}</span>
+                  <span className="text-[10px] text-neutral-500"> / {effectiveTargetCarbs}g</span>
+                </div>
+              </div>
+              <div className="w-full bg-neutral-950 h-2 rounded-full overflow-hidden">
+                <div 
+                  className="bg-white h-full rounded-full transition-all"
+                  style={{ width: `${Math.min(100, (currentCarbs / effectiveTargetCarbs) * 100)}%` }}
+                />
+              </div>
+              <div className="flex justify-end gap-1.5 pt-1">
+                <button
+                  onClick={() => handleAdjustMacro('carbsGrams', 10)}
+                  className="px-2 py-1 rounded bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
+                >
+                  +10g
+                </button>
+                <button
+                  onClick={() => handleAdjustMacro('carbsGrams', 30)}
+                  className="px-2.5 py-1 rounded bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
+                >
+                  +30g Oats
+                </button>
+              </div>
+            </div>
+
+            {/* Fats Card */}
+            <div className="p-3.5 rounded-xl bg-neutral-900 border border-neutral-800 space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-bold text-white uppercase block">Fats</span>
+                  <span className="text-[10px] text-neutral-400">Hormonal balance and satiety</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-sm font-bold text-white">{currentFats}</span>
+                  <span className="text-[10px] text-neutral-500"> / {effectiveTargetFats}g</span>
+                </div>
+              </div>
+              <div className="w-full bg-neutral-950 h-2 rounded-full overflow-hidden">
+                <div 
+                  className="bg-white h-full rounded-full transition-all"
+                  style={{ width: `${Math.min(100, (currentFats / effectiveTargetFats) * 100)}%` }}
+                />
+              </div>
+              <div className="flex justify-end gap-1.5 pt-1">
+                <button
+                  onClick={() => handleAdjustMacro('fatsGrams', 5)}
+                  className="px-2 py-1 rounded bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
+                >
+                  +5g
+                </button>
+                <button
+                  onClick={() => handleAdjustMacro('fatsGrams', 15)}
+                  className="px-2.5 py-1 rounded bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
+                >
+                  +15g Nuts
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Granular Macro Cards */}
-      <div className="space-y-2.5 font-mono">
-        {/* Protein */}
-        <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3.5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="text-xs font-bold text-white uppercase flex items-center gap-2">
-              <span>Protein</span>
-              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded border border-neutral-700 bg-neutral-900 text-neutral-300">
-                {protStatus.label}
-              </span>
-              <ContextualHelp
-                title="Protein Goal (~2.3g/kg)"
-                content="Protects lean contractile tissue and muscle protein synthesis during shift stress."
-              />
-            </div>
+      {/* 5. Today's Logged Items List & Empty State */}
+      <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3">
+        <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+          Today's Food Diary
+        </h3>
 
-            <div className="text-right">
-              <span className="text-base font-bold text-white">{currentProtein}</span>
-              <span className="text-[10px] text-neutral-500"> / {effectiveTargetProtein}g</span>
-            </div>
+        {loggedFoods.length === 0 ? (
+          /* Friendly Novice-Proof Empty State */
+          <div className="p-6 text-center text-neutral-500 font-sans border border-dashed border-neutral-800 rounded-xl space-y-2">
+            <Utensils className="w-8 h-8 mx-auto text-neutral-700" />
+            <p className="text-xs font-bold text-neutral-300">No Meals Logged Today</p>
+            <p className="text-[11px] text-neutral-400 max-w-xs mx-auto">
+              Use the <strong className="text-white">Database Search</strong> above or tap <strong className="text-white">Quick 12h Shift Meals</strong> to add what you ate.
+            </p>
           </div>
+        ) : (
+          <div className="divide-y divide-neutral-850">
+            {loggedFoods.map((f) => (
+              <div key={f.id} className="py-2.5 flex items-center justify-between text-xs">
+                <div>
+                  <span className="text-white font-bold block">{f.name}</span>
+                  <span className="text-[10px] text-neutral-400">
+                    {f.servingGrams > 1 ? `${f.servingGrams}g • ` : ''}{f.timeLogged}
+                  </span>
+                </div>
 
-          <div className="mt-2.5 w-full bg-neutral-900 h-1 rounded-full overflow-hidden">
-            <div 
-              className="bg-white h-full rounded-full transition-all duration-300"
-              style={{ width: `${Math.min(100, (currentProtein / effectiveTargetProtein) * 100)}%` }}
-            />
-          </div>
-
-          <div className="mt-2.5 flex items-center justify-end gap-1">
-            <button
-              onClick={() => handleAdjustMacro('proteinGrams', -10)}
-              className="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-850 text-neutral-400 hover:text-white text-[10px] border border-neutral-800"
-            >
-              -10g
-            </button>
-            <button
-              onClick={() => handleAdjustMacro('proteinGrams', -5)}
-              className="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-850 text-neutral-400 hover:text-white text-[10px] border border-neutral-800"
-            >
-              -5g
-            </button>
-            <button
-              onClick={() => handleAdjustMacro('proteinGrams', 5)}
-              className="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-850 text-neutral-200 hover:text-white text-[10px] border border-neutral-750 font-bold"
-            >
-              +5g
-            </button>
-            <button
-              onClick={() => handleAdjustMacro('proteinGrams', 25)}
-              className="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-850 text-white text-[10px] border border-neutral-750 font-bold"
-            >
-              +25g Shake
-            </button>
-          </div>
-        </div>
-
-        {/* Carbohydrates (Dynamic Target Allocation) */}
-        <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3.5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-xs font-bold text-white uppercase flex items-center gap-2">
-                <span>Carbohydrates</span>
-                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded border border-neutral-700 bg-neutral-900 text-neutral-300">
-                  {carbsStatus.label}
-                </span>
-                <ContextualHelp
-                  title="Dynamic Carbohydrate Cycling"
-                  content="Replenishes muscle glycogen for lifting sessions. Excess energy burned during cardio and extra steps dynamically expands this target."
-                />
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="text-xs font-mono font-bold text-neutral-300">
+                    {f.proteinGrams}g P • {f.calories} kcal
+                  </span>
+                  <button
+                    onClick={() => handleRemoveLoggedFood(f.id)}
+                    className="p-1 rounded text-neutral-600 hover:text-white transition-colors"
+                    title="Remove item"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
-              {dynamicMacros.extraCarbsGrams > 0 && (
-                <span className="text-[9px] text-neutral-400 block mt-0.5">
-                  +{dynamicMacros.extraCarbsGrams}g active fuel from cardio/steps
-                </span>
-              )}
-            </div>
-
-            <div className="text-right">
-              <span className="text-base font-bold text-white">{currentCarbs}</span>
-              <span className="text-[10px] text-neutral-500"> / {effectiveTargetCarbs}g</span>
-            </div>
-          </div>
-
-          <div className="mt-2.5 w-full bg-neutral-900 h-1 rounded-full overflow-hidden">
-            <div 
-              className="bg-white h-full rounded-full transition-all duration-300"
-              style={{ width: `${Math.min(100, (currentCarbs / effectiveTargetCarbs) * 100)}%` }}
-            />
-          </div>
-
-          <div className="mt-2.5 flex items-center justify-end gap-1">
-            <button
-              onClick={() => handleAdjustMacro('carbsGrams', -10)}
-              className="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-850 text-neutral-400 hover:text-white text-[10px] border border-neutral-800"
-            >
-              -10g
-            </button>
-            <button
-              onClick={() => handleAdjustMacro('carbsGrams', -5)}
-              className="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-850 text-neutral-400 hover:text-white text-[10px] border border-neutral-800"
-            >
-              -5g
-            </button>
-            <button
-              onClick={() => handleAdjustMacro('carbsGrams', 10)}
-              className="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-850 text-neutral-200 hover:text-white text-[10px] border border-neutral-750 font-bold"
-            >
-              +10g
-            </button>
-            <button
-              onClick={() => handleAdjustMacro('carbsGrams', 30)}
-              className="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-850 text-white text-[10px] border border-neutral-750 font-bold"
-            >
-              +30g Oats
-            </button>
-          </div>
-        </div>
-
-        {/* Fats */}
-        <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3.5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="text-xs font-bold text-white uppercase flex items-center gap-2">
-              <span>Fats</span>
-              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded border border-neutral-700 bg-neutral-900 text-neutral-300">
-                {fatsStatus.label}
-              </span>
-              <ContextualHelp
-                title="Hormonal Balance Fats"
-                content="Maintains androgen production and cellular integrity during shift fatigue."
-              />
-            </div>
-
-            <div className="text-right">
-              <span className="text-base font-bold text-white">{currentFats}</span>
-              <span className="text-[10px] text-neutral-500"> / {effectiveTargetFats}g</span>
-            </div>
-          </div>
-
-          <div className="mt-2.5 w-full bg-neutral-900 h-1 rounded-full overflow-hidden">
-            <div 
-              className="bg-white h-full rounded-full transition-all duration-300"
-              style={{ width: `${Math.min(100, (currentFats / effectiveTargetFats) * 100)}%` }}
-            />
-          </div>
-
-          <div className="mt-2.5 flex items-center justify-end gap-1">
-            <button
-              onClick={() => handleAdjustMacro('fatsGrams', -5)}
-              className="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-850 text-neutral-400 hover:text-white text-[10px] border border-neutral-800"
-            >
-              -5g
-            </button>
-            <button
-              onClick={() => handleAdjustMacro('fatsGrams', 5)}
-              className="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-850 text-neutral-200 hover:text-white text-[10px] border border-neutral-750 font-bold"
-            >
-              +5g
-            </button>
-            <button
-              onClick={() => handleAdjustMacro('fatsGrams', 15)}
-              className="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-850 text-white text-[10px] border border-neutral-750 font-bold"
-            >
-              +15g Nuts
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Hydration Checklist Card */}
-      <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-4 shadow-sm font-mono">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <h3 className="text-xs font-bold text-white uppercase">Hydration Checklist</h3>
-            <ContextualHelp
-              title="12-Hour Hydration Strategy"
-              content="Reaching your 3.8L checkpoint goals prevents afternoon cognitive fatigue and muscle cramping on shifts."
-            />
-          </div>
-
-          <button
-            onClick={handleResetWater}
-            className="p-1 text-neutral-500 hover:text-white"
-            title="Reset Water Log"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        <div className="mt-3 p-3 rounded-lg bg-neutral-900 border border-neutral-800">
-          <div className="flex items-baseline justify-between">
-            <div>
-              <span className="text-xl font-black text-white">{currentWater}</span>
-              <span className="text-xs text-neutral-500"> / {targetWater} ml</span>
-            </div>
-            <span className="text-xs font-bold text-white bg-black px-2 py-0.5 rounded border border-neutral-700">
-              {waterPercent}%
-            </span>
-          </div>
-
-          <div className="mt-2 w-full bg-black h-1.5 rounded-full overflow-hidden border border-neutral-800">
-            <div 
-              className="bg-white h-full rounded-full transition-all duration-300"
-              style={{ width: `${waterPercent}%` }}
-            />
-          </div>
-
-          <div className="grid grid-cols-4 gap-1.5 mt-3">
-            {[
-              { label: '+250ml', ml: 250 },
-              { label: '+500ml', ml: 500 },
-              { label: '+750ml', ml: 750 },
-              { label: '+1000ml', ml: 1000 },
-            ].map((btn, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleAddWater(btn.ml)}
-                className="py-1.5 rounded bg-neutral-850 hover:bg-neutral-800 border border-neutral-750 text-white text-[10px] font-bold active:scale-95 transition-all text-center"
-              >
-                {btn.label}
-              </button>
             ))}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

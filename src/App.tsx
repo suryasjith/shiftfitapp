@@ -21,15 +21,13 @@ import { FloatingRestTimer } from './components/FloatingRestTimer';
 import { InstallBanner } from './components/InstallBanner';
 import { OnboardingOverlay } from './components/OnboardingOverlay';
 import { DashboardTab } from './components/tabs/DashboardTab';
-import { ScheduleTab } from './components/tabs/ScheduleTab';
 import { WorkoutTab } from './components/tabs/WorkoutTab';
-import { ActivityTab } from './components/tabs/ActivityTab';
 import { NutritionTab } from './components/tabs/NutritionTab';
-import { AnalyticsTab } from './components/tabs/AnalyticsTab';
+import { ProgressTab } from './components/tabs/ProgressTab';
 
 export const App: React.FC = () => {
   const [isReady, setIsReady] = useState<boolean>(false);
-  const [currentTab, setCurrentTab] = useState<NavTab>('dashboard');
+  const [currentTab, setCurrentTab] = useState<NavTab>('today');
   
   const todayStr = RotaEngine.formatDate(new Date());
 
@@ -257,22 +255,21 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-neutral-100 flex flex-col max-w-lg mx-auto relative select-none">
-      {/* Top Header - Spacious with Dynamic Island Clearance */}
+      {/* Top Header - Spacious with Dynamic Island Clearance & 'i' Contextual Tab Guide */}
       <Header
         todayStr={todayStr}
         profile={profile}
         customShifts={customShifts}
-        currentFatigue={currentFatigue}
-        onOpenFatigueModal={() => setIsFatigueModalOpen(true)}
+        currentTab={currentTab}
         onExportBackup={handleExportBackup}
-        onOpenGuide={() => setIsOnboardingOpen(true)}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 px-3 pt-2.5 pb-8">
+      {/* Main Content Area: 4 Distinct iOS-Style Tabs */}
+      <main className="flex-1 px-4 pt-3 pb-8">
         <InstallBanner />
 
-        {currentTab === 'dashboard' && (
+        {/* Tab 1: Today Dashboard (Minimalist Focus) */}
+        {currentTab === 'today' && (
           <DashboardTab
             todayStr={todayStr}
             profile={profile}
@@ -281,13 +278,10 @@ export const App: React.FC = () => {
             todayNutrition={todayNutrition}
             todayHydration={hydration}
             todayWeight={todayWeight}
-            dailySteps={dailySteps}
-            activities={activities}
             currentFatigue={currentFatigue}
-            onOpenFatigueModal={() => setIsFatigueModalOpen(true)}
+            onUpdateFatigue={handleSaveFatigue}
             onNavigateTab={setCurrentTab}
             onSaveWeight={(val) => handleSaveWeight({ date: todayStr, weightKg: val })}
-            onSaveSteps={handleSaveSteps}
             onAddWater={(ml) => {
               const current = hydration?.currentMl || 0;
               handleSaveHydration({
@@ -300,17 +294,7 @@ export const App: React.FC = () => {
           />
         )}
 
-        {currentTab === 'schedule' && (
-          <ScheduleTab
-            todayStr={todayStr}
-            profile={profile}
-            customShifts={customShifts}
-            onSaveShift={handleSaveShift}
-            onUpdateTemplate={handleUpdateTemplate}
-            onNavigateTab={setCurrentTab}
-          />
-        )}
-
+        {/* Tab 2: Workout (Active Session & Collapsible 2-Week Rota) */}
         {currentTab === 'workout' && (
           <WorkoutTab
             todayStr={todayStr}
@@ -321,24 +305,13 @@ export const App: React.FC = () => {
             onSaveWorkout={handleSaveWorkout}
             onStartRestTimer={handleStartRestTimer}
             onOpenFatigueModal={() => setIsFatigueModalOpen(true)}
+            onSaveShift={handleSaveShift}
+            onUpdateTemplate={handleUpdateTemplate}
           />
         )}
 
-        {currentTab === 'activity' && (
-          <ActivityTab
-            todayStr={todayStr}
-            profile={profile}
-            todayWeight={todayWeight}
-            activities={activities}
-            dailySteps={dailySteps}
-            onSaveActivity={handleSaveActivity}
-            onDeleteActivity={handleDeleteActivity}
-            onClearActivities={handleClearActivities}
-            onSaveSteps={handleSaveSteps}
-          />
-        )}
-
-        {currentTab === 'nutrition' && (
+        {/* Tab 3: Fuel (Macros, Food Diary & Hydration) */}
+        {currentTab === 'fuel' && (
           <NutritionTab
             todayStr={todayStr}
             profile={profile}
@@ -351,8 +324,9 @@ export const App: React.FC = () => {
           />
         )}
 
-        {currentTab === 'analytics' && (
-          <AnalyticsTab
+        {/* Tab 4: Progress (Trends, Analytics, Cardio, Steps & Backup) */}
+        {currentTab === 'progress' && (
+          <ProgressTab
             todayStr={todayStr}
             profile={profile}
             weights={weights}
@@ -360,12 +334,21 @@ export const App: React.FC = () => {
             workouts={workouts}
             shifts={customShifts}
             fatigueLogs={dailyFatigueLogs}
+            activities={activities}
+            dailySteps={dailySteps}
+            todayWeight={todayWeight}
             onSaveWeight={handleSaveWeight}
+            onSaveActivity={handleSaveActivity}
+            onDeleteActivity={handleDeleteActivity}
+            onClearActivities={handleClearActivities}
+            onSaveSteps={handleSaveSteps}
+            onExportBackup={handleExportBackup}
+            onOpenGuide={() => setIsOnboardingOpen(true)}
           />
         )}
       </main>
 
-      {/* Floating Rest Timer */}
+      {/* Full-Screen Focus Takeover Rest Timer */}
       <FloatingRestTimer
         initialSeconds={restTimerState.seconds}
         isRunning={restTimerState.isRunning}
@@ -374,7 +357,7 @@ export const App: React.FC = () => {
         onCancel={() => setRestTimerState((prev) => ({ ...prev, isRunning: false }))}
       />
 
-      {/* Daily 1-10 Fatigue Modal */}
+      {/* Daily 1-10 Fatigue Modal (Alternative Trigger) */}
       <FatigueModal
         initialScore={currentFatigue}
         isOpen={isFatigueModalOpen}
@@ -390,7 +373,7 @@ export const App: React.FC = () => {
         onClose={handleDismissOnboarding}
       />
 
-      {/* Bottom iOS Navigation Bar */}
+      {/* iOS-Style 4-Tab Bottom Navigation Bar */}
       <Navbar
         currentTab={currentTab}
         onSelectTab={setCurrentTab}

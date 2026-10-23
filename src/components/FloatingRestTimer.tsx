@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Timer, Plus, Minus, X } from 'lucide-react';
+import { Timer, Plus, Minus, ChevronDown, Play, FastForward } from 'lucide-react';
 import { soundManager } from '../services/audioTimer';
 
 interface FloatingRestTimerProps {
@@ -19,10 +19,12 @@ export const FloatingRestTimer: React.FC<FloatingRestTimerProps> = ({
 }) => {
   const [secondsLeft, setSecondsLeft] = useState<number>(initialSeconds);
   const [totalSeconds, setTotalSeconds] = useState<number>(initialSeconds);
+  const [isMinimized, setIsMinimized] = useState<boolean>(false);
 
   useEffect(() => {
     setSecondsLeft(initialSeconds);
     setTotalSeconds(initialSeconds);
+    setIsMinimized(false);
   }, [initialSeconds]);
 
   useEffect(() => {
@@ -46,6 +48,7 @@ export const FloatingRestTimer: React.FC<FloatingRestTimerProps> = ({
   }, [isRunning, secondsLeft, onFinish]);
 
   if (!isRunning && secondsLeft <= 0) return null;
+  if (!isRunning) return null;
 
   const handleAdd30 = () => {
     soundManager.playTap();
@@ -53,9 +56,9 @@ export const FloatingRestTimer: React.FC<FloatingRestTimerProps> = ({
     setTotalSeconds((prev) => Math.max(prev, secondsLeft + 30));
   };
 
-  const handleSub30 = () => {
+  const handleSub15 = () => {
     soundManager.playTap();
-    setSecondsLeft((prev) => Math.max(0, prev - 30));
+    setSecondsLeft((prev) => Math.max(0, prev - 15));
   };
 
   const formatTime = (secs: number) => {
@@ -64,63 +67,110 @@ export const FloatingRestTimer: React.FC<FloatingRestTimerProps> = ({
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
-  const progressPercent = totalSeconds > 0 ? Math.max(0, Math.min(100, (secondsLeft / totalSeconds) * 100)) : 0;
+  const progressPercent = totalSeconds > 0 
+    ? Math.max(0, Math.min(100, (secondsLeft / totalSeconds) * 100)) 
+    : 0;
 
+  // Minimized floating pill mode
+  if (isMinimized) {
+    return (
+      <div className="fixed bottom-24 right-4 z-50 animate-slideUp">
+        <button
+          onClick={() => setIsMinimized(false)}
+          className="bg-white text-black border border-neutral-300 rounded-full px-4 py-2.5 shadow-2xl flex items-center gap-2 font-mono font-bold text-xs active:scale-95 transition-all"
+        >
+          <Timer className="w-4 h-4 text-black animate-pulse" />
+          <span>Resting: {formatTime(secondsLeft)}</span>
+        </button>
+      </div>
+    );
+  }
+
+  // Full Screen Takeover: Hides the noise of upcoming exercises so user can recover with zero cognitive overload
   return (
-    <div className="fixed bottom-20 left-4 right-4 z-40 max-w-sm mx-auto animate-slideUp">
-      <div className="bg-neutral-950 border border-neutral-700 rounded-xl p-3.5 shadow-2xl relative overflow-hidden text-left">
-        {/* Subtle monochrome progress line */}
-        <div 
-          className="absolute bottom-0 left-0 h-[2px] bg-white transition-all duration-1000"
-          style={{ width: `${progressPercent}%` }}
-        />
-
-        <div className="flex items-center justify-between gap-3">
-          {/* Timer Display */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-neutral-900 border border-neutral-750 flex items-center justify-center shrink-0">
-              <Timer className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <div className="flex items-baseline gap-1.5 font-mono">
-                <span className="text-2xl font-black text-white">
-                  {formatTime(secondsLeft)}
-                </span>
-                <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">REST</span>
-              </div>
-              <p className="text-[11px] text-neutral-400 font-mono truncate max-w-[130px]">
-                {exerciseName || 'Next Set Coming Up'}
-              </p>
-            </div>
-          </div>
-
-          {/* Controls */}
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={handleSub30}
-              className="p-2 rounded-lg bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-neutral-300 active:scale-95 transition-all text-xs font-mono"
-              title="-30s"
-            >
-              <Minus className="w-3.5 h-3.5" />
-            </button>
-
-            <button
-              onClick={handleAdd30}
-              className="p-2 rounded-lg bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-neutral-300 active:scale-95 transition-all text-xs font-mono"
-              title="+30s"
-            >
-              <Plus className="w-3.5 h-3.5" />
-            </button>
-
-            <button
-              onClick={onCancel}
-              className="p-2 rounded-lg border border-neutral-800 hover:border-neutral-700 text-neutral-400 hover:text-white active:scale-95 transition-all"
-              title="Skip Rest"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
+    <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col justify-between p-6 text-center animate-fadeIn select-none">
+      {/* Top Header Bar */}
+      <div className="flex items-center justify-between pt-[max(env(safe-area-inset-top,24px),24px)]">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-white animate-pulse" />
+          <span className="text-xs font-mono font-bold tracking-widest uppercase text-neutral-400">
+            Active Recovery Interval
+          </span>
         </div>
+
+        <button
+          onClick={() => setIsMinimized(true)}
+          className="text-xs font-mono text-neutral-400 hover:text-white px-2.5 py-1 rounded-lg border border-neutral-800 bg-neutral-900 transition-colors flex items-center gap-1"
+        >
+          <span>Peek Exercises</span>
+          <ChevronDown className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* Main Focus Center */}
+      <div className="my-auto space-y-6">
+        <div>
+          <span className="text-xs font-mono uppercase tracking-wider text-neutral-500 block">
+            Completed Set on:
+          </span>
+          <h2 className="text-lg font-bold text-white mt-1 font-mono tracking-tight">
+            {exerciseName || 'Current Movement'}
+          </h2>
+        </div>
+
+        {/* Big Digital Timer Display */}
+        <div className="relative py-4">
+          <div className="text-7xl sm:text-8xl font-black font-mono text-white tracking-tighter">
+            {formatTime(secondsLeft)}
+          </div>
+          <p className="text-xs text-neutral-400 mt-2 font-sans max-w-xs mx-auto">
+            Breathe deeply. Your nervous system is restoring ATP for your next heavy set.
+          </p>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="max-w-xs mx-auto w-full bg-neutral-900 h-2 rounded-full overflow-hidden border border-neutral-800">
+          <div 
+            className="h-full bg-white rounded-full transition-all duration-1000"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+
+        {/* Adjustment Buttons */}
+        <div className="flex items-center justify-center gap-3 pt-2">
+          <button
+            onClick={handleSub15}
+            className="px-4 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-850 border border-neutral-750 text-neutral-300 hover:text-white text-xs font-mono font-bold transition-all active:scale-95 flex items-center gap-1"
+          >
+            <Minus className="w-3.5 h-3.5" />
+            <span>-15s</span>
+          </button>
+
+          <button
+            onClick={handleAdd30}
+            className="px-4 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-850 border border-neutral-750 text-white text-xs font-mono font-bold transition-all active:scale-95 flex items-center gap-1"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>+30s Rest</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Bottom Primary Action Button */}
+      <div className="pb-[max(env(safe-area-inset-bottom,20px),20px)] max-w-sm mx-auto w-full space-y-2">
+        <button
+          onClick={() => {
+            soundManager.playTap();
+            onFinish();
+          }}
+          className="w-full py-4 rounded-xl bg-white text-black font-bold text-sm uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-[0.98] shadow-2xl flex items-center justify-center gap-2"
+        >
+          <FastForward className="w-4 h-4 fill-black" />
+          <span>Skip Rest & Start Next Set</span>
+        </button>
+        <p className="text-[11px] text-neutral-500 font-sans">
+          Next set will be highlighted immediately upon resuming.
+        </p>
       </div>
     </div>
   );

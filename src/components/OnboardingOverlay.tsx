@@ -19,11 +19,11 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
 }) => {
   const [step, setStep] = useState<number>(0);
 
-  // Form state - String based to prevent backspace/deletion bugs
+  // Form state - String based to prevent backspace/deletion bugs, empty by default
   const [gender, setGender] = useState<Gender>(profile.gender || 'male');
-  const [heightStr, setHeightStr] = useState<string>(profile.heightCm ? String(profile.heightCm) : '178');
-  const [currentWeightStr, setCurrentWeightStr] = useState<string>(profile.currentWeightKg ? String(profile.currentWeightKg) : '76.4');
-  const [desiredWeightStr, setDesiredWeightStr] = useState<string>(profile.desiredWeightKg ? String(profile.desiredWeightKg) : '76.5');
+  const [heightStr, setHeightStr] = useState<string>('');
+  const [currentWeightStr, setCurrentWeightStr] = useState<string>('');
+  const [desiredWeightStr, setDesiredWeightStr] = useState<string>('');
   const [selectedGoal, setSelectedGoal] = useState<FitnessGoal>(profile.fitnessGoal || 'body_recomposition');
   const [twoWeekTemplate, setTwoWeekTemplate] = useState<ShiftType[]>(
     profile.twoWeekTemplate || ROTA_PRESETS.fourOnThreeOff
@@ -156,7 +156,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                     step="any"
                     value={heightStr}
                     onChange={(e) => setHeightStr(e.target.value)}
-                    placeholder="178"
+                    placeholder="e.g. 178"
                     className="w-full bg-neutral-900 border border-neutral-750 rounded-lg px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white transition-colors"
                   />
                 </div>
@@ -169,7 +169,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                     step="any"
                     value={currentWeightStr}
                     onChange={(e) => setCurrentWeightStr(e.target.value)}
-                    placeholder="76.4"
+                    placeholder="e.g. 76.4"
                     className="w-full bg-neutral-900 border border-neutral-750 rounded-lg px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white transition-colors"
                   />
                 </div>
@@ -185,7 +185,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                   step="any"
                   value={desiredWeightStr}
                   onChange={(e) => setDesiredWeightStr(e.target.value)}
-                  placeholder="76.5"
+                  placeholder="e.g. 76.5"
                   className="w-full bg-neutral-900 border border-neutral-750 rounded-lg px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white transition-colors"
                 />
               </div>
