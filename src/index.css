@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    background-color: #000000;
+    color: #f5f5f5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Prevent 300ms tap delay on iOS mobile browsers */
+  button, 
+  a, 
+  input, 
+  select, 
+  textarea, 
+  [role="button"], 
+  [role="tab"] {
+    touch-action: manipulation;
+  }
+}
+
 @layer utilities {
   .pt-safe {
     /* Generous iOS safe area spacing with 48px baseline for dynamic island & notch clearance */

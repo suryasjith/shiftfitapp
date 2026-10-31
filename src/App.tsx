@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   UserProfile, 
   ShiftDay, 
@@ -29,7 +29,7 @@ export const App: React.FC = () => {
   const [isReady, setIsReady] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState<NavTab>('today');
   
-  const todayStr = RotaEngine.formatDate(new Date());
+  const todayStr = useMemo(() => RotaEngine.formatDate(new Date()), []);
 
   // Core App State
   const [profile, setProfile] = useState<UserProfile>(DEFAULT_PROFILE);
@@ -111,67 +111,76 @@ export const App: React.FC = () => {
     loadData();
   }, [todayStr]);
 
-  const handleDismissOnboarding = () => {
+  const handleDismissOnboarding = useCallback(() => {
     setIsOnboardingOpen(false);
     localStorage.setItem('shiftfit_onboarded_v2', 'true');
-  };
+  }, []);
 
-  const getTodayWorkout = (): WorkoutSession => {
+  // Memoized Workout Generation (Vercel React Best Practices)
+  const todayWorkout = useMemo(() => {
+    if (!isReady) return null;
     const existing = workouts[todayStr];
     if (existing) {
       return existing;
     }
     return RotaEngine.generateWorkoutForDate(todayStr, profile, customShifts, currentFatigue);
-  };
+  }, [isReady, workouts, todayStr, profile, customShifts, currentFatigue]);
 
-  const todayWorkout = isReady ? getTodayWorkout() : null;
   const todayNutrition = nutritions[todayStr] || null;
   const todayWeight = weights[todayStr] || null;
 
-  // Active Burn Calculation (Steps + Cardio Activities)
+  // Active Burn Calculation Memoized (Steps + Cardio Activities)
   const currentEffectiveWeightKg = todayWeight?.weightKg || profile.currentWeightKg || 76.4;
-  const stepBurn = ActivityEngine.calculateStepCalories(dailySteps?.stepCount || 0, currentEffectiveWeightKg).activeStepCalories;
-  const cardioBurn = activities.reduce((acc, a) => acc + (a.caloriesBurned || 0), 0);
+  const stepBurn = useMemo(() => {
+    return ActivityEngine.calculateStepCalories(dailySteps?.stepCount || 0, currentEffectiveWeightKg).activeStepCalories;
+  }, [dailySteps?.stepCount, currentEffectiveWeightKg]);
+
+  const cardioBurn = useMemo(() => {
+    return activities.reduce((acc, a) => acc + (a.caloriesBurned || 0), 0);
+  }, [activities]);
+
   const totalActiveBurn = stepBurn + cardioBurn;
 
-  // Handlers
-  const handleSaveWorkout = async (w: WorkoutSession) => {
+  // Stable Handlers (Vercel React Best Practices)
+  const handleSaveWorkout = useCallback(async (w: WorkoutSession) => {
     setWorkouts((prev) => ({ ...prev, [w.date]: w }));
     await storage.saveWorkout(w);
-  };
+  }, []);
 
-  const handleSaveWeight = async (entry: BodyweightEntry) => {
-    const updated = { ...weights, [entry.date]: entry };
-    setWeights(updated);
+  const handleSaveWeight = useCallback(async (entry: BodyweightEntry) => {
+    setWeights((prev) => ({ ...prev, [entry.date]: entry }));
     await storage.saveWeightEntry(entry);
     if (entry.date === todayStr) {
-      const updatedProfile = { ...profile, currentWeightKg: entry.weightKg };
-      setProfile(updatedProfile);
-      await storage.saveProfile(updatedProfile);
+      setProfile((prev) => {
+        const updatedProfile = { ...prev, currentWeightKg: entry.weightKg };
+        storage.saveProfile(updatedProfile);
+        return updatedProfile;
+      });
     }
-  };
+  }, [todayStr]);
 
-  const handleSaveNutrition = async (log: NutritionLog) => {
+  const handleSaveNutrition = useCallback(async (log: NutritionLog) => {
     setNutritions((prev) => ({ ...prev, [log.date]: log }));
     await storage.saveNutrition(log);
-  };
+  }, []);
 
-  const handleSaveHydration = async (log: HydrationLog) => {
+  const handleSaveHydration = useCallback(async (log: HydrationLog) => {
     setHydration(log);
     await storage.saveHydration(log);
-  };
+  }, []);
 
-  const handleSaveShift = async (shift: ShiftDay) => {
-    const updated = { ...customShifts, [shift.date]: shift };
-    setCustomShifts(updated);
-    await storage.saveShift(shift);
+  const handleSaveShift = useCallback(async (shift: ShiftDay) => {
+    setCustomShifts((prev) => {
+      const updated = { ...prev, [shift.date]: shift };
+      storage.saveShift(shift);
+      const recalculated = RotaEngine.generateWorkoutForDate(shift.date, profile, updated, currentFatigue);
+      setWorkouts((wPrev) => ({ ...wPrev, [shift.date]: recalculated }));
+      storage.saveWorkout(recalculated);
+      return updated;
+    });
+  }, [profile, currentFatigue]);
 
-    const recalculated = RotaEngine.generateWorkoutForDate(shift.date, profile, updated, currentFatigue);
-    setWorkouts((prev) => ({ ...prev, [shift.date]: recalculated }));
-    await storage.saveWorkout(recalculated);
-  };
-
-  const handleUpdateTemplate = async (newTemplate: ShiftType[]) => {
+  const handleUpdateTemplate = useCallback(async (newTemplate: ShiftType[]) => {
     const updatedProfile = { ...profile, twoWeekTemplate: newTemplate };
     setProfile(updatedProfile);
     await storage.saveProfile(updatedProfile);
@@ -180,9 +189,9 @@ export const App: React.FC = () => {
     const recalculated = RotaEngine.generateWorkoutForDate(todayStr, updatedProfile, customShifts, currentFatigue);
     setWorkouts((prev) => ({ ...prev, [todayStr]: recalculated }));
     await storage.saveWorkout(recalculated);
-  };
+  }, [profile, todayStr, customShifts, currentFatigue]);
 
-  const handleSaveFatigue = async (score: number) => {
+  const handleSaveFatigue = useCallback(async (score: number) => {
     setCurrentFatigue(score);
     setDailyFatigueLogs((prev) => ({ ...prev, [todayStr]: score }));
     await storage.saveDailyFatigue(todayStr, score);
@@ -190,29 +199,29 @@ export const App: React.FC = () => {
     const regenerated = RotaEngine.generateWorkoutForDate(todayStr, profile, customShifts, score);
     setWorkouts((prev) => ({ ...prev, [todayStr]: regenerated }));
     await storage.saveWorkout(regenerated);
-  };
+  }, [todayStr, profile, customShifts]);
 
-  const handleSaveActivity = async (activity: ActivityEntry) => {
+  const handleSaveActivity = useCallback(async (activity: ActivityEntry) => {
     const updated = await storage.saveActivity(activity);
     setActivities(updated);
-  };
+  }, []);
 
-  const handleDeleteActivity = async (id: string) => {
+  const handleDeleteActivity = useCallback(async (id: string) => {
     const updated = await storage.deleteActivity(id, todayStr);
     setActivities(updated);
-  };
+  }, [todayStr]);
 
-  const handleClearActivities = async () => {
+  const handleClearActivities = useCallback(async () => {
     await storage.clearActivitiesForDate(todayStr);
     setActivities([]);
-  };
+  }, [todayStr]);
 
-  const handleSaveSteps = async (entry: DailyStepsEntry) => {
+  const handleSaveSteps = useCallback(async (entry: DailyStepsEntry) => {
     await storage.saveSteps(entry);
     setDailySteps(entry);
-  };
+  }, []);
 
-  const handleUpdateProfile = async (p: UserProfile) => {
+  const handleUpdateProfile = useCallback(async (p: UserProfile) => {
     setProfile(p);
     await storage.saveProfile(p);
 
@@ -220,17 +229,17 @@ export const App: React.FC = () => {
     const recalculated = RotaEngine.generateWorkoutForDate(todayStr, p, customShifts, currentFatigue);
     setWorkouts((prev) => ({ ...prev, [todayStr]: recalculated }));
     await storage.saveWorkout(recalculated);
-  };
+  }, [todayStr, customShifts, currentFatigue]);
 
-  const handleStartRestTimer = (seconds: number, exerciseName: string) => {
+  const handleStartRestTimer = useCallback((seconds: number, exerciseName: string) => {
     setRestTimerState({
       isRunning: true,
       seconds,
       exerciseName,
     });
-  };
+  }, []);
 
-  const handleExportBackup = async () => {
+  const handleExportBackup = useCallback(async () => {
     const jsonStr = await storage.exportFullData();
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -239,16 +248,21 @@ export const App: React.FC = () => {
     a.download = `ShiftFit_Offline_Backup_${todayStr}.json`;
     a.click();
     URL.revokeObjectURL(url);
-  };
+  }, [todayStr]);
 
   if (!isReady) {
     return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-neutral-500 font-mono">
+      <div 
+        role="alert" 
+        aria-busy="true"
+        aria-label="Loading ShiftFit application"
+        className="min-h-screen bg-black flex flex-col items-center justify-center text-neutral-400 font-mono"
+      >
         <div className="w-10 h-10 rounded border border-neutral-700 bg-neutral-900 flex items-center justify-center font-bold text-white mb-2">
           SF
         </div>
         <p className="font-bold text-white text-xs">SHIFTFIT</p>
-        <p className="text-[10px] text-neutral-600 mt-0.5">Initializing Offline IndexedDB Engine...</p>
+        <p className="text-[10px] text-neutral-400 mt-0.5">Initializing Offline IndexedDB Engine...</p>
       </div>
     );
   }
@@ -264,87 +278,119 @@ export const App: React.FC = () => {
         onExportBackup={handleExportBackup}
       />
 
-      {/* Main Content Area: 4 Distinct iOS-Style Tabs */}
+      {/* Main Content Area: 4 Distinct Accessible Tabs */}
       <main className="flex-1 px-4 pt-3 pb-8">
         <InstallBanner />
 
         {/* Tab 1: Today Dashboard (Minimalist Focus) */}
         {currentTab === 'today' && (
-          <DashboardTab
-            todayStr={todayStr}
-            profile={profile}
-            customShifts={customShifts}
-            todayWorkout={todayWorkout}
-            todayNutrition={todayNutrition}
-            todayHydration={hydration}
-            todayWeight={todayWeight}
-            currentFatigue={currentFatigue}
-            onUpdateFatigue={handleSaveFatigue}
-            onNavigateTab={setCurrentTab}
-            onSaveWeight={(val) => handleSaveWeight({ date: todayStr, weightKg: val })}
-            onAddWater={(ml) => {
-              const current = hydration?.currentMl || 0;
-              handleSaveHydration({
-                date: todayStr,
-                targetMl: profile.dailyWaterTargetMl || 3800,
-                currentMl: current + ml,
-                drinks: [...(hydration?.drinks || []), { time: 'Now', amountMl: ml }],
-              });
-            }}
-          />
+          <div 
+            role="tabpanel" 
+            id="tabpanel-today" 
+            aria-labelledby="nav-tab-today"
+            tabIndex={0}
+            className="outline-none"
+          >
+            <DashboardTab
+              todayStr={todayStr}
+              profile={profile}
+              customShifts={customShifts}
+              todayWorkout={todayWorkout}
+              todayNutrition={todayNutrition}
+              todayHydration={hydration}
+              todayWeight={todayWeight}
+              currentFatigue={currentFatigue}
+              onUpdateFatigue={handleSaveFatigue}
+              onNavigateTab={setCurrentTab}
+              onSaveWeight={(val) => handleSaveWeight({ date: todayStr, weightKg: val })}
+              onAddWater={(ml) => {
+                const current = hydration?.currentMl || 0;
+                handleSaveHydration({
+                  date: todayStr,
+                  targetMl: profile.dailyWaterTargetMl || 3800,
+                  currentMl: current + ml,
+                  drinks: [...(hydration?.drinks || []), { time: 'Now', amountMl: ml }],
+                });
+              }}
+            />
+          </div>
         )}
 
         {/* Tab 2: Workout (Active Session & Collapsible 2-Week Rota) */}
         {currentTab === 'workout' && (
-          <WorkoutTab
-            todayStr={todayStr}
-            workout={todayWorkout}
-            profile={profile}
-            customShifts={customShifts}
-            currentFatigue={currentFatigue}
-            onSaveWorkout={handleSaveWorkout}
-            onStartRestTimer={handleStartRestTimer}
-            onOpenFatigueModal={() => setIsFatigueModalOpen(true)}
-            onSaveShift={handleSaveShift}
-            onUpdateTemplate={handleUpdateTemplate}
-          />
+          <div 
+            role="tabpanel" 
+            id="tabpanel-workout" 
+            aria-labelledby="nav-tab-workout"
+            tabIndex={0}
+            className="outline-none"
+          >
+            <WorkoutTab
+              todayStr={todayStr}
+              workout={todayWorkout}
+              profile={profile}
+              customShifts={customShifts}
+              currentFatigue={currentFatigue}
+              onSaveWorkout={handleSaveWorkout}
+              onStartRestTimer={handleStartRestTimer}
+              onOpenFatigueModal={() => setIsFatigueModalOpen(true)}
+              onSaveShift={handleSaveShift}
+              onUpdateTemplate={handleUpdateTemplate}
+            />
+          </div>
         )}
 
         {/* Tab 3: Fuel (Macros, Food Diary & Hydration) */}
         {currentTab === 'fuel' && (
-          <NutritionTab
-            todayStr={todayStr}
-            profile={profile}
-            customShifts={customShifts}
-            nutrition={todayNutrition}
-            hydration={hydration}
-            activeExpenditureCalories={totalActiveBurn}
-            onSaveNutrition={handleSaveNutrition}
-            onSaveHydration={handleSaveHydration}
-          />
+          <div 
+            role="tabpanel" 
+            id="tabpanel-fuel" 
+            aria-labelledby="nav-tab-fuel"
+            tabIndex={0}
+            className="outline-none"
+          >
+            <NutritionTab
+              todayStr={todayStr}
+              profile={profile}
+              customShifts={customShifts}
+              nutrition={todayNutrition}
+              hydration={hydration}
+              activeExpenditureCalories={totalActiveBurn}
+              onSaveNutrition={handleSaveNutrition}
+              onSaveHydration={handleSaveHydration}
+            />
+          </div>
         )}
 
         {/* Tab 4: Progress (Trends, Analytics, Cardio, Steps & Backup) */}
         {currentTab === 'progress' && (
-          <ProgressTab
-            todayStr={todayStr}
-            profile={profile}
-            weights={weights}
-            nutritions={nutritions}
-            workouts={workouts}
-            shifts={customShifts}
-            fatigueLogs={dailyFatigueLogs}
-            activities={activities}
-            dailySteps={dailySteps}
-            todayWeight={todayWeight}
-            onSaveWeight={handleSaveWeight}
-            onSaveActivity={handleSaveActivity}
-            onDeleteActivity={handleDeleteActivity}
-            onClearActivities={handleClearActivities}
-            onSaveSteps={handleSaveSteps}
-            onExportBackup={handleExportBackup}
-            onOpenGuide={() => setIsOnboardingOpen(true)}
-          />
+          <div 
+            role="tabpanel" 
+            id="tabpanel-progress" 
+            aria-labelledby="nav-tab-progress"
+            tabIndex={0}
+            className="outline-none"
+          >
+            <ProgressTab
+              todayStr={todayStr}
+              profile={profile}
+              weights={weights}
+              nutritions={nutritions}
+              workouts={workouts}
+              shifts={customShifts}
+              fatigueLogs={dailyFatigueLogs}
+              activities={activities}
+              dailySteps={dailySteps}
+              todayWeight={todayWeight}
+              onSaveWeight={handleSaveWeight}
+              onSaveActivity={handleSaveActivity}
+              onDeleteActivity={handleDeleteActivity}
+              onClearActivities={handleClearActivities}
+              onSaveSteps={handleSaveSteps}
+              onExportBackup={handleExportBackup}
+              onOpenGuide={() => setIsOnboardingOpen(true)}
+            />
+          </div>
         )}
       </main>
 

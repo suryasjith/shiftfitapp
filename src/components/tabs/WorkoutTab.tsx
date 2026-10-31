@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { 
   WorkoutSession, 
-  ExerciseLog, 
   SetLog, 
   ExerciseDefinition,
   UserProfile,
@@ -18,7 +17,6 @@ import {
   ArrowRightLeft, 
   Plus, 
   Trash2, 
-  Activity, 
   ChevronDown, 
   ChevronUp,
   RotateCcw,
@@ -51,7 +49,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
   currentFatigue,
   onSaveWorkout,
   onStartRestTimer,
-  onOpenFatigueModal,
+  onOpenFatigueModal: _onOpenFatigueModal,
   onSaveShift,
   onUpdateTemplate,
 }) => {
@@ -62,100 +60,113 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
   const [showRotaManager, setShowRotaManager] = useState<boolean>(false);
   const [showTimingManager, setShowTimingManager] = useState<boolean>(false);
 
-  const dayInfo = RotaEngine.getDayInfo(todayStr, profile, customShifts);
+  const dayInfo = useMemo(() => {
+    return RotaEngine.getDayInfo(todayStr, profile, customShifts);
+  }, [todayStr, profile, customShifts]);
 
-  if (!workout) {
-    return (
-      <div className="p-8 text-center text-neutral-500 font-sans space-y-3">
-        <Dumbbell className="w-12 h-12 mx-auto text-neutral-700" />
-        <h3 className="font-bold text-white text-sm">No Workout Loaded</h3>
-        <p className="text-xs text-neutral-400 max-w-xs mx-auto">
-          Tap "Manage Shift Rota" below to verify your 4-on / 3-off shift pattern.
-        </p>
-      </div>
-    );
-  }
-
-  const handleToggleSetComplete = (exIdx: number, setIdx: number) => {
+  // Fast immutable set completion (Vercel React Best Practices - zero JSON GC lag)
+  const handleToggleSetComplete = useCallback((exIdx: number, setIdx: number) => {
+    if (!workout) return;
     soundManager.playTap();
-    const updatedWorkout: WorkoutSession = JSON.parse(JSON.stringify(workout));
-    const targetSet = updatedWorkout.exercises[exIdx].sets[setIdx];
-    const willBeComplete = !targetSet.completed;
-    targetSet.completed = willBeComplete;
+    let restSecs = 90;
+    let exName = '';
+    let willBeComplete = false;
+
+    const newExercises = workout.exercises.map((ex, eIdx) => {
+      if (eIdx !== exIdx) return ex;
+      const newSets = ex.sets.map((s, sIdx) => {
+        if (sIdx !== setIdx) return s;
+        willBeComplete = !s.completed;
+        return { ...s, completed: willBeComplete };
+      });
+      restSecs = ex.restSecs || 90;
+      exName = ex.selectedAlternative || ex.exerciseName;
+      return { ...ex, sets: newSets };
+    });
 
     if (willBeComplete) {
-      const restSecs = updatedWorkout.exercises[exIdx].restSecs || 90;
-      const exName = updatedWorkout.exercises[exIdx].selectedAlternative || updatedWorkout.exercises[exIdx].exerciseName;
       onStartRestTimer(restSecs, `${exName} (Set ${setIdx + 1})`);
     }
 
-    const allSetsComplete = updatedWorkout.exercises.every(ex => 
-      ex.sets.every(s => s.completed)
-    );
-    if (allSetsComplete && !updatedWorkout.completed) {
-      updatedWorkout.completed = true;
+    const allSetsComplete = newExercises.every(ex => ex.sets.every(s => s.completed));
+    if (allSetsComplete && !workout.completed) {
       setCompletedCelebration(true);
       soundManager.playCompleteChime();
     }
 
-    onSaveWorkout(updatedWorkout);
-  };
+    onSaveWorkout({
+      ...workout,
+      exercises: newExercises,
+      completed: allSetsComplete ? true : workout.completed,
+    });
+  }, [workout, onStartRestTimer, onSaveWorkout]);
 
-  const handleUpdateSetValue = (exIdx: number, setIdx: number, field: 'weightKg' | 'reps', value: number) => {
-    const updatedWorkout: WorkoutSession = JSON.parse(JSON.stringify(workout));
-    updatedWorkout.exercises[exIdx].sets[setIdx][field] = value;
-    onSaveWorkout(updatedWorkout);
-  };
+  const handleUpdateSetValue = useCallback((exIdx: number, setIdx: number, field: 'weightKg' | 'reps', value: number) => {
+    if (!workout) return;
+    const newExercises = workout.exercises.map((ex, eIdx) => {
+      if (eIdx !== exIdx) return ex;
+      const newSets = ex.sets.map((s, sIdx) => {
+        if (sIdx !== setIdx) return s;
+        return { ...s, [field]: value };
+      });
+      return { ...ex, sets: newSets };
+    });
+    onSaveWorkout({ ...workout, exercises: newExercises });
+  }, [workout, onSaveWorkout]);
 
-  const handleAddSet = (exIdx: number) => {
+  const handleAddSet = useCallback((exIdx: number) => {
+    if (!workout) return;
     soundManager.playTap();
-    const updatedWorkout: WorkoutSession = JSON.parse(JSON.stringify(workout));
-    const ex = updatedWorkout.exercises[exIdx];
-    const lastSet = ex.sets[ex.sets.length - 1];
-    const newSet: SetLog = {
-      setNumber: ex.sets.length + 1,
-      weightKg: lastSet && lastSet.weightKg > 0 ? lastSet.weightKg : 0,
-      reps: lastSet && lastSet.reps > 0 ? lastSet.reps : 0,
-      completed: false,
-    };
-    ex.sets.push(newSet);
-    onSaveWorkout(updatedWorkout);
-  };
+    const newExercises = workout.exercises.map((ex, eIdx) => {
+      if (eIdx !== exIdx) return ex;
+      const lastSet = ex.sets[ex.sets.length - 1];
+      const newSet: SetLog = {
+        setNumber: ex.sets.length + 1,
+        weightKg: lastSet && lastSet.weightKg > 0 ? lastSet.weightKg : 0,
+        reps: lastSet && lastSet.reps > 0 ? lastSet.reps : 0,
+        completed: false,
+      };
+      return { ...ex, sets: [...ex.sets, newSet] };
+    });
+    onSaveWorkout({ ...workout, exercises: newExercises });
+  }, [workout, onSaveWorkout]);
 
-  const handleRemoveSet = (exIdx: number, setIdx: number) => {
+  const handleRemoveSet = useCallback((exIdx: number, setIdx: number) => {
+    if (!workout) return;
     soundManager.playTap();
-    const updatedWorkout: WorkoutSession = JSON.parse(JSON.stringify(workout));
-    const ex = updatedWorkout.exercises[exIdx];
-    if (ex.sets.length > 1) {
-      ex.sets.splice(setIdx, 1);
-      ex.sets.forEach((s, i) => s.setNumber = i + 1);
-      onSaveWorkout(updatedWorkout);
-    }
-  };
+    const newExercises = workout.exercises.map((ex, eIdx) => {
+      if (eIdx !== exIdx) return ex;
+      if (ex.sets.length <= 1) return ex;
+      const filtered = ex.sets.filter((_, sIdx) => sIdx !== setIdx).map((s, i) => ({ ...s, setNumber: i + 1 }));
+      return { ...ex, sets: filtered };
+    });
+    onSaveWorkout({ ...workout, exercises: newExercises });
+  }, [workout, onSaveWorkout]);
 
-  const handleSelectAlternative = (altName: string) => {
-    if (activeSwapExerciseIndex === null) return;
+  const handleSelectAlternative = useCallback((altName: string) => {
+    if (!workout || activeSwapExerciseIndex === null) return;
     soundManager.playTap();
-    const updatedWorkout: WorkoutSession = JSON.parse(JSON.stringify(workout));
-    const ex = updatedWorkout.exercises[activeSwapExerciseIndex];
-    if (altName) {
-      ex.selectedAlternative = altName;
-      ex.equipmentTaken = true;
-    } else {
-      delete ex.selectedAlternative;
-      ex.equipmentTaken = false;
-    }
-    onSaveWorkout(updatedWorkout);
+    const newExercises = workout.exercises.map((ex, eIdx) => {
+      if (eIdx !== activeSwapExerciseIndex) return ex;
+      if (altName) {
+        return { ...ex, selectedAlternative: altName, equipmentTaken: true };
+      } else {
+        const copy = { ...ex, equipmentTaken: false };
+        delete copy.selectedAlternative;
+        return copy;
+      }
+    });
+    onSaveWorkout({ ...workout, exercises: newExercises });
     setActiveSwapExerciseIndex(null);
-  };
+  }, [workout, activeSwapExerciseIndex, onSaveWorkout]);
 
   // Timing handlers
-  const handleUpdateTiming = (
+  const handleUpdateTiming = useCallback((
     field: 'startTime' | 'endTime' | 'actualDurationMin',
     value: any
   ) => {
-    const updatedWorkout: WorkoutSession = JSON.parse(JSON.stringify(workout));
-    (updatedWorkout as any)[field] = value;
+    if (!workout) return;
+    const updatedWorkout: WorkoutSession = { ...workout, [field]: value };
 
     const start = field === 'startTime' ? value : updatedWorkout.startTime;
     const end = field === 'endTime' ? value : updatedWorkout.endTime;
@@ -171,58 +182,85 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
     }
 
     onSaveWorkout(updatedWorkout);
-  };
+  }, [workout, onSaveWorkout]);
 
-  const handleSetTimeToNow = (field: 'startTime' | 'endTime') => {
+  const handleSetTimeToNow = useCallback((field: 'startTime' | 'endTime') => {
     soundManager.playTap();
     const now = new Date();
     const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
     handleUpdateTiming(field, timeStr);
-  };
+  }, [handleUpdateTiming]);
 
-  const handleStartFreshWorkout = () => {
+  const handleStartFreshWorkout = useCallback(() => {
+    if (!workout) return;
     soundManager.playTap();
-    const resetWorkout: WorkoutSession = JSON.parse(JSON.stringify(workout));
-    resetWorkout.completed = false;
-    resetWorkout.startTime = '';
-    resetWorkout.endTime = '';
-    resetWorkout.actualDurationMin = undefined;
-    resetWorkout.totalTonnageKg = 0;
-    resetWorkout.exercises.forEach((ex) => {
-      ex.sets.forEach((s) => {
-        s.completed = false;
-      });
-    });
+    const resetWorkout: WorkoutSession = {
+      ...workout,
+      completed: false,
+      startTime: '',
+      endTime: '',
+      actualDurationMin: undefined,
+      totalTonnageKg: 0,
+      exercises: workout.exercises.map((ex) => ({
+        ...ex,
+        sets: ex.sets.map((s) => ({ ...s, completed: false })),
+      })),
+    };
     onSaveWorkout(resetWorkout);
     setShowResetConfirm(false);
-  };
+  }, [workout, onSaveWorkout]);
 
-  const swapDef: ExerciseDefinition | undefined = 
-    activeSwapExerciseIndex !== null 
-      ? EXERCISE_DATABASE[workout.exercises[activeSwapExerciseIndex]?.exerciseId]
-      : undefined;
+  const swapDef: ExerciseDefinition | undefined = useMemo(() => {
+    if (!workout || activeSwapExerciseIndex === null) return undefined;
+    return EXERCISE_DATABASE[workout.exercises[activeSwapExerciseIndex]?.exerciseId];
+  }, [workout, activeSwapExerciseIndex]);
 
-  let currentTonnage = 0;
-  let totalSetsCount = 0;
-  let completedSetsCount = 0;
-  workout.exercises.forEach(ex => {
-    ex.sets.forEach(s => {
-      totalSetsCount++;
-      if (s.completed) {
-        completedSetsCount++;
-        currentTonnage += (s.weightKg || 0) * (s.reps || 0);
-      }
-    });
-  });
+  // Memoized stats calculation
+  const { currentTonnage, totalSetsCount, completedSetsCount } = useMemo(() => {
+    let tonnage = 0;
+    let totalSets = 0;
+    let completedSets = 0;
+    if (workout) {
+      workout.exercises.forEach((ex) => {
+        ex.sets.forEach((s) => {
+          totalSets++;
+          if (s.completed) {
+            completedSets++;
+            tonnage += (s.weightKg || 0) * (s.reps || 0);
+          }
+        });
+      });
+    }
+    return { currentTonnage: tonnage, totalSetsCount: totalSets, completedSetsCount: completedSets };
+  }, [workout]);
+
+  if (!workout) {
+    return (
+      <div 
+        role="region"
+        aria-label="No Workout Loaded"
+        className="p-8 text-center text-neutral-400 font-sans space-y-3"
+      >
+        <Dumbbell className="w-12 h-12 mx-auto text-neutral-600" aria-hidden="true" />
+        <h3 className="font-bold text-white text-sm">No Workout Loaded</h3>
+        <p className="text-xs text-neutral-400 max-w-xs mx-auto">
+          Tap "Manage Shift Rota" below to verify your 4-on / 3-off shift pattern.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 pb-28 text-left animate-fadeIn font-sans">
       {/* 1. Workout Session Header Card */}
-      <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4">
+      <section 
+        aria-labelledby="active-session-title"
+        className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
+      >
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 flex-wrap mb-1">
-              <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-neutral-700 bg-neutral-900 text-neutral-300 uppercase tracking-wider">
+              <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-neutral-700 bg-neutral-900 text-neutral-200 uppercase tracking-wider">
                 {workout.intensity}
               </span>
               <span className="text-xs text-neutral-400 font-mono">
@@ -230,7 +268,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
               </span>
             </div>
 
-            <h2 className="text-xl font-bold text-white tracking-tight mt-1">
+            <h2 id="active-session-title" className="text-xl font-bold text-white tracking-tight mt-1">
               {workout.title}
             </h2>
             <p className="text-xs text-neutral-400 mt-0.5">
@@ -238,39 +276,44 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
             </p>
           </div>
 
-          {/* Action: Start Fresh Button */}
+          {/* Action: Start Fresh Button (min 44px touch target) */}
           <button
             onClick={() => setShowResetConfirm(true)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-white text-xs font-medium transition-all active:scale-95 shrink-0"
-            title="Reset all inputs for a new session"
+            aria-label="Reset all sets and timers to start a fresh workout session"
+            className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-xl border border-neutral-800 bg-neutral-900 text-neutral-300 hover:text-white text-xs font-medium transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-white"
           >
-            <RotateCcw className="w-3.5 h-3.5 text-neutral-400" />
+            <RotateCcw className="w-3.5 h-3.5 text-neutral-400" aria-hidden="true" />
             <span>Start Fresh</span>
           </button>
         </div>
 
         {/* Start Fresh Confirmation Dialog */}
         {showResetConfirm && (
-          <div className="p-3.5 rounded-xl bg-neutral-900 border border-neutral-700 space-y-2 animate-fadeIn">
+          <div 
+            role="alertdialog"
+            aria-labelledby="reset-dialog-title"
+            aria-describedby="reset-dialog-desc"
+            className="p-4 rounded-xl bg-neutral-900 border border-neutral-700 space-y-2 animate-fadeIn"
+          >
             <div className="flex items-center gap-2 text-xs text-white font-bold">
-              <AlertCircle className="w-4 h-4 text-neutral-300" />
-              <span>Reset today's session to start clean?</span>
+              <AlertCircle className="w-4 h-4 text-neutral-300" aria-hidden="true" />
+              <span id="reset-dialog-title">Reset today's session to start clean?</span>
             </div>
-            <p className="text-xs text-neutral-400">
+            <p id="reset-dialog-desc" className="text-xs text-neutral-300">
               This unchecks all sets and resets timestamps so you can log from scratch.
             </p>
-            <div className="flex justify-end gap-2 pt-1">
+            <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setShowResetConfirm(false)}
-                className="px-3 py-1.5 rounded-lg border border-neutral-750 text-neutral-300 text-xs hover:text-white"
+                className="min-h-[44px] px-3.5 py-2 rounded-lg border border-neutral-750 text-neutral-200 text-xs hover:text-white"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleStartFreshWorkout}
-                className="px-3 py-1.5 rounded-lg bg-white text-black font-bold text-xs hover:bg-neutral-200"
+                className="min-h-[44px] px-4 py-2 rounded-lg bg-white text-black font-bold text-xs hover:bg-neutral-200"
               >
                 Confirm Reset
               </button>
@@ -281,38 +324,43 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
         {/* High-level progress counts */}
         <div className="pt-3 border-t border-neutral-850 grid grid-cols-3 gap-2 text-center font-mono">
           <div className="bg-neutral-900 p-2.5 rounded-xl border border-neutral-800">
-            <span className="text-[10px] text-neutral-500 uppercase font-bold block">Sets Done</span>
+            <span className="text-[10px] text-neutral-400 uppercase font-bold block">Sets Done</span>
             <span className="text-sm font-bold text-white mt-0.5 block">
               {completedSetsCount} / {totalSetsCount}
             </span>
           </div>
 
           <div className="bg-neutral-900 p-2.5 rounded-xl border border-neutral-800">
-            <span className="text-[10px] text-neutral-500 uppercase font-bold block">Total Work</span>
+            <span className="text-[10px] text-neutral-400 uppercase font-bold block">Total Work</span>
             <span className="text-sm font-bold text-white mt-0.5 block">
-              {Math.round(currentTonnage).toLocaleString()} <span className="text-[10px] text-neutral-500">kg</span>
+              {Math.round(currentTonnage).toLocaleString()} <span className="text-[10px] text-neutral-400">kg</span>
             </span>
           </div>
 
           <div className="bg-neutral-900 p-2.5 rounded-xl border border-neutral-800">
-            <span className="text-[10px] text-neutral-500 uppercase font-bold block">Target</span>
-            <span className="text-sm font-bold text-neutral-300 mt-0.5 block">
-              75–78 <span className="text-[10px] text-neutral-500">kg</span>
+            <span className="text-[10px] text-neutral-400 uppercase font-bold block">Target</span>
+            <span className="text-sm font-bold text-neutral-200 mt-0.5 block">
+              75–78 <span className="text-[10px] text-neutral-400">kg</span>
             </span>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* 2. PROGRESSIVE DISCLOSURE: Manage 2-Week Shift Calendar (Collapsed by Default) */}
-      <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-4 shadow-sm">
+      {/* 2. PROGRESSIVE DISCLOSURE: Manage 2-Week Shift Calendar */}
+      <section 
+        aria-label="Shift Rota Management"
+        className="rounded-2xl border border-neutral-800 bg-neutral-950 p-4 shadow-sm"
+      >
         <button
           type="button"
           onClick={() => setShowRotaManager(!showRotaManager)}
-          className="w-full flex items-center justify-between text-left"
+          aria-expanded={showRotaManager}
+          aria-controls="shift-rota-container"
+          className="min-h-[44px] w-full flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-white rounded-xl"
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white shrink-0">
-              <Calendar className="w-4 h-4 text-white" />
+              <Calendar className="w-4 h-4 text-white" aria-hidden="true" />
             </div>
             <div>
               <span className="text-xs font-bold text-white uppercase tracking-wider block">
@@ -326,12 +374,12 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
 
           <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-mono shrink-0">
             <span>{showRotaManager ? 'Collapse' : 'Manage'}</span>
-            {showRotaManager ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {showRotaManager ? <ChevronUp className="w-4 h-4" aria-hidden="true" /> : <ChevronDown className="w-4 h-4" aria-hidden="true" />}
           </div>
         </button>
 
         {showRotaManager && onSaveShift && onUpdateTemplate && (
-          <div className="mt-4 pt-4 border-t border-neutral-850 animate-fadeIn">
+          <div id="shift-rota-container" className="mt-4 pt-4 border-t border-neutral-850 animate-fadeIn">
             <ScheduleTab
               todayStr={todayStr}
               profile={profile}
@@ -342,18 +390,23 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
             />
           </div>
         )}
-      </div>
+      </section>
 
-      {/* 3. PROGRESSIVE DISCLOSURE: Session Timing (Collapsed by Default) */}
-      <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-4 shadow-sm">
+      {/* 3. PROGRESSIVE DISCLOSURE: Session Timing */}
+      <section 
+        aria-label="Session Duration & Timestamps"
+        className="rounded-2xl border border-neutral-800 bg-neutral-950 p-4 shadow-sm"
+      >
         <button
           type="button"
           onClick={() => setShowTimingManager(!showTimingManager)}
-          className="w-full flex items-center justify-between text-left"
+          aria-expanded={showTimingManager}
+          aria-controls="timing-container"
+          className="min-h-[44px] w-full flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-white rounded-xl"
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white shrink-0">
-              <Clock className="w-4 h-4 text-white" />
+              <Clock className="w-4 h-4 text-white" aria-hidden="true" />
             </div>
             <div>
               <span className="text-xs font-bold text-white uppercase tracking-wider block">
@@ -369,27 +422,29 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
 
           <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-mono shrink-0">
             <span>{showTimingManager ? 'Hide' : 'Set Time'}</span>
-            {showTimingManager ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {showTimingManager ? <ChevronUp className="w-4 h-4" aria-hidden="true" /> : <ChevronDown className="w-4 h-4" aria-hidden="true" />}
           </div>
         </button>
 
         {showTimingManager && (
-          <div className="mt-4 pt-4 border-t border-neutral-850 grid grid-cols-3 gap-2.5 animate-fadeIn font-mono">
+          <div id="timing-container" className="mt-4 pt-4 border-t border-neutral-850 grid grid-cols-3 gap-2.5 animate-fadeIn font-mono">
             <div>
-              <label className="text-[9px] uppercase font-bold text-neutral-500 block mb-1">
+              <label htmlFor="workout-start-time" className="text-[9px] uppercase font-bold text-neutral-400 block mb-1">
                 Start Time
               </label>
               <div className="flex items-center gap-1">
                 <input
+                  id="workout-start-time"
                   type="time"
                   value={workout.startTime || ''}
                   onChange={(e) => handleUpdateTiming('startTime', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-750 rounded-lg px-2 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-white"
+                  className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-lg px-2 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-white"
                 />
                 <button
                   type="button"
                   onClick={() => handleSetTimeToNow('startTime')}
-                  className="px-2 py-1.5 text-[9px] rounded-lg bg-neutral-850 hover:bg-neutral-800 text-neutral-300 hover:text-white border border-neutral-750 active:scale-95"
+                  aria-label="Set workout start time to current time"
+                  className="min-h-[44px] px-2.5 py-1.5 text-[10px] font-bold rounded-lg bg-neutral-850 hover:bg-neutral-800 text-neutral-200 hover:text-white border border-neutral-750 active:scale-95"
                 >
                   Now
                 </button>
@@ -397,20 +452,22 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
             </div>
 
             <div>
-              <label className="text-[9px] uppercase font-bold text-neutral-500 block mb-1">
+              <label htmlFor="workout-end-time" className="text-[9px] uppercase font-bold text-neutral-400 block mb-1">
                 End Time
               </label>
               <div className="flex items-center gap-1">
                 <input
+                  id="workout-end-time"
                   type="time"
                   value={workout.endTime || ''}
                   onChange={(e) => handleUpdateTiming('endTime', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-750 rounded-lg px-2 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-white"
+                  className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-lg px-2 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-white"
                 />
                 <button
                   type="button"
                   onClick={() => handleSetTimeToNow('endTime')}
-                  className="px-2 py-1.5 text-[9px] rounded-lg bg-neutral-850 hover:bg-neutral-800 text-neutral-300 hover:text-white border border-neutral-750 active:scale-95"
+                  aria-label="Set workout end time to current time"
+                  className="min-h-[44px] px-2.5 py-1.5 text-[10px] font-bold rounded-lg bg-neutral-850 hover:bg-neutral-800 text-neutral-200 hover:text-white border border-neutral-750 active:scale-95"
                 >
                   Now
                 </button>
@@ -418,10 +475,11 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
             </div>
 
             <div>
-              <label className="text-[9px] uppercase font-bold text-neutral-500 block mb-1">
+              <label htmlFor="workout-duration-min" className="text-[9px] uppercase font-bold text-neutral-400 block mb-1">
                 Duration (min)
               </label>
               <input
+                id="workout-duration-min"
                 type="number"
                 min="0"
                 max="300"
@@ -431,26 +489,34 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                   handleUpdateTiming('actualDurationMin', isNaN(val as number) ? undefined : val);
                 }}
                 placeholder="e.g. 50"
-                className="w-full bg-neutral-900 border border-neutral-750 rounded-lg px-2 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-white text-center"
+                className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-lg px-2 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-white text-center"
               />
             </div>
           </div>
         )}
-      </div>
+      </section>
 
       {/* 4. Empty State Guidance Banner (if 0 sets completed yet) */}
       {completedSetsCount === 0 && (
-        <div className="p-4 rounded-2xl bg-neutral-900/60 border border-neutral-800 flex items-start gap-3">
-          <Info className="w-5 h-5 text-neutral-400 shrink-0 mt-0.5" />
+        <div 
+          role="note" 
+          aria-label="Workout guidance"
+          className="p-4 rounded-2xl bg-neutral-900/60 border border-neutral-800 flex items-start gap-3"
+        >
+          <Info className="w-5 h-5 text-neutral-400 shrink-0 mt-0.5" aria-hidden="true" />
           <div className="text-xs text-neutral-300 leading-relaxed">
             <strong className="text-white block mb-0.5">Ready to Train:</strong>
-            Tap Exercise #1 below, type your weight and reps, then tap <strong className="text-white">Complete Set</strong>. The countdown rest timer will automatically guide your recovery.
+            Tap Exercise #1 below, type your weight and reps, then tap <strong className="text-white">Complete</strong>. The countdown rest timer will automatically guide your recovery.
           </div>
         </div>
       )}
 
       {/* 5. Exercises List with Obvious Action Verbs & Progressive Disclosure */}
-      <div className="space-y-3">
+      <div 
+        role="feed"
+        aria-label="Scheduled Exercises"
+        className="space-y-3"
+      >
         {workout.exercises.map((ex, exIdx) => {
           const def = EXERCISE_DATABASE[ex.exerciseId];
           const isExpanded = expandedExerciseIndex === exIdx;
@@ -459,8 +525,9 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
           const displayName = ex.selectedAlternative || ex.exerciseName;
 
           return (
-            <div 
+            <article 
               key={exIdx}
+              aria-labelledby={`exercise-name-${exIdx}`}
               className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                 isDone 
                   ? 'bg-neutral-950 border-neutral-750' 
@@ -470,22 +537,26 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
               }`}
             >
               {/* Exercise Accordion Bar */}
-              <div 
-                className="p-4 flex items-start justify-between cursor-pointer hover:bg-neutral-900/70 transition-colors"
+              <button 
+                type="button"
+                id={`exercise-header-${exIdx}`}
+                aria-expanded={isExpanded}
+                aria-controls={`exercise-panel-${exIdx}`}
+                className="w-full min-h-[48px] p-4 flex items-start justify-between text-left hover:bg-neutral-900/70 transition-colors focus:outline-none focus:ring-2 focus:ring-white"
                 onClick={() => setExpandedExerciseIndex(isExpanded ? null : exIdx)}
               >
                 <div className="flex items-start gap-3">
                   <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold font-mono mt-0.5 shrink-0 ${
                     isDone 
                       ? 'bg-white text-black' 
-                      : 'bg-neutral-900 text-neutral-400 border border-neutral-800'
+                      : 'bg-neutral-900 text-neutral-300 border border-neutral-800'
                   }`}>
-                    {isDone ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : exIdx + 1}
+                    {isDone ? <Check className="w-3.5 h-3.5 stroke-[3]" aria-hidden="true" /> : exIdx + 1}
                   </span>
 
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-sm font-bold text-white tracking-tight">
+                      <h3 id={`exercise-name-${exIdx}`} className="text-sm font-bold text-white tracking-tight">
                         {displayName}
                       </h3>
                       {ex.equipmentTaken && (
@@ -501,32 +572,33 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-xs font-mono font-bold text-neutral-400">
+                  <span className="text-xs font-mono font-bold text-neutral-300">
                     {completedCount}/{ex.sets.length} sets
                   </span>
                   {isExpanded ? (
-                    <ChevronUp className="w-4 h-4 text-neutral-400" />
+                    <ChevronUp className="w-4 h-4 text-neutral-400" aria-hidden="true" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-neutral-400" />
+                    <ChevronDown className="w-4 h-4 text-neutral-400" aria-hidden="true" />
                   )}
                 </div>
-              </div>
+              </button>
 
               {/* Expanded Set Logger */}
               {isExpanded && (
-                <div className="px-4 pb-4 pt-2 border-t border-neutral-850 space-y-3">
+                <div id={`exercise-panel-${exIdx}`} className="px-4 pb-4 pt-2 border-t border-neutral-850 space-y-3">
                   <div className="flex items-center justify-between gap-2 pt-1">
-                    <span className="text-xs text-neutral-500 font-mono truncate max-w-[180px]">
+                    <span className="text-xs text-neutral-400 font-mono truncate max-w-[180px]">
                       {def?.primaryEquipment || 'Free weights'}
                     </span>
 
-                    {/* Swap Exercise Button (Obvious Action Verb) */}
+                    {/* Swap Exercise Button (min 44px touch target) */}
                     <button
                       type="button"
                       onClick={() => setActiveSwapExerciseIndex(exIdx)}
-                      className="px-2.5 py-1.5 rounded-lg border border-neutral-750 bg-neutral-900 hover:border-neutral-500 text-white text-xs font-medium flex items-center gap-1.5 active:scale-95 transition-all"
+                      aria-label={`Swap ${displayName} with alternate equipment or movement`}
+                      className="min-h-[44px] px-3 py-1.5 rounded-lg border border-neutral-750 bg-neutral-900 hover:border-neutral-500 text-white text-xs font-medium flex items-center gap-1.5 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-white"
                     >
-                      <ArrowRightLeft className="w-3.5 h-3.5 text-neutral-300" />
+                      <ArrowRightLeft className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
                       <span>Swap Exercise</span>
                     </button>
                   </div>
@@ -538,9 +610,9 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                     </div>
                   )}
 
-                  {/* Granular Sets Table with Novice-Proof Placeholders */}
+                  {/* Granular Sets Table with Accessible Labels */}
                   <div className="space-y-2">
-                    <div className="grid grid-cols-12 gap-2 text-[10px] uppercase font-mono font-bold text-neutral-500 px-1">
+                    <div className="grid grid-cols-12 gap-2 text-[10px] uppercase font-mono font-bold text-neutral-400 px-1">
                       <div className="col-span-2 text-center">Set</div>
                       <div className="col-span-4 text-center">Weight</div>
                       <div className="col-span-3 text-center">Reps</div>
@@ -564,41 +636,49 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                           </div>
 
                           <div className="col-span-4">
+                            <label htmlFor={`ex-${exIdx}-set-${setIdx}-weight`} className="sr-only">
+                              Set {setIdx + 1} Weight in kg
+                            </label>
                             <input
+                              id={`ex-${exIdx}-set-${setIdx}-weight`}
                               type="number"
                               step="any"
                               value={set.weightKg === 0 || set.weightKg === undefined ? '' : set.weightKg}
                               onChange={(e) => handleUpdateSetValue(exIdx, setIdx, 'weightKg', e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
                               placeholder="Weight (kg)"
-                              className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1.5 text-center font-mono text-xs font-bold text-white placeholder-neutral-600 focus:outline-none focus:border-white transition-colors"
+                              className="w-full min-h-[44px] bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1.5 text-center font-mono text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white transition-colors"
                             />
                           </div>
 
                           <div className="col-span-3">
+                            <label htmlFor={`ex-${exIdx}-set-${setIdx}-reps`} className="sr-only">
+                              Set {setIdx + 1} Repetitions
+                            </label>
                             <input
+                              id={`ex-${exIdx}-set-${setIdx}-reps`}
                               type="number"
                               step="1"
                               value={set.reps === 0 || set.reps === undefined ? '' : set.reps}
                               onChange={(e) => handleUpdateSetValue(exIdx, setIdx, 'reps', e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0)}
                               placeholder="Reps"
-                              className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1.5 text-center font-mono text-xs font-bold text-white placeholder-neutral-600 focus:outline-none focus:border-white transition-colors"
+                              className="w-full min-h-[44px] bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1.5 text-center font-mono text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white transition-colors"
                             />
                           </div>
 
                           <div className="col-span-3 flex justify-center">
-                            {/* Obvious Plain-English Set Action Button */}
                             <button
                               type="button"
                               onClick={() => handleToggleSetComplete(exIdx, setIdx)}
-                              className={`w-full py-1.5 px-2 rounded-lg text-xs font-bold uppercase tracking-tight transition-all active:scale-95 flex items-center justify-center gap-1 ${
+                              aria-label={`Mark Set ${set.setNumber} of ${displayName} as ${set.completed ? 'incomplete' : 'complete'}`}
+                              className={`w-full min-h-[44px] py-1.5 px-2 rounded-lg text-xs font-bold uppercase tracking-tight transition-all active:scale-95 flex items-center justify-center gap-1 focus:outline-none focus:ring-2 focus:ring-white ${
                                 set.completed
                                   ? 'bg-white text-black font-black'
-                                  : 'bg-neutral-900 border border-neutral-700 text-neutral-300 hover:text-white hover:border-neutral-500'
+                                  : 'bg-neutral-900 border border-neutral-700 text-neutral-200 hover:text-white hover:border-neutral-500'
                               }`}
                             >
                               {set.completed ? (
                                 <>
-                                  <Check className="w-3.5 h-3.5 stroke-[3]" />
+                                  <Check className="w-3.5 h-3.5 stroke-[3]" aria-hidden="true" />
                                   <span className="text-[10px]">Done</span>
                                 </>
                               ) : (
@@ -616,9 +696,10 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                     <button
                       type="button"
                       onClick={() => handleAddSet(exIdx)}
-                      className="px-3 py-1.5 rounded-lg border border-neutral-800 bg-neutral-900 text-white font-medium hover:bg-neutral-850 flex items-center gap-1.5 active:scale-95 transition-all"
+                      aria-label={`Add extra set to ${displayName}`}
+                      className="min-h-[44px] px-3 py-1.5 rounded-lg border border-neutral-800 bg-neutral-900 text-white font-medium hover:bg-neutral-850 flex items-center gap-1.5 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-white"
                     >
-                      <Plus className="w-3.5 h-3.5" />
+                      <Plus className="w-3.5 h-3.5" aria-hidden="true" />
                       <span>Add Extra Set</span>
                     </button>
 
@@ -626,27 +707,32 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                       <button
                         type="button"
                         onClick={() => handleRemoveSet(exIdx, ex.sets.length - 1)}
-                        className="text-neutral-500 hover:text-neutral-300 text-xs flex items-center gap-1 p-1"
+                        aria-label={`Remove last set from ${displayName}`}
+                        className="min-h-[44px] text-neutral-400 hover:text-white text-xs flex items-center gap-1 p-2 focus:outline-none focus:ring-2 focus:ring-white"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="w-3 h-3" aria-hidden="true" />
                         <span>Remove Last</span>
                       </button>
                     )}
                   </div>
                 </div>
               )}
-            </div>
+            </article>
           );
         })}
       </div>
 
       {completedCelebration && (
-        <div className="p-5 rounded-2xl bg-neutral-950 border border-neutral-700 text-center animate-slideUp font-sans space-y-1">
+        <div 
+          role="status" 
+          aria-live="polite"
+          className="p-5 rounded-2xl bg-neutral-950 border border-neutral-700 text-center animate-slideUp font-sans space-y-1"
+        >
           <div className="flex items-center justify-center gap-1.5 text-white font-bold text-sm">
-            <Sparkles className="w-4 h-4 text-white" />
+            <Sparkles className="w-4 h-4 text-white" aria-hidden="true" />
             <span>SESSION COMPLETED!</span>
           </div>
-          <p className="text-xs text-neutral-400">
+          <p className="text-xs text-neutral-300">
             Total tonnage: <strong className="text-white font-mono">{Math.round(currentTonnage).toLocaleString()} kg</strong>. Great workout!
           </p>
         </div>

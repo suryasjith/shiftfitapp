@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { 
   UserProfile, 
   BodyweightEntry, 
   NutritionLog, 
   WorkoutSession, 
   ShiftDay, 
-  WeeklyAnalyticsReport,
+  WeeklyAnalyticsReport, 
   ActivityEntry,
   DailyStepsEntry,
   ActivityType
@@ -14,10 +14,7 @@ import { AnalyticsEngine } from '../../services/analyticsEngine';
 import { PhysicsEngine } from '../../services/physicsEngine';
 import { ACTIVITY_MET_TABLE, ActivityEngine, ActivityMeta } from '../../services/activityEngine';
 import { 
-  Scale, 
   Flame, 
-  Dumbbell, 
-  TrendingUp, 
   Clock, 
   AlertTriangle,
   Footprints,
@@ -29,7 +26,6 @@ import {
   Bike,
   Zap,
   Activity as ActivityIcon,
-  ChevronRight,
   Sparkles,
   Info
 } from 'lucide-react';
@@ -95,39 +91,47 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
   const currentEffectiveWeight = todayWeight?.weightKg || profile.currentWeightKg || 76.4;
   const desiredWeight = profile.desiredWeightKg || profile.targetWeightMinKg || 76.5;
   const gender = profile.gender || 'male';
-  const heightCm = profile.heightCm || 178;
 
-  // Analytics & Physics Reports
-  const computedWeights = AnalyticsEngine.compute7DayMovingAverages(weights);
-  const timeline = PhysicsEngine.getTimelineProjection(currentEffectiveWeight, desiredWeight, gender);
-  const bmiReport = PhysicsEngine.getBmiReport(currentEffectiveWeight, heightCm, gender);
-  const report: WeeklyAnalyticsReport = AnalyticsEngine.generateWeeklyReport(
-    todayStr,
-    profile,
-    computedWeights,
-    nutritions,
-    workouts,
-    shifts,
-    fatigueLogs
-  );
+  // Memoized Analytics & Physics Reports (Vercel React Best Practices)
+  const computedWeights = useMemo(() => {
+    return AnalyticsEngine.compute7DayMovingAverages(weights);
+  }, [weights]);
 
-  // Cardio & Steps MET Calculations
+  const timeline = useMemo(() => {
+    return PhysicsEngine.getTimelineProjection(currentEffectiveWeight, desiredWeight, gender);
+  }, [currentEffectiveWeight, desiredWeight, gender]);
+
+  const report: WeeklyAnalyticsReport = useMemo(() => {
+    return AnalyticsEngine.generateWeeklyReport(
+      todayStr,
+      profile,
+      computedWeights,
+      nutritions,
+      workouts,
+      shifts,
+      fatigueLogs
+    );
+  }, [todayStr, profile, computedWeights, nutritions, workouts, shifts, fatigueLogs]);
+
+  // Cardio & Steps MET Calculations Memoized
   const currentMeta: ActivityMeta = ACTIVITY_MET_TABLE[selectedType] || ACTIVITY_MET_TABLE.swimming_moderate;
   const parsedDuration = parseInt(durationStr, 10) || 0;
   const parsedDistance = parseFloat(distanceStr) || 0;
-  const liveBurnEstimate = ActivityEngine.calculateMetCalories(
-    currentMeta.met,
-    currentEffectiveWeight,
-    parsedDuration
-  );
+  
+  const liveBurnEstimate = useMemo(() => {
+    return ActivityEngine.calculateMetCalories(
+      currentMeta.met,
+      currentEffectiveWeight,
+      parsedDuration
+    );
+  }, [currentMeta.met, currentEffectiveWeight, parsedDuration]);
 
-  const stepCalc = ActivityEngine.calculateStepCalories(currentStepCount, currentEffectiveWeight);
-  const totalCardioBurn = activities.reduce((acc, a) => acc + (a.caloriesBurned || 0), 0);
-  const totalCardioMinutes = activities.reduce((acc, a) => acc + (a.durationMinutes || 0), 0);
-  const totalActiveBurn = totalCardioBurn + stepCalc.activeStepCalories;
+  const stepCalc = useMemo(() => {
+    return ActivityEngine.calculateStepCalories(currentStepCount, currentEffectiveWeight);
+  }, [currentStepCount, currentEffectiveWeight]);
 
-  // Handlers
-  const handleWeightSubmit = (e: React.FormEvent) => {
+  // Handlers with useCallback
+  const handleWeightSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     const val = parseFloat(newWeightInput);
     if (!isNaN(val) && val >= 30 && val <= 250) {
@@ -140,9 +144,9 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
       setWeightSavedNotice(true);
       setTimeout(() => setWeightSavedNotice(false), 2000);
     }
-  };
+  }, [newWeightInput, onSaveWeight, todayStr]);
 
-  const handleLogCardioSubmit = (e: React.FormEvent) => {
+  const handleLogCardioSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (parsedDuration <= 0) return;
 
@@ -163,9 +167,9 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
     onSaveActivity(newActivity);
     setDurationStr('');
     setDistanceStr('');
-  };
+  }, [parsedDuration, selectedType, currentMeta, liveBurnEstimate, parsedDistance, onSaveActivity, todayStr]);
 
-  const handleSaveStepsSubmit = (e: React.FormEvent) => {
+  const handleSaveStepsSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     const count = parseInt(stepInputStr, 10);
     const validCount = isNaN(count) || count < 0 ? 0 : count;
@@ -184,9 +188,9 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
     setStepInputStr('');
     setStepSavedNotice(true);
     setTimeout(() => setStepSavedNotice(false), 2000);
-  };
+  }, [stepInputStr, currentEffectiveWeight, onSaveSteps, todayStr]);
 
-  const handleAddStepIncrement = (increment: number) => {
+  const handleAddStepIncrement = useCallback((increment: number) => {
     soundManager.playTap();
     const newCount = Math.max(0, currentStepCount + increment);
     const calc = ActivityEngine.calculateStepCalories(newCount, currentEffectiveWeight);
@@ -198,38 +202,44 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
       lastUpdated: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
     };
     onSaveSteps(updated);
-    setStepSavedNotice(true);
-    setTimeout(() => setStepSavedNotice(false), 2000);
-  };
+  }, [currentStepCount, currentEffectiveWeight, onSaveSteps, todayStr]);
 
   const getActivityIcon = (category: string) => {
     switch (category) {
       case 'Running':
       case 'Walking':
-        return <Footprints className="w-4 h-4 text-white" />;
+        return <Footprints className="w-4 h-4 text-white" aria-hidden="true" />;
       case 'Swimming':
-        return <Waves className="w-4 h-4 text-white" />;
+        return <Waves className="w-4 h-4 text-white" aria-hidden="true" />;
       case 'Cycling':
-        return <Bike className="w-4 h-4 text-white" />;
+        return <Bike className="w-4 h-4 text-white" aria-hidden="true" />;
       case 'HIIT':
-        return <Zap className="w-4 h-4 text-white" />;
+        return <Zap className="w-4 h-4 text-white" aria-hidden="true" />;
       default:
-        return <ActivityIcon className="w-4 h-4 text-white" />;
+        return <ActivityIcon className="w-4 h-4 text-white" aria-hidden="true" />;
     }
   };
 
   // Sorted weight entries for SVG trend line
-  const sortedDates = Object.keys(computedWeights).sort();
-  const recent7Dates = sortedDates.slice(-7);
-  const recent7Weights = recent7Dates.map(d => computedWeights[d]);
+  const sortedDates = useMemo(() => Object.keys(computedWeights).sort(), [computedWeights]);
+  const recent7Dates = useMemo(() => sortedDates.slice(-7), [sortedDates]);
+  const recent7Weights = useMemo(() => recent7Dates.map(d => computedWeights[d]), [recent7Dates, computedWeights]);
 
   return (
     <div className="space-y-4 pb-28 text-left animate-fadeIn font-sans">
-      {/* Sub-Section Segmented Control (Progressive Disclosure) */}
-      <div className="bg-neutral-950 border border-neutral-800 p-1.5 rounded-2xl grid grid-cols-3 gap-1 shadow-sm">
+      {/* Sub-Section Segmented Control (WCAG 2.2 Tablist) */}
+      <div 
+        role="tablist"
+        aria-label="Progress views"
+        className="bg-neutral-950 border border-neutral-800 p-1.5 rounded-2xl grid grid-cols-3 gap-1 shadow-sm"
+      >
         <button
+          role="tab"
+          id="subtab-trends"
+          aria-selected={activeSection === 'trends'}
+          aria-controls="subtabpanel-trends"
           onClick={() => setActiveSection('trends')}
-          className={`py-2 px-1 text-xs font-bold rounded-xl transition-all ${
+          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-white ${
             activeSection === 'trends'
               ? 'bg-white text-black shadow-md'
               : 'text-neutral-400 hover:text-white'
@@ -238,8 +248,12 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           Weekly Trends
         </button>
         <button
+          role="tab"
+          id="subtab-cardio"
+          aria-selected={activeSection === 'cardio'}
+          aria-controls="subtabpanel-cardio"
           onClick={() => setActiveSection('cardio')}
-          className={`py-2 px-1 text-xs font-bold rounded-xl transition-all ${
+          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-white ${
             activeSection === 'cardio'
               ? 'bg-white text-black shadow-md'
               : 'text-neutral-400 hover:text-white'
@@ -248,8 +262,12 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           Cardio & Steps
         </button>
         <button
+          role="tab"
+          id="subtab-settings"
+          aria-selected={activeSection === 'settings'}
+          aria-controls="subtabpanel-settings"
           onClick={() => setActiveSection('settings')}
-          className={`py-2 px-1 text-xs font-bold rounded-xl transition-all ${
+          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-white ${
             activeSection === 'settings'
               ? 'bg-white text-black shadow-md'
               : 'text-neutral-400 hover:text-white'
@@ -259,19 +277,25 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
         </button>
       </div>
 
-      {/* ========================================================================= */}
       {/* SECTION 1: WEEKLY TRENDS & BODYWEIGHT ANALYTICS */}
-      {/* ========================================================================= */}
       {activeSection === 'trends' && (
-        <div className="space-y-4 animate-fadeIn">
+        <div 
+          role="tabpanel"
+          id="subtabpanel-trends"
+          aria-labelledby="subtab-trends"
+          className="space-y-4 animate-fadeIn"
+        >
           {/* 7-Day Moving Average & Weight Chart */}
-          <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4">
+          <section 
+            aria-labelledby="weight-progression-heading"
+            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
+          >
             <div className="flex items-start justify-between">
               <div>
                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-400 block">
                   Aesthetic Recomposition
                 </span>
-                <h3 className="text-xl font-bold text-white tracking-tight mt-0.5">
+                <h3 id="weight-progression-heading" className="text-xl font-bold text-white tracking-tight mt-0.5">
                   Weight Progression
                 </h3>
                 <p className="text-xs text-neutral-400 mt-0.5">
@@ -282,14 +306,18 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
               <div className="p-3 rounded-xl bg-neutral-900 border border-neutral-750 text-right">
                 <span className="text-[10px] uppercase font-bold text-neutral-400 block">7-Day Avg</span>
                 <span className="text-base font-black font-mono text-white">
-                  {report.averageWeightKg} <span className="text-xs text-neutral-500">kg</span>
+                  {report.averageWeightKg} <span className="text-xs text-neutral-400">kg</span>
                 </span>
               </div>
             </div>
 
             {/* SVG Trend Graph (Monochrome Grayscale) */}
             {recent7Weights.length > 1 ? (
-              <div className="p-3 bg-neutral-900/60 rounded-xl border border-neutral-850">
+              <div 
+                role="figure"
+                aria-label="Recent 7-day weight trend bars"
+                className="p-3 bg-neutral-900/60 rounded-xl border border-neutral-850"
+              >
                 <div className="h-28 w-full flex items-end justify-between gap-1 pt-4 pb-2 px-2">
                   {recent7Weights.map((w, idx) => {
                     const minW = 74.0;
@@ -302,7 +330,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                           className="w-full max-w-[24px] bg-white rounded-t transition-all duration-300"
                           style={{ height: `${pct}%` }}
                         />
-                        <span className="text-[9px] font-mono text-neutral-500">D{idx + 1}</span>
+                        <span className="text-[9px] font-mono text-neutral-400">D{idx + 1}</span>
                       </div>
                     );
                   })}
@@ -316,7 +344,11 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
             {/* Log Weight Form (Empty with Placeholder) */}
             <form onSubmit={handleWeightSubmit} className="pt-2 flex items-center gap-2">
+              <label htmlFor="progress-log-weight" className="sr-only">
+                Log today's bodyweight in kilograms
+              </label>
               <input
+                id="progress-log-weight"
                 type="number"
                 step="0.1"
                 min="30"
@@ -324,23 +356,27 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 value={newWeightInput}
                 onChange={(e) => setNewWeightInput(e.target.value)}
                 placeholder="Enter weight in kg"
-                className="flex-1 bg-neutral-900 border border-neutral-750 rounded-xl px-3 py-2.5 text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white"
+                className="flex-1 min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-xl px-3 py-2.5 text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white"
               />
               <button
                 type="submit"
-                className="px-4 py-2.5 rounded-xl bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-95 shrink-0"
+                aria-label={weightSavedNotice ? 'Weight saved' : 'Save weight entry'}
+                className="min-h-[44px] px-4 py-2.5 rounded-xl bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-white"
               >
                 {weightSavedNotice ? 'Saved ✓' : 'Save Weight'}
               </button>
             </form>
-          </div>
+          </section>
 
           {/* Goal Timeline Projection & Discipline Warning */}
-          <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3">
+          <section 
+            aria-labelledby="timeline-projection-title"
+            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-white" />
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                <Clock className="w-4 h-4 text-white" aria-hidden="true" />
+                <h4 id="timeline-projection-title" className="text-xs font-bold text-white uppercase tracking-wider">
                   Timeline Projection Engine
                 </h4>
               </div>
@@ -351,7 +387,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
             <div className="grid grid-cols-2 gap-3 text-left">
               <div className="p-3 rounded-xl bg-neutral-900 border border-neutral-800">
-                <span className="text-[10px] text-neutral-500 uppercase font-bold block">Average Timeline</span>
+                <span className="text-[10px] text-neutral-400 uppercase font-bold block">Average Timeline</span>
                 <span className="text-sm font-black text-white font-mono mt-0.5 block">
                   {timeline.mode === 'maintenance' ? '0 Weeks' : `~${timeline.averageWeeks} Wks`}
                 </span>
@@ -375,22 +411,28 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
             </div>
 
             {/* Discipline Warning */}
-            <div className="p-3 rounded-xl bg-black border border-neutral-750 space-y-1">
+            <div 
+              role="alert"
+              className="p-3 rounded-xl bg-black border border-neutral-750 space-y-1"
+            >
               <div className="flex items-center gap-1.5 text-white font-bold text-[10px] uppercase">
-                <AlertTriangle className="w-3.5 h-3.5 text-white" />
+                <AlertTriangle className="w-3.5 h-3.5 text-white" aria-hidden="true" />
                 <span>Discipline Warning</span>
               </div>
               <p className="text-[11px] text-neutral-300 leading-relaxed">
                 WARNING: The optimal timeline is strictly theoretical and is only achievable with absolute discipline, zero missed sessions, and perfect macro adherence.
               </p>
             </div>
-          </div>
+          </section>
 
           {/* Actionable Weekly Insights */}
-          <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3">
+          <section 
+            aria-labelledby="weekly-review-title"
+            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
+          >
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-white" />
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              <Sparkles className="w-4 h-4 text-white" aria-hidden="true" />
+              <h4 id="weekly-review-title" className="text-xs font-bold text-white uppercase tracking-wider">
                 Actionable Weekly Review
               </h4>
             </div>
@@ -402,24 +444,30 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 </div>
               ))}
             </div>
-          </div>
+          </section>
         </div>
       )}
 
-      {/* ========================================================================= */}
       {/* SECTION 2: CARDIO TRACKING & DAILY STEPS (MET ENGINE) */}
-      {/* ========================================================================= */}
       {activeSection === 'cardio' && (
-        <div className="space-y-4 animate-fadeIn">
+        <div 
+          role="tabpanel"
+          id="subtabpanel-cardio"
+          aria-labelledby="subtab-cardio"
+          className="space-y-4 animate-fadeIn"
+        >
           {/* Manual Daily Steps (iOS HealthKit Bypass) */}
-          <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3">
+          <section 
+            aria-labelledby="daily-steps-title"
+            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white">
-                  <Footprints className="w-4 h-4 text-white" />
+                  <Footprints className="w-4 h-4 text-white" aria-hidden="true" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                  <h4 id="daily-steps-title" className="text-xs font-bold text-white uppercase tracking-wider">
                     Total Daily Steps
                   </h4>
                   <p className="text-[11px] text-neutral-400">Manual pedometer log for iOS Safari PWA</p>
@@ -434,7 +482,11 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
             </div>
 
             <form onSubmit={handleSaveStepsSubmit} className="flex items-center gap-2 mt-2">
+              <label htmlFor="manual-daily-steps" className="sr-only">
+                Enter total daily step count
+              </label>
               <input
+                id="manual-daily-steps"
                 type="number"
                 step="100"
                 min="0"
@@ -442,37 +494,41 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 value={stepInputStr}
                 onChange={(e) => setStepInputStr(e.target.value)}
                 placeholder="Enter step count (e.g. 8500)"
-                className="flex-1 bg-neutral-900 border border-neutral-750 rounded-xl px-3 py-2.5 text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white"
+                className="flex-1 min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-xl px-3 py-2.5 text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white"
               />
               <button
                 type="submit"
-                className="px-4 py-2.5 rounded-xl bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-95 shrink-0"
+                aria-label={stepSavedNotice ? 'Steps saved' : 'Save steps'}
+                className="min-h-[44px] px-4 py-2.5 rounded-xl bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-white"
               >
                 {stepSavedNotice ? 'Saved ✓' : 'Save Steps'}
               </button>
             </form>
 
-            {/* Quick Increment Pills */}
+            {/* Quick Increment Pills (min 44px touch target) */}
             <div className="flex items-center gap-1.5 flex-wrap pt-1">
-              <span className="text-[10px] text-neutral-500 uppercase font-bold mr-1">Quick Add:</span>
+              <span className="text-[10px] text-neutral-400 uppercase font-bold mr-1">Quick Add:</span>
               <button
                 type="button"
                 onClick={() => handleAddStepIncrement(1000)}
-                className="px-2.5 py-1 rounded-lg bg-neutral-900 hover:bg-neutral-850 text-white text-xs font-bold border border-neutral-800"
+                aria-label="Add 1000 steps"
+                className="min-h-[44px] px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-850 text-white text-xs font-bold border border-neutral-800 focus:outline-none focus:ring-2 focus:ring-white"
               >
                 +1,000
               </button>
               <button
                 type="button"
                 onClick={() => handleAddStepIncrement(2500)}
-                className="px-2.5 py-1 rounded-lg bg-neutral-900 hover:bg-neutral-850 text-white text-xs font-bold border border-neutral-800"
+                aria-label="Add 2500 steps"
+                className="min-h-[44px] px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-850 text-white text-xs font-bold border border-neutral-800 focus:outline-none focus:ring-2 focus:ring-white"
               >
                 +2,500
               </button>
               <button
                 type="button"
                 onClick={() => handleAddStepIncrement(5000)}
-                className="px-2.5 py-1 rounded-lg bg-neutral-900 hover:bg-neutral-850 text-white text-xs font-bold border border-neutral-800"
+                aria-label="Add 5000 steps"
+                className="min-h-[44px] px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-850 text-white text-xs font-bold border border-neutral-800 focus:outline-none focus:ring-2 focus:ring-white"
               >
                 +5,000
               </button>
@@ -482,14 +538,17 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
               <span>Total Steps Burn: <strong className="text-white">{stepCalc.totalStepCalories} kcal</strong></span>
               <span>Active Burn (&gt;3.5k): <strong className="text-white">+{stepCalc.activeStepCalories} kcal</strong></span>
             </div>
-          </div>
+          </section>
 
           {/* Log Cardio Movement Form (MET Engine) */}
-          <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4">
+          <section 
+            aria-labelledby="cardio-movement-heading"
+            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Flame className="w-4 h-4 text-white" />
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                <Flame className="w-4 h-4 text-white" aria-hidden="true" />
+                <h4 id="cardio-movement-heading" className="text-xs font-bold text-white uppercase tracking-wider">
                   Log Cardio Movement
                 </h4>
               </div>
@@ -500,17 +559,18 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
             <form onSubmit={handleLogCardioSubmit} className="space-y-3">
               <div>
-                <label className="text-[10px] uppercase font-bold text-neutral-400 block mb-1">
+                <label htmlFor="cardio-movement-select" className="text-[10px] uppercase font-bold text-neutral-400 block mb-1">
                   Movement Type
                 </label>
                 <select
+                  id="cardio-movement-select"
                   value={selectedType}
                   onChange={(e) => {
                     const t = e.target.value as ActivityType;
                     setSelectedType(t);
                     setDurationStr('');
                   }}
-                  className="w-full bg-neutral-900 border border-neutral-750 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-white"
+                  className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-white"
                 >
                   {Object.values(ACTIVITY_MET_TABLE).map((item) => (
                     <option key={item.type} value={item.type}>
@@ -522,10 +582,11 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-neutral-400 block mb-1">
+                  <label htmlFor="cardio-duration-minutes" className="text-[10px] uppercase font-bold text-neutral-400 block mb-1">
                     Duration (Minutes)
                   </label>
                   <input
+                    id="cardio-duration-minutes"
                     type="number"
                     step="1"
                     min="1"
@@ -533,16 +594,17 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                     value={durationStr}
                     onChange={(e) => setDurationStr(e.target.value)}
                     placeholder="Minutes (e.g. 30)"
-                    className="w-full bg-neutral-900 border border-neutral-750 rounded-xl px-3 py-2 text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white text-center"
+                    className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-xl px-3 py-2 text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white text-center"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-neutral-400 block mb-1">
+                  <label htmlFor="cardio-distance-km" className="text-[10px] uppercase font-bold text-neutral-400 block mb-1">
                     Distance (km)
                   </label>
                   <input
+                    id="cardio-distance-km"
                     type="number"
                     step="0.1"
                     min="0"
@@ -551,7 +613,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                     onChange={(e) => setDistanceStr(e.target.value)}
                     placeholder="km (optional)"
                     disabled={!currentMeta.supportsDistance}
-                    className="w-full bg-neutral-900 border border-neutral-750 rounded-xl px-3 py-2 text-xs font-bold text-white placeholder-neutral-500 disabled:opacity-30 focus:outline-none focus:border-white text-center"
+                    className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-xl px-3 py-2 text-xs font-bold text-white placeholder-neutral-500 disabled:opacity-30 focus:outline-none focus:border-white text-center"
                   />
                 </div>
               </div>
@@ -569,39 +631,48 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
               <button
                 type="submit"
                 disabled={parsedDuration <= 0}
-                className="w-full py-3.5 rounded-xl bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-[0.98] disabled:opacity-40 flex items-center justify-center gap-1.5"
+                aria-label={`Log ${currentMeta.label} session`}
+                className="min-h-[48px] w-full py-3.5 rounded-xl bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-[0.98] disabled:opacity-40 flex items-center justify-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-white"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-4 h-4" aria-hidden="true" />
                 <span>Log Cardio Session</span>
               </button>
             </form>
-          </div>
+          </section>
 
           {/* Today's Logged Cardio Sessions */}
-          <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3">
+          <section 
+            aria-labelledby="cardio-diary-title"
+            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
+          >
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              <h4 id="cardio-diary-title" className="text-xs font-bold text-white uppercase tracking-wider">
                 Today's Cardio Diary
               </h4>
               {activities.length > 0 && (
                 <button
                   type="button"
                   onClick={() => setShowClearConfirm(true)}
-                  className="text-xs text-neutral-400 hover:text-white flex items-center gap-1 font-mono"
+                  aria-label="Clear all cardio sessions logged today"
+                  className="min-h-[44px] text-xs text-neutral-400 hover:text-white flex items-center gap-1 font-mono p-2 focus:outline-none focus:ring-2 focus:ring-white rounded-lg"
                 >
-                  <RotateCcw className="w-3 h-3" />
+                  <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
                   <span>Start Fresh</span>
                 </button>
               )}
             </div>
 
             {showClearConfirm && (
-              <div className="p-3 rounded-xl bg-neutral-900 border border-neutral-700 space-y-2 animate-fadeIn font-sans">
-                <p className="text-xs text-white font-bold">Clear all cardio logged today?</p>
+              <div 
+                role="alertdialog"
+                aria-labelledby="clear-cardio-title"
+                className="p-4 rounded-xl bg-neutral-900 border border-neutral-700 space-y-2 animate-fadeIn font-sans"
+              >
+                <p id="clear-cardio-title" className="text-xs text-white font-bold">Clear all cardio logged today?</p>
                 <div className="flex justify-end gap-2 pt-1">
                   <button
                     onClick={() => setShowClearConfirm(false)}
-                    className="px-3 py-1 rounded-lg border border-neutral-750 text-xs text-neutral-300"
+                    className="min-h-[44px] px-3.5 py-1.5 rounded-lg border border-neutral-750 text-xs text-neutral-300"
                   >
                     Cancel
                   </button>
@@ -610,7 +681,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                       onClearActivities();
                       setShowClearConfirm(false);
                     }}
-                    className="px-3 py-1 rounded-lg bg-white text-black font-bold text-xs"
+                    className="min-h-[44px] px-4 py-1.5 rounded-lg bg-white text-black font-bold text-xs"
                   >
                     Confirm Clear
                   </button>
@@ -619,17 +690,21 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
             )}
 
             {activities.length === 0 ? (
-              <div className="p-6 text-center text-neutral-500 font-sans border border-dashed border-neutral-800 rounded-xl space-y-2">
-                <Flame className="w-8 h-8 mx-auto text-neutral-700" />
-                <p className="text-xs font-bold text-neutral-300">No Cardio Logged Today</p>
+              <div className="p-6 text-center text-neutral-400 font-sans border border-dashed border-neutral-800 rounded-xl space-y-2">
+                <Flame className="w-8 h-8 mx-auto text-neutral-600" aria-hidden="true" />
+                <p className="text-xs font-bold text-neutral-200">No Cardio Logged Today</p>
                 <p className="text-[11px] text-neutral-400 max-w-xs mx-auto">
                   Select an activity above (Swimming, Running, Incline Treadmill) to calculate MET burn.
                 </p>
               </div>
             ) : (
-              <div className="divide-y divide-neutral-850">
+              <div 
+                role="list"
+                aria-label="Logged cardio movements"
+                className="divide-y divide-neutral-850"
+              >
                 {activities.map((act) => (
-                  <div key={act.id} className="py-2.5 flex items-center justify-between text-xs">
+                  <div key={act.id} role="listitem" className="py-2.5 flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2.5">
                       <div className="w-7 h-7 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center shrink-0">
                         {getActivityIcon(act.category)}
@@ -648,30 +723,36 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                       </span>
                       <button
                         onClick={() => onDeleteActivity(act.id)}
-                        className="text-neutral-600 hover:text-white p-1"
-                        title="Delete"
+                        aria-label={`Delete ${act.title} session`}
+                        className="min-h-[44px] min-w-[44px] flex items-center justify-center text-neutral-400 hover:text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-4 h-4" aria-hidden="true" />
                       </button>
                     </div>
                   </div>
                 ))}
               </div>
             )}
-          </div>
+          </section>
         </div>
       )}
 
-      {/* ========================================================================= */}
       {/* SECTION 3: DATA BACKUP & SETTINGS */}
-      {/* ========================================================================= */}
       {activeSection === 'settings' && (
-        <div className="space-y-4 animate-fadeIn">
+        <div 
+          role="tabpanel"
+          id="subtabpanel-settings"
+          aria-labelledby="subtab-settings"
+          className="space-y-4 animate-fadeIn"
+        >
           {/* Offline Database Export */}
-          <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4">
+          <section 
+            aria-labelledby="offline-database-heading"
+            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
+          >
             <div className="flex items-center gap-2">
-              <Database className="w-4 h-4 text-white" />
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              <Database className="w-4 h-4 text-white" aria-hidden="true" />
+              <h4 id="offline-database-heading" className="text-xs font-bold text-white uppercase tracking-wider">
                 Offline Database Management
               </h4>
             </div>
@@ -682,38 +763,43 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
             <button
               onClick={onExportBackup}
-              className="w-full py-3.5 rounded-xl bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+              aria-label="Download complete offline backup file in JSON format"
+              className="min-h-[48px] w-full py-3.5 rounded-xl bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-white"
             >
-              <Database className="w-4 h-4" />
+              <Database className="w-4 h-4" aria-hidden="true" />
               <span>Download Offline Backup (JSON)</span>
             </button>
-          </div>
+          </section>
 
           {/* Profile Metrics Summary */}
-          <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3 font-mono">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider font-sans">
+          <section 
+            aria-labelledby="profile-metrics-heading"
+            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3 font-mono"
+          >
+            <h4 id="profile-metrics-heading" className="text-xs font-bold text-white uppercase tracking-wider font-sans">
               User Profile Metrics
             </h4>
 
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="p-3 rounded-xl bg-neutral-900 border border-neutral-800">
-                <span className="text-[10px] text-neutral-500 uppercase block">Gender & Height</span>
+                <span className="text-[10px] text-neutral-400 uppercase block">Gender & Height</span>
                 <span className="text-white font-bold block mt-0.5">{profile.gender} • {profile.heightCm} cm</span>
               </div>
               <div className="p-3 rounded-xl bg-neutral-900 border border-neutral-800">
-                <span className="text-[10px] text-neutral-500 uppercase block">Target Corridor</span>
+                <span className="text-[10px] text-neutral-400 uppercase block">Target Corridor</span>
                 <span className="text-white font-bold block mt-0.5">{profile.targetWeightMinKg}–{profile.targetWeightMaxKg} kg</span>
               </div>
             </div>
 
             <button
               onClick={onOpenGuide}
-              className="w-full py-3 rounded-xl border border-neutral-750 bg-neutral-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-neutral-850 transition-all flex items-center justify-center gap-2 font-sans"
+              aria-label="Open profile setup guide and metric preferences"
+              className="min-h-[44px] w-full py-3 rounded-xl border border-neutral-750 bg-neutral-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-neutral-850 transition-all flex items-center justify-center gap-2 font-sans focus:outline-none focus:ring-2 focus:ring-white"
             >
-              <Info className="w-4 h-4" />
+              <Info className="w-4 h-4" aria-hidden="true" />
               <span>Open Profile Setup Guide</span>
             </button>
-          </div>
+          </section>
         </div>
       )}
     </div>
