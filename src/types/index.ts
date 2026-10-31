@@ -48,6 +48,8 @@ export interface ExerciseDefinition {
   defaultRestSecs: number;
   tips: string;
   alternatives: ExerciseAlternative[];
+  visualGifUrl?: string;
+  formPoints?: [string, string, string];
 }
 
 export interface SetLog {

@@ -56,6 +56,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
 }) => {
   const [activeSwapExerciseIndex, setActiveSwapExerciseIndex] = useState<number | null>(null);
   const [expandedExerciseIndex, setExpandedExerciseIndex] = useState<number | null>(0);
+  const [openInstructions, setOpenInstructions] = useState<Record<number, boolean>>({});
   const [completedCelebration, setCompletedCelebration] = useState<boolean>(false);
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
   const [showRotaManager, setShowRotaManager] = useState<boolean>(false);
@@ -253,26 +254,26 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
 
   return (
     <div className="space-y-4 pb-28 text-left animate-fadeIn font-sans">
-      {/* 1. Workout Session Header Card */}
+      {/* 1. Workout Session Header Card (Warm Amber / Coral Zone) */}
       <section 
         aria-labelledby="active-session-title"
-        className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
+        className="rounded-2xl bg-slate-900/90 border border-amber-500/25 p-5 shadow-sm space-y-4"
       >
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 flex-wrap mb-1">
-              <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-neutral-700 bg-neutral-900 text-neutral-200 uppercase tracking-wider">
+              <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 uppercase tracking-wider">
                 {workout.intensity}
               </span>
-              <span className="text-xs text-neutral-400 font-mono">
+              <span className="text-xs text-amber-400/80 font-mono font-medium">
                 {workout.category} Focus
               </span>
             </div>
 
-            <h2 id="active-session-title" className="text-xl font-bold text-white tracking-tight mt-1">
+            <h2 id="active-session-title" className="text-xl font-bold text-slate-100 tracking-tight mt-1">
               {workout.title}
             </h2>
-            <p className="text-xs text-neutral-400 mt-0.5">
+            <p className="text-xs text-slate-400 mt-0.5">
               Target: ~{workout.targetDurationMin || 45} mins • RPE Fatigue: {currentFatigue}/10
             </p>
           </div>
@@ -281,9 +282,9 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
           <button
             onClick={() => setShowResetConfirm(true)}
             aria-label="Reset all sets and timers to start a fresh workout session"
-            className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-xl border border-neutral-800 bg-neutral-900 text-neutral-300 hover:text-white text-xs font-medium transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-white"
+            className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-amber-400"
           >
-            <RotateCcw className="w-3.5 h-3.5 text-neutral-400" aria-hidden="true" />
+            <RotateCcw className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
             <span>Start Fresh</span>
           </button>
         </div>
@@ -294,27 +295,27 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
             role="alertdialog"
             aria-labelledby="reset-dialog-title"
             aria-describedby="reset-dialog-desc"
-            className="p-4 rounded-xl bg-neutral-900 border border-neutral-700 space-y-2 animate-fadeIn"
+            className="p-4 rounded-xl bg-slate-800 border border-amber-500/40 space-y-2 animate-fadeIn"
           >
-            <div className="flex items-center gap-2 text-xs text-white font-bold">
-              <AlertCircle className="w-4 h-4 text-neutral-300" aria-hidden="true" />
+            <div className="flex items-center gap-2 text-xs text-amber-300 font-bold">
+              <AlertCircle className="w-4 h-4 text-amber-400" aria-hidden="true" />
               <span id="reset-dialog-title">Reset today's session to start clean?</span>
             </div>
-            <p id="reset-dialog-desc" className="text-xs text-neutral-300">
+            <p id="reset-dialog-desc" className="text-xs text-slate-300">
               This unchecks all sets and resets timestamps so you can log from scratch.
             </p>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setShowResetConfirm(false)}
-                className="min-h-[44px] px-3.5 py-2 rounded-lg border border-neutral-750 text-neutral-200 text-xs hover:text-white"
+                className="min-h-[44px] px-3.5 py-2 rounded-lg border border-slate-700 text-slate-300 text-xs hover:text-white"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleStartFreshWorkout}
-                className="min-h-[44px] px-4 py-2 rounded-lg bg-white text-black font-bold text-xs hover:bg-neutral-200"
+                className="min-h-[44px] px-4 py-2 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400"
               >
                 Confirm Reset
               </button>
@@ -323,25 +324,25 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
         )}
 
         {/* High-level progress counts */}
-        <div className="pt-3 border-t border-neutral-850 grid grid-cols-3 gap-2 text-center font-mono">
-          <div className="bg-neutral-900 p-2.5 rounded-xl border border-neutral-800">
-            <span className="text-[10px] text-neutral-400 uppercase font-bold block">Sets Done</span>
-            <span className="text-sm font-bold text-white mt-0.5 block">
+        <div className="pt-3 border-t border-amber-500/15 grid grid-cols-3 gap-2 text-center font-mono">
+          <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60">
+            <span className="text-[10px] text-slate-400 uppercase font-bold block">Sets Done</span>
+            <span className="text-sm font-bold text-amber-300 mt-0.5 block">
               {completedSetsCount} / {totalSetsCount}
             </span>
           </div>
 
-          <div className="bg-neutral-900 p-2.5 rounded-xl border border-neutral-800">
-            <span className="text-[10px] text-neutral-400 uppercase font-bold block">Total Work</span>
-            <span className="text-sm font-bold text-white mt-0.5 block">
-              {Math.round(currentTonnage).toLocaleString()} <span className="text-[10px] text-neutral-400">kg</span>
+          <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60">
+            <span className="text-[10px] text-slate-400 uppercase font-bold block">Total Work</span>
+            <span className="text-sm font-bold text-slate-100 mt-0.5 block">
+              {Math.round(currentTonnage).toLocaleString()} <span className="text-[10px] text-slate-400">kg</span>
             </span>
           </div>
 
-          <div className="bg-neutral-900 p-2.5 rounded-xl border border-neutral-800">
-            <span className="text-[10px] text-neutral-400 uppercase font-bold block">Target</span>
-            <span className="text-sm font-bold text-neutral-200 mt-0.5 block">
-              75–78 <span className="text-[10px] text-neutral-400">kg</span>
+          <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60">
+            <span className="text-[10px] text-slate-400 uppercase font-bold block">Target</span>
+            <span className="text-sm font-bold text-slate-200 mt-0.5 block">
+              75–78 <span className="text-[10px] text-slate-400">kg</span>
             </span>
           </div>
         </div>
@@ -536,49 +537,71 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
               aria-labelledby={`exercise-name-${exIdx}`}
               className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                 isDone 
-                  ? 'bg-neutral-950 border-neutral-750' 
+                  ? 'bg-slate-900/90 border-emerald-500/30' 
                   : isExpanded
-                  ? 'bg-neutral-950 border-white shadow-md'
-                  : 'bg-neutral-950 border-neutral-850'
+                  ? 'bg-slate-900 border-amber-500/40 shadow-lg shadow-amber-500/5'
+                  : 'bg-slate-900/70 border-slate-800 hover:border-amber-500/25'
               }`}
             >
               {/* Exercise Accordion Bar (Semantic Container, No Nested Links) */}
-              <div className="w-full min-h-[48px] p-4 flex items-start justify-between text-left hover:bg-neutral-900/70 transition-colors">
+              <div className="w-full min-h-[48px] p-4 flex items-start justify-between text-left hover:bg-slate-800/40 transition-colors">
                 <button
                   type="button"
                   id={`exercise-header-${exIdx}`}
                   aria-expanded={isExpanded}
                   aria-controls={`exercise-panel-${exIdx}`}
-                  className="flex-1 flex items-start gap-3 text-left focus:outline-none focus:ring-1 focus:ring-white rounded pr-2"
+                  className="flex-1 flex items-start gap-3 text-left focus:outline-none focus:ring-1 focus:ring-amber-400 rounded pr-2"
                   onClick={() => setExpandedExerciseIndex(isExpanded ? null : exIdx)}
                 >
                   <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold font-mono mt-0.5 shrink-0 ${
                     isDone 
-                      ? 'bg-white text-black' 
-                      : 'bg-neutral-900 text-neutral-300 border border-neutral-800'
+                      ? 'bg-emerald-500 text-slate-950 font-black' 
+                      : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
                   }`}>
                     {isDone ? <Check className="w-3.5 h-3.5 stroke-[3]" aria-hidden="true" /> : exIdx + 1}
                   </span>
 
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 id={`exercise-name-${exIdx}`} className="text-sm font-bold text-white tracking-tight">
+                      <h3 id={`exercise-name-${exIdx}`} className="text-sm font-bold text-slate-100 tracking-tight">
                         {displayName}
                       </h3>
                       {ex.equipmentTaken && (
-                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-white text-black">
+                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-amber-500 text-slate-950">
                           SWAPPED
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-neutral-400 mt-0.5">
+                    <p className="text-xs text-slate-400 mt-0.5">
                       {ex.targetMuscle} • {ex.restSecs}s Rest
                     </p>
                   </div>
                 </button>
 
-                <div className="flex items-center gap-2.5 shrink-0">
-                  {/* Standalone Sibling Tutorial Action (Valid HTML, accessible touch target) */}
+                <div className="flex items-center gap-2 shrink-0">
+                  {/* Instructions Toggle Button (Embedded GIF & 3 Form Points) */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      soundManager.playTap();
+                      if (!isExpanded) setExpandedExerciseIndex(exIdx);
+                      setOpenInstructions(prev => ({ ...prev, [exIdx]: !prev[exIdx] }));
+                    }}
+                    aria-expanded={!!openInstructions[exIdx]}
+                    aria-controls={`exercise-instructions-${exIdx}`}
+                    aria-label={`Toggle form instructions and visual GIF for ${displayName}`}
+                    className={`min-h-[44px] inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-xl text-xs font-mono font-bold transition-all active:scale-95 ${
+                      openInstructions[exIdx]
+                        ? 'bg-amber-500 text-slate-950 border border-amber-400 shadow-sm'
+                        : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                    }`}
+                  >
+                    <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
+                    <span>Instructions</span>
+                  </button>
+
+                  {/* Standalone Sibling Tutorial Action (YouTube Form Tutorial) */}
                   <a
                     href={`https://www.youtube.com/results?search_query=${encodeURIComponent(displayName + ' form tutorial')}`}
                     target="_blank"
@@ -588,23 +611,23 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                       soundManager.playTap();
                     }}
                     aria-label={`Watch form tutorial video for ${displayName} on YouTube`}
-                    className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-none bg-neutral-900 hover:bg-neutral-800 border border-neutral-750 text-xs font-mono text-neutral-300 hover:text-white transition-colors active:scale-95"
+                    className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center gap-1 px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-xs font-mono text-slate-300 hover:text-white transition-colors active:scale-95"
                   >
                     <Play className="w-3 h-3 fill-red-500 stroke-red-500 shrink-0" aria-hidden="true" />
-                    <span className="hidden sm:inline">Form</span>
+                    <span className="hidden sm:inline">YT</span>
                   </a>
 
                   <button
                     type="button"
                     onClick={() => setExpandedExerciseIndex(isExpanded ? null : exIdx)}
                     aria-label={isExpanded ? `Collapse ${displayName}` : `Expand ${displayName}`}
-                    className="min-h-[44px] min-w-[44px] flex items-center justify-center text-xs font-mono font-bold text-neutral-300 hover:text-white"
+                    className="min-h-[44px] min-w-[44px] flex items-center justify-center text-xs font-mono font-bold text-slate-300 hover:text-white"
                   >
                     <span className="mr-1">{completedCount}/{ex.sets.length}</span>
                     {isExpanded ? (
-                      <ChevronUp className="w-4 h-4 text-neutral-400" aria-hidden="true" />
+                      <ChevronUp className="w-4 h-4 text-slate-400" aria-hidden="true" />
                     ) : (
-                      <ChevronDown className="w-4 h-4 text-neutral-400" aria-hidden="true" />
+                      <ChevronDown className="w-4 h-4 text-slate-400" aria-hidden="true" />
                     )}
                   </button>
                 </div>
@@ -612,48 +635,113 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
 
               {/* Expanded Set Logger */}
               {isExpanded && (
-                <div id={`exercise-panel-${exIdx}`} className="px-4 pb-4 pt-2 border-t border-neutral-850 space-y-3">
+                <div id={`exercise-panel-${exIdx}`} className="px-4 pb-4 pt-2 border-t border-slate-800 space-y-3">
                   <div className="flex items-center justify-between gap-2 pt-1">
-                    <span className="text-xs text-neutral-400 font-mono truncate max-w-[150px]">
+                    <span className="text-xs text-slate-400 font-mono truncate max-w-[150px]">
                       {def?.primaryEquipment || 'Free weights'}
                     </span>
 
                     <div className="flex items-center gap-2">
-                      {/* Secondary Quick Tutorial Action */}
-                      <a
-                        href={`https://www.youtube.com/results?search_query=${encodeURIComponent(displayName + ' form tutorial')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`Open YouTube form tutorial for ${displayName}`}
-                        className="min-h-[44px] px-2.5 py-1.5 rounded-none border border-neutral-750 bg-neutral-900 hover:border-neutral-500 text-neutral-300 hover:text-white text-xs font-mono flex items-center gap-1.5 active:scale-95 transition-all"
+                      {/* Secondary Instructions Toggle Button */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundManager.playTap();
+                          setOpenInstructions(prev => ({ ...prev, [exIdx]: !prev[exIdx] }));
+                        }}
+                        aria-expanded={!!openInstructions[exIdx]}
+                        className={`min-h-[44px] px-2.5 py-1.5 rounded-lg border text-xs font-mono flex items-center gap-1.5 active:scale-95 transition-all ${
+                          openInstructions[exIdx]
+                            ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold'
+                            : 'border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300'
+                        }`}
                       >
-                        <Play className="w-3 h-3 fill-red-500 stroke-red-500" aria-hidden="true" />
-                        <span>Tutorial</span>
-                      </a>
+                        <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
+                        <span>{openInstructions[exIdx] ? 'Hide Form' : 'Show Form'}</span>
+                      </button>
 
                       {/* Swap Exercise Button (min 44px touch target) */}
                       <button
                         type="button"
                         onClick={() => setActiveSwapExerciseIndex(exIdx)}
                         aria-label={`Swap ${displayName} with alternate equipment or movement`}
-                        className="min-h-[44px] px-3 py-1.5 rounded-none border border-neutral-750 bg-neutral-900 hover:border-neutral-500 text-white text-xs font-mono font-bold flex items-center gap-1.5 active:scale-95 transition-all focus:outline-none focus:ring-1 focus:ring-white"
+                        className="min-h-[44px] px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:border-slate-500 text-slate-100 text-xs font-mono font-bold flex items-center gap-1.5 active:scale-95 transition-all focus:outline-none focus:ring-1 focus:ring-amber-400"
                       >
-                        <ArrowRightLeft className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
+                        <ArrowRightLeft className="w-3.5 h-3.5 text-slate-300" aria-hidden="true" />
                         <span>Swap</span>
                       </button>
                     </div>
                   </div>
 
-                  {def?.tips && (
-                    <div className="text-xs text-neutral-300 bg-neutral-900 p-2.5 rounded-xl border border-neutral-850 leading-relaxed">
-                      <strong className="text-white uppercase font-mono text-[10px] block mb-0.5">Form Cue:</strong>
+                  {/* Embedded "How-To" Exercise Visuals & 3 Plain-English Form Points */}
+                  {openInstructions[exIdx] && (
+                    <div 
+                      id={`exercise-instructions-${exIdx}`}
+                      className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/30 space-y-3 animate-expandDown text-left"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-amber-400" aria-hidden="true" />
+                          <span className="text-xs font-bold text-amber-300 uppercase tracking-wider font-mono">
+                            Form & Technique Guide
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold">
+                          {def?.mechanics || 'Compound'}
+                        </span>
+                      </div>
+
+                      {/* Looping Visual Movement GIF */}
+                      <div className="relative rounded-xl overflow-hidden border border-amber-500/30 bg-slate-950 shadow-inner flex flex-col items-center justify-center min-h-[160px]">
+                        <img
+                          src={def?.visualGifUrl || `https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${encodeURIComponent(def?.name || displayName).replace(/%20/g, '_')}/0.jpg`}
+                          alt={`${displayName} movement animation`}
+                          loading="lazy"
+                          className="w-full max-h-60 object-cover object-center bg-slate-900"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            target.style.display = 'none';
+                          }}
+                        />
+                        <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-slate-950/80 backdrop-blur-sm border border-amber-500/30 text-[9px] font-mono text-amber-300 flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                          <span>Looping Visual</span>
+                        </div>
+                      </div>
+
+                      {/* 3 Simple, Plain-English Form Points */}
+                      <div className="space-y-2 pt-1">
+                        <span className="text-[11px] font-mono font-bold text-slate-300 uppercase tracking-wide block">
+                          3 Key Form Rules:
+                        </span>
+                        <ul className="space-y-1.5 text-xs text-slate-200">
+                          {(def?.formPoints || [
+                            'Setup: Retract shoulder blades and establish a stable base of support.',
+                            'Execution: Control the eccentric descent for 2–3 seconds without bouncing.',
+                            'Contraction: Drive smoothly into lockout with active muscle engagement.'
+                          ]).map((point, ptIdx) => (
+                            <li key={ptIdx} className="flex items-start gap-2.5 bg-slate-900/80 p-2.5 rounded-lg border border-amber-500/20">
+                              <span className="w-5 h-5 rounded-md bg-amber-500/20 text-amber-300 font-mono text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                                {ptIdx + 1}
+                              </span>
+                              <span className="leading-relaxed text-slate-200">{point}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+
+                  {def?.tips && !openInstructions[exIdx] && (
+                    <div className="text-xs text-slate-300 bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/60 leading-relaxed">
+                      <strong className="text-amber-300 uppercase font-mono text-[10px] block mb-0.5">Form Cue:</strong>
                       {def.tips}
                     </div>
                   )}
 
                   {/* Granular Sets Table with Accessible Labels */}
                   <div className="space-y-2">
-                    <div className="grid grid-cols-12 gap-2 text-[10px] uppercase font-mono font-bold text-neutral-400 px-1">
+                    <div className="grid grid-cols-12 gap-2 text-[10px] uppercase font-mono font-bold text-slate-400 px-1">
                       <div className="col-span-2 text-center">Set</div>
                       <div className="col-span-4 text-center">Weight</div>
                       <div className="col-span-3 text-center">Reps</div>
@@ -666,12 +754,12 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                           key={setIdx}
                           className={`grid grid-cols-12 gap-2 items-center p-2 rounded-xl border transition-all ${
                             set.completed 
-                              ? 'bg-neutral-900 border-neutral-700 text-white' 
-                              : 'bg-neutral-950 border-neutral-850'
+                              ? 'bg-slate-850 border-emerald-500/30 text-slate-100' 
+                              : 'bg-slate-900 border-slate-800'
                           }`}
                         >
                           <div className="col-span-2 text-center">
-                            <span className="font-mono text-xs font-bold text-neutral-400">
+                            <span className="font-mono text-xs font-bold text-slate-400">
                               #{set.setNumber}
                             </span>
                           </div>
@@ -687,7 +775,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                               value={set.weightKg === 0 || set.weightKg === undefined ? '' : set.weightKg}
                               onChange={(e) => handleUpdateSetValue(exIdx, setIdx, 'weightKg', e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
                               placeholder="Weight (kg)"
-                              className="w-full min-h-[44px] bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1.5 text-center font-mono text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white transition-colors"
+                              className="w-full min-h-[44px] bg-slate-800/90 border border-slate-700 rounded-lg px-2 py-1.5 text-center font-mono text-xs font-bold text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
                             />
                           </div>
 
@@ -702,7 +790,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                               value={set.reps === 0 || set.reps === undefined ? '' : set.reps}
                               onChange={(e) => handleUpdateSetValue(exIdx, setIdx, 'reps', e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0)}
                               placeholder="Reps"
-                              className="w-full min-h-[44px] bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1.5 text-center font-mono text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white transition-colors"
+                              className="w-full min-h-[44px] bg-slate-800/90 border border-slate-700 rounded-lg px-2 py-1.5 text-center font-mono text-xs font-bold text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
                             />
                           </div>
 
@@ -711,10 +799,10 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                               type="button"
                               onClick={() => handleToggleSetComplete(exIdx, setIdx)}
                               aria-label={`Mark Set ${set.setNumber} of ${displayName} as ${set.completed ? 'incomplete' : 'complete'}`}
-                              className={`w-full min-h-[44px] py-1.5 px-2 rounded-lg text-xs font-bold uppercase tracking-tight transition-all active:scale-95 flex items-center justify-center gap-1 focus:outline-none focus:ring-2 focus:ring-white ${
+                              className={`w-full min-h-[44px] py-1.5 px-2 rounded-lg text-xs font-bold uppercase tracking-tight transition-all active:scale-95 flex items-center justify-center gap-1 focus:outline-none focus:ring-2 focus:ring-amber-400 ${
                                 set.completed
-                                  ? 'bg-white text-black font-black'
-                                  : 'bg-neutral-900 border border-neutral-700 text-neutral-200 hover:text-white hover:border-neutral-500'
+                                  ? 'bg-emerald-500 text-slate-950 font-black'
+                                  : 'bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:bg-amber-500/20 hover:text-white'
                               }`}
                             >
                               {set.completed ? (
@@ -738,7 +826,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                       type="button"
                       onClick={() => handleAddSet(exIdx)}
                       aria-label={`Add extra set to ${displayName}`}
-                      className="min-h-[44px] px-3 py-1.5 rounded-lg border border-neutral-800 bg-neutral-900 text-white font-medium hover:bg-neutral-850 flex items-center gap-1.5 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-white"
+                      className="min-h-[44px] px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-200 font-medium hover:bg-slate-750 flex items-center gap-1.5 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-amber-400"
                     >
                       <Plus className="w-3.5 h-3.5" aria-hidden="true" />
                       <span>Add Extra Set</span>
@@ -749,7 +837,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                         type="button"
                         onClick={() => handleRemoveSet(exIdx, ex.sets.length - 1)}
                         aria-label={`Remove last set from ${displayName}`}
-                        className="min-h-[44px] text-neutral-400 hover:text-white text-xs flex items-center gap-1 p-2 focus:outline-none focus:ring-2 focus:ring-white"
+                        className="min-h-[44px] text-slate-400 hover:text-rose-400 text-xs flex items-center gap-1 p-2 focus:outline-none focus:ring-2 focus:ring-rose-400"
                       >
                         <Trash2 className="w-3 h-3" aria-hidden="true" />
                         <span>Remove Last</span>

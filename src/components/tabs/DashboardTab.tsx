@@ -122,54 +122,54 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
 
   return (
     <div className="space-y-4 pb-28 text-left animate-fadeIn font-sans">
-      {/* 1. HERO "ZEN" WORKOUT CARD & PRIMARY ACTION BUTTON */}
+      {/* 1. HERO "ZEN" WORKOUT CARD & PRIMARY ACTION BUTTON (Warm Amber / Coral Zone) */}
       <section 
         aria-labelledby="zen-workout-heading"
-        className="rounded-none bg-neutral-950 border border-neutral-800 p-5 shadow-none space-y-5"
+        className="rounded-2xl bg-slate-900/90 border border-amber-500/25 p-5 shadow-sm space-y-4"
       >
         {/* Shift Badge & Rota Context */}
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 flex-wrap mb-1.5">
               {dayInfo.isOvertime ? (
-                <span className="px-2.5 py-0.5 rounded-none text-[10px] font-bold bg-white text-black font-mono">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-slate-950 font-mono">
                   12H OVERTIME
                 </span>
               ) : dayInfo.isShiftDay ? (
-                <span className="px-2.5 py-0.5 rounded-none text-[10px] font-bold border border-neutral-700 bg-neutral-900 text-neutral-200 flex items-center gap-1 font-mono">
-                  <Sun className="w-3 h-3 text-neutral-400" aria-hidden="true" />
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold border border-amber-500/30 bg-amber-500/10 text-amber-300 flex items-center gap-1 font-mono">
+                  <Sun className="w-3 h-3 text-amber-400" aria-hidden="true" />
                   12H SHIFT DAY
                 </span>
               ) : (
-                <span className="px-2.5 py-0.5 rounded-none text-[10px] font-bold bg-white text-black flex items-center gap-1 font-mono">
-                  <Moon className="w-3 h-3 text-black" aria-hidden="true" />
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1 font-mono">
+                  <Moon className="w-3 h-3 text-amber-400" aria-hidden="true" />
                   OFF-DAY TRAINING
                 </span>
               )}
-              <span className="text-xs text-neutral-400 font-mono">
+              <span className="text-xs text-slate-400 font-mono">
                 {dayInfo.dayOfWeek}
               </span>
             </div>
 
-            <h2 id="zen-workout-heading" className="text-2xl font-black text-white tracking-tight">
+            <h2 id="zen-workout-heading" className="text-2xl font-black text-slate-100 tracking-tight">
               {todayWorkout?.title || dayInfo.workoutTitle}
             </h2>
-            <p className="text-xs text-neutral-400 mt-1 font-mono">
-              Focus: <strong className="text-neutral-200">{todayWorkout?.category || dayInfo.recommendedWorkoutCategory}</strong> • Target: ~{todayWorkout?.targetDurationMin || 45}m
+            <p className="text-xs text-slate-400 mt-1 font-mono">
+              Focus: <strong className="text-amber-300">{todayWorkout?.category || dayInfo.recommendedWorkoutCategory}</strong> • Target: ~{todayWorkout?.targetDurationMin || 45}m
             </p>
           </div>
 
-          <div className="w-11 h-11 rounded-none bg-neutral-900 border border-neutral-700 flex items-center justify-center shrink-0 text-white">
-            <Dumbbell className="w-5 h-5 text-white" aria-hidden="true" />
+          <div className="w-11 h-11 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center shrink-0 text-amber-400">
+            <Dumbbell className="w-5 h-5" aria-hidden="true" />
           </div>
         </div>
 
         {/* Dynamic Status Strip */}
-        <div className="p-3 rounded-none bg-neutral-900/80 border border-neutral-800 flex items-center justify-between text-xs font-mono">
+        <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-between text-xs font-mono">
           <div className="flex items-center gap-2">
-            <Activity className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
-            <span className="text-neutral-400">Current Fatigue:</span>
-            <span className="text-white font-bold">{currentFatigue} / 10</span>
+            <Activity className="w-3.5 h-3.5 text-amber-400" aria-hidden="true" />
+            <span className="text-slate-400">Current Fatigue:</span>
+            <span className="text-amber-300 font-bold">{currentFatigue} / 10</span>
           </div>
 
           <div>
@@ -179,18 +179,18 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                 Done
               </span>
             ) : isWorkoutInProgress ? (
-              <span className="text-white font-bold">
+              <span className="text-amber-300 font-bold">
                 In Progress ({completedExercisesCount}/{totalExercisesCount})
               </span>
             ) : (
-              <span className="text-neutral-400">
+              <span className="text-slate-400">
                 {totalExercisesCount > 0 ? `${totalExercisesCount} exercises` : 'Rest Day'}
               </span>
             )}
           </div>
         </div>
 
-        {/* MASSIVE PRIMARY ACTION BUTTON (Zen Focus) */}
+        {/* MASSIVE PRIMARY ACTION BUTTON (Zen Focus - Warm Amber) */}
         <button
           onClick={handleStartWorkoutClick}
           aria-label={
@@ -200,9 +200,9 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
               ? 'Resume active workout session' 
               : "Start today's workout session"
           }
-          className="min-h-[56px] w-full py-4 px-5 rounded-none bg-white text-black font-mono font-black text-base uppercase tracking-wider hover:bg-neutral-200 transition-all active:translate-y-[1px] shadow-sm flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-white border border-white"
+          className="min-h-[56px] w-full py-4 px-5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-mono font-black text-base uppercase tracking-wider transition-all active:scale-[0.99] shadow-lg shadow-amber-500/20 flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-amber-300 border border-amber-400"
         >
-          <Play className="w-5 h-5 fill-black stroke-black" aria-hidden="true" />
+          <Play className="w-5 h-5 fill-slate-950 stroke-slate-950" aria-hidden="true" />
           <span>
             {isWorkoutDone 
               ? 'View Completed Workout' 
@@ -214,17 +214,17 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         </button>
       </section>
 
-      {/* 2. CONDENSED DAILY FUEL & WATER SUMMARY (Compact Progress View) */}
+      {/* 2. CONDENSED DAILY FUEL & WATER SUMMARY (Earthy Mint / Teal Zone) */}
       <section 
         aria-labelledby="condensed-fuel-heading"
-        className="rounded-none bg-neutral-950 border border-neutral-800 p-5 shadow-none space-y-4"
+        className="rounded-2xl bg-slate-900/90 border border-teal-500/25 p-5 shadow-sm space-y-4"
       >
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 block font-bold">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-teal-400 block font-bold">
               Daily Fuel & Hydration
             </span>
-            <h3 id="condensed-fuel-heading" className="text-base font-bold text-white tracking-tight">
+            <h3 id="condensed-fuel-heading" className="text-base font-bold text-slate-100 tracking-tight">
               Nutrition Readiness
             </h3>
           </div>
@@ -237,7 +237,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             }}
             aria-expanded={isFuelDetailsExpanded}
             aria-label={isFuelDetailsExpanded ? "Hide granular fuel details" : "Show granular fuel details"}
-            className="min-h-[44px] px-3 py-1.5 rounded-none border border-neutral-800 hover:border-neutral-700 bg-neutral-900 text-neutral-300 hover:text-white text-xs font-mono flex items-center gap-1.5 transition-colors focus:outline-none focus:ring-1 focus:ring-white"
+            className="min-h-[44px] px-3 py-1.5 rounded-xl border border-teal-500/30 hover:border-teal-400/50 bg-teal-500/10 text-teal-300 text-xs font-mono flex items-center gap-1.5 transition-colors focus:outline-none focus:ring-1 focus:ring-teal-400 active:scale-95"
           >
             <span>{isFuelDetailsExpanded ? 'Hide Grams' : 'Tap for Details'}</span>
             {isFuelDetailsExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -249,11 +249,11 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           {/* Calories Bar */}
           <div>
             <div className="flex justify-between text-xs font-mono mb-1">
-              <span className="text-neutral-300 flex items-center gap-1.5 font-bold">
-                <Flame className="w-3.5 h-3.5 text-neutral-400" aria-hidden="true" />
+              <span className="text-slate-300 flex items-center gap-1.5 font-bold">
+                <Flame className="w-3.5 h-3.5 text-teal-400" aria-hidden="true" />
                 Energy Intake
               </span>
-              <span className="text-white font-bold">{caloriesPercent}%</span>
+              <span className="text-teal-300 font-bold">{caloriesPercent}%</span>
             </div>
             <div 
               role="progressbar" 
@@ -261,10 +261,10 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
               aria-valuemin={0} 
               aria-valuemax={100}
               aria-label="Daily calories consumed percentage"
-              className="w-full bg-neutral-900 h-2.5 rounded-none overflow-hidden border border-neutral-800"
+              className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden border border-slate-700/60"
             >
               <div 
-                className="bg-white h-full transition-all duration-300"
+                className="bg-gradient-to-r from-teal-500 to-emerald-400 h-full transition-all duration-300 rounded-full"
                 style={{ width: `${caloriesPercent}%` }}
               />
             </div>
@@ -272,11 +272,11 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
 
           {/* Dual Compact Rings/Bars: Protein & Water */}
           <div className="grid grid-cols-2 gap-3 pt-1">
-            {/* Protein Percentage */}
-            <div className="p-3 rounded-none bg-neutral-900/60 border border-neutral-850">
+            {/* Protein Percentage (Mint / Emerald) */}
+            <div className="p-3 rounded-xl bg-slate-800/80 border border-teal-500/20">
               <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-                <span className="text-[10px] font-bold uppercase text-neutral-400">Protein</span>
-                <span className="text-white font-bold">{proteinPercent}%</span>
+                <span className="text-[10px] font-bold uppercase text-slate-400">Protein</span>
+                <span className="text-emerald-400 font-bold">{proteinPercent}%</span>
               </div>
               <div 
                 role="progressbar"
@@ -284,23 +284,23 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label="Daily protein target percentage"
-                className="w-full bg-neutral-950 h-1.5 rounded-none overflow-hidden border border-neutral-800"
+                className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden border border-slate-700/60"
               >
                 <div 
-                  className="bg-emerald-400 h-full transition-all duration-300"
+                  className="bg-emerald-400 h-full transition-all duration-300 rounded-full"
                   style={{ width: `${proteinPercent}%` }}
                 />
               </div>
             </div>
 
-            {/* Hydration Percentage */}
-            <div className="p-3 rounded-none bg-neutral-900/60 border border-neutral-850">
+            {/* Hydration Percentage (Cool Sky Blue) */}
+            <div className="p-3 rounded-xl bg-slate-800/80 border border-sky-500/20">
               <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-                <span className="text-[10px] font-bold uppercase text-neutral-400 flex items-center gap-1">
-                  <Droplet className="w-3 h-3 text-cyan-400" aria-hidden="true" />
+                <span className="text-[10px] font-bold uppercase text-slate-400 flex items-center gap-1">
+                  <Droplet className="w-3 h-3 text-sky-400" aria-hidden="true" />
                   Water
                 </span>
-                <span className="text-white font-bold">{waterPercent}%</span>
+                <span className="text-sky-300 font-bold">{waterPercent}%</span>
               </div>
               <div 
                 role="progressbar"
@@ -308,10 +308,10 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label="Daily water intake percentage"
-                className="w-full bg-neutral-950 h-1.5 rounded-none overflow-hidden border border-neutral-800"
+                className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden border border-slate-700/60"
               >
                 <div 
-                  className="bg-cyan-400 h-full transition-all duration-300"
+                  className="bg-sky-400 h-full transition-all duration-300 rounded-full"
                   style={{ width: `${waterPercent}%` }}
                 />
               </div>
@@ -321,24 +321,24 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
 
         {/* Granular Data Reveal (Only shown when tapped) */}
         {isFuelDetailsExpanded && (
-          <div className="mt-3 pt-3 border-t border-neutral-850 space-y-3 animate-fadeIn">
+          <div className="mt-3 pt-3 border-t border-teal-500/20 space-y-3 animate-fadeIn">
             <div className="grid grid-cols-2 gap-3 text-xs font-mono">
-              <div className="p-2.5 bg-neutral-900 border border-neutral-800">
-                <div className="text-[10px] uppercase text-neutral-400">Protein Grams</div>
-                <div className="text-sm font-bold text-white mt-0.5">
+              <div className="p-3 bg-slate-850 rounded-xl border border-teal-500/20">
+                <div className="text-[10px] uppercase text-teal-400">Protein Grams</div>
+                <div className="text-sm font-bold text-slate-100 mt-0.5">
                   {currentProtein}g / {targetProtein}g
                 </div>
-                <div className="text-[10px] text-neutral-400 mt-1">
+                <div className="text-[10px] text-slate-400 mt-1">
                   {remainingProtein > 0 ? `${Math.round(remainingProtein)}g left` : 'Goal reached ✓'}
                 </div>
               </div>
 
-              <div className="p-2.5 bg-neutral-900 border border-neutral-800">
-                <div className="text-[10px] uppercase text-neutral-400">Hydration Volume</div>
-                <div className="text-sm font-bold text-white mt-0.5">
+              <div className="p-3 bg-slate-850 rounded-xl border border-sky-500/20">
+                <div className="text-[10px] uppercase text-sky-400">Hydration Volume</div>
+                <div className="text-sm font-bold text-slate-100 mt-0.5">
                   {(currentWater / 1000).toFixed(1)}L / {(targetWater / 1000).toFixed(1)}L
                 </div>
-                <div className="text-[10px] text-neutral-400 mt-1">
+                <div className="text-[10px] text-slate-400 mt-1">
                   {remainingCals} kcal remaining
                 </div>
               </div>
@@ -350,7 +350,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                 type="button"
                 onClick={() => onAddWater(250)}
                 aria-label="Quick log 250 milliliters of water"
-                className="min-h-[44px] flex-1 py-1.5 rounded-none bg-neutral-900 hover:bg-neutral-850 border border-neutral-750 text-xs font-bold text-white active:scale-95 transition-all text-center focus:outline-none focus:ring-1 focus:ring-white"
+                className="min-h-[44px] flex-1 py-1.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-xs font-bold text-sky-300 active:scale-95 transition-all text-center focus:outline-none focus:ring-1 focus:ring-sky-400"
               >
                 +250ml
               </button>
@@ -358,7 +358,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                 type="button"
                 onClick={() => onAddWater(500)}
                 aria-label="Quick log 500 milliliters of water"
-                className="min-h-[44px] flex-1 py-1.5 rounded-none bg-neutral-900 hover:bg-neutral-850 border border-neutral-750 text-xs font-bold text-white active:scale-95 transition-all text-center focus:outline-none focus:ring-1 focus:ring-white"
+                className="min-h-[44px] flex-1 py-1.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-xs font-bold text-sky-300 active:scale-95 transition-all text-center focus:outline-none focus:ring-1 focus:ring-sky-400"
               >
                 +500ml
               </button>
@@ -370,27 +370,27 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         <button
           onClick={() => onNavigateTab('fuel')}
           aria-label="Open Fuel tab to log meals and view full macronutrient breakdown"
-          className="min-h-[48px] w-full py-3 px-4 rounded-none border border-neutral-800 bg-neutral-900 text-white font-mono font-bold text-xs uppercase tracking-wider hover:bg-neutral-850 transition-all active:translate-y-[1px] flex items-center justify-center gap-2 focus:outline-none focus:ring-1 focus:ring-white"
+          className="min-h-[48px] w-full py-3 px-4 rounded-xl border border-teal-500/30 bg-teal-500/10 text-teal-300 font-mono font-bold text-xs uppercase tracking-wider hover:bg-teal-500/20 transition-all active:scale-[0.99] flex items-center justify-center gap-2 focus:outline-none focus:ring-1 focus:ring-teal-400"
         >
           <span>Open Full Fuel Diary</span>
-          <ChevronRight className="w-4 h-4 text-neutral-400" aria-hidden="true" />
+          <ChevronRight className="w-4 h-4 text-teal-400" aria-hidden="true" />
         </button>
       </section>
 
-      {/* 3. Minimal Morning Weigh-In Card */}
+      {/* 3. Minimal Morning Weigh-In Card (Purple / Indigo Zone) */}
       <section 
         aria-labelledby="weigh-in-heading"
-        className="rounded-none bg-neutral-950 border border-neutral-800 p-4 shadow-none"
+        className="rounded-2xl bg-slate-900/90 border border-purple-500/25 p-4 shadow-sm"
       >
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <Scale className="w-4 h-4 text-neutral-400" aria-hidden="true" />
-            <h4 id="weigh-in-heading" className="text-xs font-bold text-white font-mono uppercase tracking-wider">
+            <Scale className="w-4 h-4 text-purple-400" aria-hidden="true" />
+            <h4 id="weigh-in-heading" className="text-xs font-bold text-slate-100 font-mono uppercase tracking-wider">
               Morning Weight
             </h4>
           </div>
           {todayWeight?.weightKg && (
-            <span className="text-xs font-mono font-bold text-white bg-neutral-900 px-2 py-0.5 rounded-none border border-neutral-750">
+            <span className="text-xs font-mono font-bold text-purple-300 bg-purple-500/15 px-2.5 py-0.5 rounded-full border border-purple-500/30">
               {todayWeight.weightKg} kg logged
             </span>
           )}
@@ -410,23 +410,23 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
               value={quickWeight}
               onChange={(e) => setQuickWeight(e.target.value)}
               placeholder="Enter weight in kg"
-              className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-none px-3 py-2 text-white text-xs font-bold placeholder-neutral-500 focus:outline-none focus:border-white transition-colors"
+              className="w-full min-h-[44px] bg-slate-800/90 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs font-bold placeholder-slate-500 focus:outline-none focus:border-purple-400 transition-colors"
             />
-            <span className="absolute right-3 top-3 text-xs text-neutral-400" aria-hidden="true">kg</span>
+            <span className="absolute right-3 top-3 text-xs text-slate-400" aria-hidden="true">kg</span>
           </div>
 
           <button
             type="submit"
             aria-label={weightSavedNotice ? 'Weight saved' : 'Save morning weight entry'}
-            className="min-h-[44px] px-4 py-2 rounded-none bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:translate-y-[1px] shrink-0 focus:outline-none focus:ring-1 focus:ring-white"
+            className="min-h-[44px] px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs uppercase tracking-wider transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-purple-400 shadow-sm"
           >
             {weightSavedNotice ? 'Saved ✓' : 'Save'}
           </button>
         </form>
 
         {todayWeight?.movingAverage7Day && (
-          <p className="text-[10px] text-neutral-400 mt-2 font-mono">
-            7-Day Moving Avg: <strong className="text-white">{todayWeight.movingAverage7Day} kg</strong>
+          <p className="text-[10px] text-slate-400 mt-2 font-mono">
+            7-Day Moving Avg: <strong className="text-purple-300">{todayWeight.movingAverage7Day} kg</strong>
           </p>
         )}
       </section>

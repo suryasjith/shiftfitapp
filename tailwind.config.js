@@ -8,21 +8,62 @@ export default {
   theme: {
     extend: {
       colors: {
-        // True Black & OLED Grayscale
-        black: '#000000',
+        // Soft Dark Slate Base (Eliminates OLED Halation & Eye Strain)
+        slate: {
+          950: '#0B1120',
+          900: '#0F172A',
+          850: '#162036',
+          800: '#1E293B',
+          750: '#28354D',
+          700: '#334155',
+          600: '#475569',
+          500: '#64748B',
+          400: '#94A3B8',
+          300: '#CBD5E1',
+          200: '#E2E8F0',
+          100: '#F1F5F9',
+          50: '#F8FAFC',
+        },
+        // Mapped neutral to soft slate/charcoal scale
         neutral: {
-          950: '#050505',
-          900: '#0a0a0a',
-          850: '#121212',
-          800: '#1a1a1a',
-          750: '#222222',
-          700: '#2c2c2c',
-          600: '#404040',
-          500: '#525252',
-          400: '#737373',
-          300: '#a3a3a3',
-          200: '#d4d4d4',
-          100: '#f5f5f5',
+          950: '#0B1120',
+          900: '#0F172A',
+          850: '#162036',
+          800: '#1E293B',
+          750: '#28354D',
+          700: '#334155',
+          600: '#475569',
+          500: '#64748B',
+          400: '#94A3B8',
+          300: '#CBD5E1',
+          200: '#E2E8F0',
+          100: '#F1F5F9',
+          50: '#F8FAFC',
+        },
+        // Zone-Specific Vibrancy Accents
+        workout: {
+          light: '#FDE68A',
+          DEFAULT: '#F59E0B',
+          coral: '#F97316',
+          dark: '#B45309',
+        },
+        fuel: {
+          light: '#A7F3D0',
+          DEFAULT: '#14B8A6',
+          mint: '#10B981',
+          dark: '#0F766E',
+        },
+        hydration: {
+          light: '#BAE6FD',
+          DEFAULT: '#0EA5E9',
+          blue: '#3B82F6',
+          dark: '#0369A1',
+        },
+        progress: {
+          light: '#DDD6FE',
+          DEFAULT: '#A855F7',
+          indigo: '#6366F1',
+          dark: '#7E22CE',
         }
       },
       fontFamily: {

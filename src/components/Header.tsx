@@ -78,22 +78,22 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      <header className="sticky top-0 z-30 bg-black/95 backdrop-blur-md border-b border-neutral-850 px-4 pt-[max(env(safe-area-inset-top,44px),44px)] pb-2.5 select-none space-y-2.5">
+      <header className="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-4 pt-[max(env(safe-area-inset-top,44px),44px)] pb-2.5 select-none space-y-2.5">
         {/* Top Bar: Brand, Weight Corridor & Utility Actions */}
         <div className="flex items-center justify-between">
           {/* Brand */}
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-750 flex items-center justify-center font-black font-mono text-xs text-white">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center font-black font-mono text-xs text-amber-400">
               SF
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-bold text-sm tracking-tight text-white font-mono">SHIFTFIT</span>
-                <span className="text-[9px] px-1.5 py-0.2 rounded border border-neutral-750 bg-neutral-900 text-neutral-300 font-mono font-medium">
+                <span className="font-bold text-sm tracking-tight text-slate-100 font-mono">SHIFTFIT</span>
+                <span className="text-[9px] px-1.5 py-0.2 rounded-full border border-slate-700 bg-slate-800 text-slate-300 font-mono font-medium">
                   {profile.targetWeightMinKg}–{profile.targetWeightMaxKg}kg
                 </span>
               </div>
-              <p className="text-[10px] text-neutral-400 font-mono">
+              <p className="text-[10px] text-slate-400 font-mono">
                 {isToday ? 'Live Daily Tracker' : 'Historical Archive Mode'}
               </p>
             </div>
@@ -105,21 +105,21 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onExportBackup}
               aria-label="Export Offline Database Backup (JSON)"
-              className="min-h-[44px] flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white hover:border-neutral-700 text-[10px] font-mono transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-white"
+              className="min-h-[44px] flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-slate-750 bg-slate-800/80 text-slate-300 hover:text-white hover:border-slate-600 text-[10px] font-mono transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-slate-400"
               title="100% Offline IndexedDB Engine Active. Tap to Export Local Backup."
             >
-              <Database className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
+              <Database className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
               <span>Offline DB</span>
             </button>
 
             {/* Contextual Tab Guide ('i' Icon) */}
             <button
               onClick={() => setIsTabGuideOpen(true)}
-              className="min-h-[44px] min-w-[44px] w-9 h-9 rounded-full border border-neutral-750 bg-neutral-900 hover:bg-neutral-800 text-white flex items-center justify-center transition-all active:scale-90 shadow-sm focus:outline-none focus:ring-2 focus:ring-white"
+              className="min-h-[44px] min-w-[44px] w-9 h-9 rounded-full border border-slate-700 bg-slate-800 hover:bg-slate-750 text-slate-200 flex items-center justify-center transition-all active:scale-90 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
               title="Tab Guide & Instructions"
               aria-label="Open Tab Instructions"
             >
-              <Info className="w-4 h-4 stroke-[2.2px] text-white" aria-hidden="true" />
+              <Info className="w-4 h-4 stroke-[2.2px] text-slate-200" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -128,13 +128,13 @@ export const Header: React.FC<HeaderProps> = ({
         <div 
           role="region"
           aria-label="Date Navigation"
-          className="flex items-center justify-between bg-neutral-950 border border-neutral-800 p-1 rounded-2xl shadow-inner"
+          className="flex items-center justify-between bg-slate-950 border border-slate-800 p-1 rounded-2xl shadow-inner"
         >
           {/* Previous Day Button */}
           <button
             onClick={handlePrevDay}
             aria-label="Go to previous day"
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl bg-neutral-900 hover:bg-neutral-850 text-neutral-300 hover:text-white border border-neutral-800 active:scale-90 transition-all focus:outline-none focus:ring-2 focus:ring-white"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl bg-slate-800/80 hover:bg-slate-750 text-slate-300 hover:text-white border border-slate-700/60 active:scale-90 transition-all focus:outline-none focus:ring-2 focus:ring-slate-400"
           >
             <ChevronLeft className="w-4 h-4" aria-hidden="true" />
           </button>

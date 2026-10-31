@@ -262,29 +262,29 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
 
   return (
     <div className="space-y-4 pb-28 text-left animate-fadeIn font-sans">
-      {/* 1. Primary Header Card: Calories & Fuel Overview */}
+      {/* 1. Primary Header Card: Calories & Fuel Overview (Earthy Mint / Teal Zone) */}
       <section 
         aria-labelledby="fuel-header-title"
-        className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
+        className="rounded-2xl bg-slate-900/90 border border-teal-500/25 p-5 shadow-sm space-y-4"
       >
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 flex-wrap mb-1">
-              <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-neutral-700 bg-neutral-900 text-neutral-200">
+              <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-teal-500/30 bg-teal-500/10 text-teal-300">
                 {dayInfo.isShiftDay ? '12H SHIFT MACROS' : 'OFF-DAY MACROS'}
               </span>
               {activeExpenditureCalories > 0 && (
-                <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-white text-black flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3 text-black" aria-hidden="true" />
+                <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3 text-teal-400" aria-hidden="true" />
                   +{activeExpenditureCalories} KCAL EXPENDED
                 </span>
               )}
             </div>
-            <h2 id="fuel-header-title" className="text-xl font-bold text-white tracking-tight mt-1">
+            <h2 id="fuel-header-title" className="text-xl font-bold text-slate-100 tracking-tight mt-1">
               Daily Fuel & Calories
             </h2>
-            <p className="text-xs text-neutral-400 mt-0.5">
-              Target: <strong className="text-white font-mono">{effectiveTargetCalories} kcal</strong> • Consumed: <strong className="text-white font-mono">{currentCalories} kcal</strong>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Target: <strong className="text-teal-300 font-mono">{effectiveTargetCalories} kcal</strong> • Consumed: <strong className="text-slate-100 font-mono">{currentCalories} kcal</strong>
             </p>
           </div>
 
@@ -292,9 +292,9 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
           <button
             onClick={() => setShowClearConfirm(true)}
             aria-label="Clear all logged meals for today and start fresh"
-            className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-xl border border-neutral-800 bg-neutral-900 text-neutral-300 hover:text-white text-xs font-medium transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-white"
+            className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-teal-400"
           >
-            <RotateCcw className="w-3.5 h-3.5 text-neutral-400" aria-hidden="true" />
+            <RotateCcw className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
             <span>Start Fresh</span>
           </button>
         </div>
@@ -305,27 +305,27 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
             role="alertdialog"
             aria-labelledby="clear-meals-title"
             aria-describedby="clear-meals-desc"
-            className="p-4 rounded-xl bg-neutral-900 border border-neutral-700 space-y-2 animate-fadeIn font-sans"
+            className="p-4 rounded-xl bg-slate-800 border border-teal-500/40 space-y-2 animate-fadeIn font-sans"
           >
-            <div className="flex items-center gap-2 text-xs text-white font-bold">
-              <AlertCircle className="w-4 h-4 text-neutral-300" aria-hidden="true" />
+            <div className="flex items-center gap-2 text-xs text-teal-300 font-bold">
+              <AlertCircle className="w-4 h-4 text-teal-400" aria-hidden="true" />
               <span id="clear-meals-title">Clear today's logged meals and reset macros?</span>
             </div>
-            <p id="clear-meals-desc" className="text-xs text-neutral-300">
+            <p id="clear-meals-desc" className="text-xs text-slate-300">
               This will remove all logged foods and reset calorie intake to zero.
             </p>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setShowClearConfirm(false)}
-                className="min-h-[44px] px-3.5 py-2 rounded-lg border border-neutral-750 text-neutral-200 text-xs hover:text-white"
+                className="min-h-[44px] px-3.5 py-2 rounded-lg border border-slate-700 text-slate-300 text-xs hover:text-white"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleStartFreshNutrition}
-                className="min-h-[44px] px-4 py-2 rounded-lg bg-white text-black font-bold text-xs hover:bg-neutral-200"
+                className="min-h-[44px] px-4 py-2 rounded-lg bg-teal-500 text-slate-950 font-bold text-xs hover:bg-teal-400"
               >
                 Confirm Reset
               </button>
@@ -336,14 +336,14 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
         {/* Big Calories Progress Bar */}
         <div>
           <div className="flex justify-between text-xs mb-1.5">
-            <span className="text-neutral-300 font-medium">
+            <span className="text-slate-400 font-medium">
               {remainingCalories > 0 ? (
                 <><strong>{remainingCalories} kcal</strong> remaining to reach goal</>
               ) : (
-                <strong className="text-white">Daily Calorie Target Met ✓</strong>
+                <strong className="text-emerald-400">Daily Calorie Target Met ✓</strong>
               )}
             </span>
-            <span className="text-white font-mono font-bold">{caloriesPercent}%</span>
+            <span className="text-teal-300 font-mono font-bold">{caloriesPercent}%</span>
           </div>
           <div 
             role="progressbar"
@@ -351,10 +351,10 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
             aria-valuemin={0}
             aria-valuemax={100}
             aria-label="Calories consumed percentage"
-            className="w-full bg-neutral-900 h-2.5 rounded-full overflow-hidden border border-neutral-850"
+            className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden border border-slate-700/60"
           >
             <div 
-              className="h-full rounded-full bg-white transition-all duration-300"
+              className="h-full rounded-full bg-gradient-to-r from-teal-500 to-emerald-400 transition-all duration-300"
               style={{ width: `${caloriesPercent}%` }}
             />
           </div>

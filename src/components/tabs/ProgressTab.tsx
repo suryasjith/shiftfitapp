@@ -313,11 +313,11 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
   return (
     <div className="space-y-4 pb-28 text-left animate-fadeIn font-sans">
-      {/* Sub-Section Segmented Control (WCAG 2.2 Tablist) */}
+      {/* Sub-Section Segmented Control (Purple / Indigo Zone) */}
       <div 
         role="tablist"
         aria-label="Progress views"
-        className="bg-neutral-950 border border-neutral-800 p-1.5 rounded-2xl grid grid-cols-4 gap-1 shadow-sm"
+        className="bg-slate-900 border border-purple-500/25 p-1.5 rounded-2xl grid grid-cols-4 gap-1 shadow-sm"
       >
         <button
           role="tab"
@@ -325,10 +325,10 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           aria-selected={activeSection === 'trends'}
           aria-controls="subtabpanel-trends"
           onClick={() => setActiveSection('trends')}
-          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-white ${
+          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-purple-400 ${
             activeSection === 'trends'
-              ? 'bg-white text-black shadow-md'
-              : 'text-neutral-400 hover:text-white'
+              ? 'bg-purple-600 text-white shadow-md'
+              : 'text-slate-400 hover:text-white'
           }`}
         >
           Trends
@@ -339,10 +339,10 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           aria-selected={activeSection === 'history'}
           aria-controls="subtabpanel-history"
           onClick={() => setActiveSection('history')}
-          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-white ${
+          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-purple-400 ${
             activeSection === 'history'
-              ? 'bg-white text-black shadow-md'
-              : 'text-neutral-400 hover:text-white'
+              ? 'bg-purple-600 text-white shadow-md'
+              : 'text-slate-400 hover:text-white'
           }`}
         >
           History
@@ -353,10 +353,10 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           aria-selected={activeSection === 'cardio'}
           aria-controls="subtabpanel-cardio"
           onClick={() => setActiveSection('cardio')}
-          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-white ${
+          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-purple-400 ${
             activeSection === 'cardio'
-              ? 'bg-white text-black shadow-md'
-              : 'text-neutral-400 hover:text-white'
+              ? 'bg-purple-600 text-white shadow-md'
+              : 'text-slate-400 hover:text-white'
           }`}
         >
           Cardio
@@ -367,10 +367,10 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           aria-selected={activeSection === 'settings'}
           aria-controls="subtabpanel-settings"
           onClick={() => setActiveSection('settings')}
-          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-white ${
+          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-purple-400 ${
             activeSection === 'settings'
-              ? 'bg-white text-black shadow-md'
-              : 'text-neutral-400 hover:text-white'
+              ? 'bg-purple-600 text-white shadow-md'
+              : 'text-slate-400 hover:text-white'
           }`}
         >
           Data
