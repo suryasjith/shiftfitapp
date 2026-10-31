@@ -229,7 +229,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           {isWorkoutDone ? (
             <span className="text-white font-bold flex items-center gap-1">
               <Check className="w-3.5 h-3.5 text-white" aria-hidden="true" />
-              Completed Today
+              Completed on this date
             </span>
           ) : isWorkoutInProgress ? (
             <span className="text-white font-bold">
@@ -237,7 +237,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             </span>
           ) : (
             <span className="text-neutral-300">
-              {totalExercisesCount} movements scheduled
+              {totalExercisesCount > 0 ? `${totalExercisesCount} movements scheduled (Not logged)` : 'Rest Day'}
             </span>
           )}
         </div>

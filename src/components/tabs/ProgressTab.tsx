@@ -8,11 +8,13 @@ import {
   WeeklyAnalyticsReport, 
   ActivityEntry,
   DailyStepsEntry,
+  HydrationLog,
   ActivityType
 } from '../../types';
 import { AnalyticsEngine } from '../../services/analyticsEngine';
 import { PhysicsEngine } from '../../services/physicsEngine';
 import { ACTIVITY_MET_TABLE, ActivityEngine, ActivityMeta } from '../../services/activityEngine';
+import { RotaEngine } from '../../services/rotaEngine';
 import { 
   Flame, 
   Clock, 
@@ -27,12 +29,19 @@ import {
   Zap,
   Activity as ActivityIcon,
   Sparkles,
-  Info
+  Info,
+  Calendar,
+  Dumbbell,
+  Utensils,
+  Droplets,
+  Check,
+  ChevronRight
 } from 'lucide-react';
 import { soundManager } from '../../services/audioTimer';
 
 interface ProgressTabProps {
   todayStr: string;
+  selectedDate: string;
   profile: UserProfile;
   weights: Record<string, BodyweightEntry>;
   nutritions: Record<string, NutritionLog>;
@@ -42,6 +51,11 @@ interface ProgressTabProps {
   activities: ActivityEntry[];
   dailySteps: DailyStepsEntry | null;
   todayWeight: BodyweightEntry | null;
+  allActivities?: Record<string, ActivityEntry[]>;
+  allSteps?: Record<string, DailyStepsEntry>;
+  allHydration?: Record<string, HydrationLog>;
+  onSelectDate: (date: string) => void;
+  onNavigateTab: (tab: any) => void;
   onSaveWeight: (entry: BodyweightEntry) => void;
   onSaveActivity: (activity: ActivityEntry) => void;
   onDeleteActivity: (id: string) => void;
@@ -53,6 +67,7 @@ interface ProgressTabProps {
 
 export const ProgressTab: React.FC<ProgressTabProps> = ({
   todayStr,
+  selectedDate,
   profile,
   weights,
   nutritions,
@@ -62,6 +77,11 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
   activities,
   dailySteps,
   todayWeight,
+  allActivities = {},
+  allSteps = {},
+  allHydration = {},
+  onSelectDate,
+  onNavigateTab,
   onSaveWeight,
   onSaveActivity,
   onDeleteActivity,
@@ -70,8 +90,8 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
   onExportBackup,
   onOpenGuide,
 }) => {
-  // Sub-navigation: Progressive disclosure
-  const [activeSection, setActiveSection] = useState<'trends' | 'cardio' | 'settings'>('trends');
+  // Sub-navigation: 4 Progressive Disclosure Tabs
+  const [activeSection, setActiveSection] = useState<'trends' | 'history' | 'cardio' | 'settings'>('trends');
 
   // Input states - Completely empty by default with placeholders
   const [newWeightInput, setNewWeightInput] = useState<string>('');
@@ -103,7 +123,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
   const report: WeeklyAnalyticsReport = useMemo(() => {
     return AnalyticsEngine.generateWeeklyReport(
-      todayStr,
+      selectedDate,
       profile,
       computedWeights,
       nutritions,
@@ -111,7 +131,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
       shifts,
       fatigueLogs
     );
-  }, [todayStr, profile, computedWeights, nutritions, workouts, shifts, fatigueLogs]);
+  }, [selectedDate, profile, computedWeights, nutritions, workouts, shifts, fatigueLogs]);
 
   // Cardio & Steps MET Calculations Memoized
   const currentMeta: ActivityMeta = ACTIVITY_MET_TABLE[selectedType] || ACTIVITY_MET_TABLE.swimming_moderate;
@@ -130,6 +150,72 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
     return ActivityEngine.calculateStepCalories(currentStepCount, currentEffectiveWeight);
   }, [currentStepCount, currentEffectiveWeight]);
 
+  // Generate 14-Day Rolling History Archive (Vercel React Best Practices)
+  const pastDaysArchive = useMemo(() => {
+    const list = [];
+    const today = RotaEngine.parseDate(todayStr);
+
+    for (let i = 0; i < 14; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const dateStr = RotaEngine.formatDate(d);
+      
+      const dayInfo = RotaEngine.getDayInfo(dateStr, profile, shifts);
+      const workout = workouts[dateStr] || null;
+      const nutrition = nutritions[dateStr] || null;
+      const hydro = allHydration[dateStr] || null;
+      const steps = allSteps[dateStr] || null;
+      const dayActivities = allActivities[dateStr] || [];
+      const weight = weights[dateStr] || null;
+      const fatigue = fatigueLogs[dateStr] ?? null;
+
+      // Workout stats
+      const totalSets = workout?.exercises.reduce((acc, ex) => acc + ex.sets.length, 0) || 0;
+      const completedSets = workout?.exercises.reduce((acc, ex) => acc + ex.sets.filter(s => s.completed).length, 0) || 0;
+      const isWorkoutDone = workout?.completed || (totalSets > 0 && completedSets === totalSets);
+      const tonnage = workout?.exercises.reduce((acc, ex) => 
+        acc + ex.sets.filter(s => s.completed).reduce((sAcc, s) => sAcc + (s.weightKg || 0) * (s.reps || 0), 0), 0) || 0;
+
+      // Nutrition stats
+      const calories = nutrition?.calories || 0;
+      const protein = nutrition?.proteinGrams || 0;
+      const foodCount = nutrition?.foods?.length || 0;
+
+      // Hydration stats
+      const waterMl = hydro?.currentMl || 0;
+
+      // Activity stats
+      const stepCount = steps?.stepCount || 0;
+      const cardioCalories = dayActivities.reduce((acc, a) => acc + (a.caloriesBurned || 0), 0);
+
+      // Has any input recorded on this day?
+      const hasInputs = completedSets > 0 || foodCount > 0 || waterMl > 0 || stepCount > 0 || dayActivities.length > 0 || weight !== null || fatigue !== null;
+
+      list.push({
+        dateStr,
+        dayOffset: i,
+        dayInfo,
+        workout,
+        isWorkoutDone,
+        completedSets,
+        totalSets,
+        tonnage,
+        nutrition,
+        calories,
+        protein,
+        foodCount,
+        waterMl,
+        stepCount,
+        cardioCalories,
+        weight,
+        fatigue,
+        hasInputs,
+      });
+    }
+
+    return list;
+  }, [todayStr, profile, shifts, workouts, nutritions, allHydration, allSteps, allActivities, weights, fatigueLogs]);
+
   // Handlers with useCallback
   const handleWeightSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
@@ -137,14 +223,14 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
     if (!isNaN(val) && val >= 30 && val <= 250) {
       soundManager.playTap();
       onSaveWeight({
-        date: todayStr,
+        date: selectedDate,
         weightKg: val,
       });
       setNewWeightInput('');
       setWeightSavedNotice(true);
       setTimeout(() => setWeightSavedNotice(false), 2000);
     }
-  }, [newWeightInput, onSaveWeight, todayStr]);
+  }, [newWeightInput, onSaveWeight, selectedDate]);
 
   const handleLogCardioSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
@@ -153,7 +239,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
     soundManager.playTap();
     const newActivity: ActivityEntry = {
       id: `act_${Date.now()}`,
-      date: todayStr,
+      date: selectedDate,
       activityType: selectedType,
       title: currentMeta.label,
       category: currentMeta.category,
@@ -167,7 +253,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
     onSaveActivity(newActivity);
     setDurationStr('');
     setDistanceStr('');
-  }, [parsedDuration, selectedType, currentMeta, liveBurnEstimate, parsedDistance, onSaveActivity, todayStr]);
+  }, [parsedDuration, selectedType, currentMeta, liveBurnEstimate, parsedDistance, onSaveActivity, selectedDate]);
 
   const handleSaveStepsSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
@@ -177,7 +263,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
     soundManager.playTap();
     const calc = ActivityEngine.calculateStepCalories(validCount, currentEffectiveWeight);
     const updated: DailyStepsEntry = {
-      date: todayStr,
+      date: selectedDate,
       stepCount: validCount,
       estimatedCaloriesBurned: calc.totalStepCalories,
       activeCaloriesBurned: calc.activeStepCalories,
@@ -188,21 +274,21 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
     setStepInputStr('');
     setStepSavedNotice(true);
     setTimeout(() => setStepSavedNotice(false), 2000);
-  }, [stepInputStr, currentEffectiveWeight, onSaveSteps, todayStr]);
+  }, [stepInputStr, currentEffectiveWeight, onSaveSteps, selectedDate]);
 
   const handleAddStepIncrement = useCallback((increment: number) => {
     soundManager.playTap();
     const newCount = Math.max(0, currentStepCount + increment);
     const calc = ActivityEngine.calculateStepCalories(newCount, currentEffectiveWeight);
     const updated: DailyStepsEntry = {
-      date: todayStr,
+      date: selectedDate,
       stepCount: newCount,
       estimatedCaloriesBurned: calc.totalStepCalories,
       activeCaloriesBurned: calc.activeStepCalories,
       lastUpdated: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
     };
     onSaveSteps(updated);
-  }, [currentStepCount, currentEffectiveWeight, onSaveSteps, todayStr]);
+  }, [currentStepCount, currentEffectiveWeight, onSaveSteps, selectedDate]);
 
   const getActivityIcon = (category: string) => {
     switch (category) {
@@ -231,7 +317,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
       <div 
         role="tablist"
         aria-label="Progress views"
-        className="bg-neutral-950 border border-neutral-800 p-1.5 rounded-2xl grid grid-cols-3 gap-1 shadow-sm"
+        className="bg-neutral-950 border border-neutral-800 p-1.5 rounded-2xl grid grid-cols-4 gap-1 shadow-sm"
       >
         <button
           role="tab"
@@ -245,7 +331,21 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
               : 'text-neutral-400 hover:text-white'
           }`}
         >
-          Weekly Trends
+          Trends
+        </button>
+        <button
+          role="tab"
+          id="subtab-history"
+          aria-selected={activeSection === 'history'}
+          aria-controls="subtabpanel-history"
+          onClick={() => setActiveSection('history')}
+          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-white ${
+            activeSection === 'history'
+              ? 'bg-white text-black shadow-md'
+              : 'text-neutral-400 hover:text-white'
+          }`}
+        >
+          History
         </button>
         <button
           role="tab"
@@ -259,7 +359,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
               : 'text-neutral-400 hover:text-white'
           }`}
         >
-          Cardio & Steps
+          Cardio
         </button>
         <button
           role="tab"
@@ -273,11 +373,13 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
               : 'text-neutral-400 hover:text-white'
           }`}
         >
-          Data & Backup
+          Data
         </button>
       </div>
 
+      {/* ========================================================================= */}
       {/* SECTION 1: WEEKLY TRENDS & BODYWEIGHT ANALYTICS */}
+      {/* ========================================================================= */}
       {activeSection === 'trends' && (
         <div 
           role="tabpanel"
@@ -345,7 +447,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
             {/* Log Weight Form (Empty with Placeholder) */}
             <form onSubmit={handleWeightSubmit} className="pt-2 flex items-center gap-2">
               <label htmlFor="progress-log-weight" className="sr-only">
-                Log today's bodyweight in kilograms
+                Log bodyweight in kilograms for {selectedDate}
               </label>
               <input
                 id="progress-log-weight"
@@ -448,7 +550,205 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
         </div>
       )}
 
-      {/* SECTION 2: CARDIO TRACKING & DAILY STEPS (MET ENGINE) */}
+      {/* ========================================================================= */}
+      {/* SECTION 2: PAST DAYS HISTORY LOG (14-DAY DAILY ARCHIVE) */}
+      {/* ========================================================================= */}
+      {activeSection === 'history' && (
+        <div 
+          role="tabpanel"
+          id="subtabpanel-history"
+          aria-labelledby="subtab-history"
+          className="space-y-4 animate-fadeIn"
+        >
+          <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-2">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-white" aria-hidden="true" />
+              <h3 className="text-base font-bold text-white tracking-tight">
+                Past Days History Archive
+              </h3>
+            </div>
+            <p className="text-xs text-neutral-400 leading-relaxed">
+              Browse what you trained, ate, and logged on previous days. Days with zero inputs are cleanly detailed so you can audit off-shifts and rest periods.
+            </p>
+          </div>
+
+          {/* 14-Day Chronological Timeline Feed */}
+          <div 
+            role="feed"
+            aria-label="Past Days History Feed"
+            className="space-y-3"
+          >
+            {pastDaysArchive.map((item) => {
+              const d = RotaEngine.parseDate(item.dateStr);
+              const formattedDate = d.toLocaleDateString('en-GB', { 
+                weekday: 'short', 
+                day: 'numeric', 
+                month: 'short', 
+                year: 'numeric' 
+              });
+              const isSelected = selectedDate === item.dateStr;
+              const isToday = todayStr === item.dateStr;
+              const isYesterday = item.dayOffset === 1;
+
+              return (
+                <article
+                  key={item.dateStr}
+                  className={`rounded-2xl border p-4 transition-all duration-200 space-y-3.5 ${
+                    isSelected 
+                      ? 'bg-neutral-950 border-white shadow-lg' 
+                      : 'bg-neutral-950 border-neutral-800 hover:border-neutral-700'
+                  }`}
+                >
+                  {/* Card Header: Date & Shift Info */}
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {isToday && (
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-white text-black font-mono">
+                            TODAY
+                          </span>
+                        )}
+                        {isYesterday && (
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold border border-neutral-700 bg-neutral-900 text-neutral-300 font-mono">
+                            YESTERDAY
+                          </span>
+                        )}
+                        <span className="text-xs font-bold text-white font-mono">
+                          {formattedDate}
+                        </span>
+                      </div>
+
+                      <span className="text-[11px] text-neutral-400 font-mono mt-0.5 block">
+                        {item.dayInfo.isShiftDay ? '12H Day Shift' : 'Off-Day Training'} • Cycle Day {item.dayInfo.cycleDayIndex + 1}/14
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      {item.hasInputs ? (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-neutral-900 border border-neutral-750 text-neutral-200 flex items-center gap-1">
+                          <Check className="w-3 h-3 text-white" aria-hidden="true" />
+                          <span>Logged</span>
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-mono text-neutral-400 border border-neutral-850 bg-neutral-900/60">
+                          0 Inputs (Rest)
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Daily Records Grid: Workout, Food, Water, Steps, Weight */}
+                  <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                    {/* 1. Workout Record */}
+                    <div className="p-2.5 rounded-xl bg-neutral-900/80 border border-neutral-850 space-y-1">
+                      <div className="flex items-center gap-1.5 text-neutral-400 text-[10px] font-bold uppercase">
+                        <Dumbbell className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
+                        <span>Workout</span>
+                      </div>
+                      {item.completedSets > 0 ? (
+                        <div>
+                          <span className="text-white font-bold block truncate">
+                            {item.workout?.title || item.dayInfo.workoutTitle}
+                          </span>
+                          <span className="text-[10px] text-neutral-300 block">
+                            {item.completedSets}/{item.totalSets} sets • {Math.round(item.tonnage).toLocaleString()} kg
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-[11px] text-neutral-400 block italic">
+                          No sets logged
+                        </span>
+                      )}
+                    </div>
+
+                    {/* 2. Food & Fuel Record */}
+                    <div className="p-2.5 rounded-xl bg-neutral-900/80 border border-neutral-850 space-y-1">
+                      <div className="flex items-center gap-1.5 text-neutral-400 text-[10px] font-bold uppercase">
+                        <Utensils className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
+                        <span>Fuel & Macros</span>
+                      </div>
+                      {item.foodCount > 0 || item.calories > 0 ? (
+                        <div>
+                          <span className="text-white font-bold block">
+                            {item.calories} kcal
+                          </span>
+                          <span className="text-[10px] text-neutral-300 block">
+                            {item.protein}g Protein ({item.foodCount} foods)
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-[11px] text-neutral-400 block italic">
+                          No meals logged (0 kcal)
+                        </span>
+                      )}
+                    </div>
+
+                    {/* 3. Steps & Cardio Record */}
+                    <div className="p-2.5 rounded-xl bg-neutral-900/80 border border-neutral-850 space-y-1">
+                      <div className="flex items-center gap-1.5 text-neutral-400 text-[10px] font-bold uppercase">
+                        <Footprints className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
+                        <span>Steps & Cardio</span>
+                      </div>
+                      {item.stepCount > 0 || item.cardioCalories > 0 ? (
+                        <div>
+                          <span className="text-white font-bold block">
+                            {item.stepCount.toLocaleString()} steps
+                          </span>
+                          <span className="text-[10px] text-neutral-300 block">
+                            +{item.cardioCalories} kcal cardio
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-[11px] text-neutral-400 block italic">
+                          0 steps / cardio
+                        </span>
+                      )}
+                    </div>
+
+                    {/* 4. Hydration & Weight Record */}
+                    <div className="p-2.5 rounded-xl bg-neutral-900/80 border border-neutral-850 space-y-1">
+                      <div className="flex items-center gap-1.5 text-neutral-400 text-[10px] font-bold uppercase">
+                        <Droplets className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
+                        <span>Fluid & Weight</span>
+                      </div>
+                      <div>
+                        <span className="text-white font-bold block">
+                          {item.waterMl > 0 ? `${(item.waterMl / 1000).toFixed(1)}L water` : 'No water'}
+                        </span>
+                        <span className="text-[10px] text-neutral-300 block">
+                          {item.weight?.weightKg ? `${item.weight.weightKg} kg` : 'Weight: —'} • {item.fatigue !== null ? `RPE ${item.fatigue}/10` : 'RPE: —'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1-Tap Action: Inspect & View Entire Day */}
+                  <button
+                    onClick={() => {
+                      soundManager.playTap();
+                      onSelectDate(item.dateStr);
+                      onNavigateTab('today');
+                    }}
+                    aria-label={`Open full dashboard and workout details for ${formattedDate}`}
+                    className={`min-h-[44px] w-full py-2.5 px-3 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white ${
+                      isSelected
+                        ? 'bg-neutral-800 text-white border border-neutral-700'
+                        : 'bg-white text-black hover:bg-neutral-200'
+                    }`}
+                  >
+                    <span>{isSelected ? 'Currently Selected (View in Today)' : 'Inspect This Day in App'}</span>
+                    <ChevronRight className="w-4 h-4" aria-hidden="true" />
+                  </button>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* SECTION 3: CARDIO TRACKING & DAILY STEPS (MET ENGINE) */}
+      {/* ========================================================================= */}
       {activeSection === 'cardio' && (
         <div 
           role="tabpanel"
@@ -470,7 +770,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                   <h4 id="daily-steps-title" className="text-xs font-bold text-white uppercase tracking-wider">
                     Total Daily Steps
                   </h4>
-                  <p className="text-[11px] text-neutral-400">Manual pedometer log for iOS Safari PWA</p>
+                  <p className="text-[11px] text-neutral-400">Manual pedometer log for {selectedDate}</p>
                 </div>
               </div>
 
@@ -483,7 +783,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
             <form onSubmit={handleSaveStepsSubmit} className="flex items-center gap-2 mt-2">
               <label htmlFor="manual-daily-steps" className="sr-only">
-                Enter total daily step count
+                Enter total daily step count for {selectedDate}
               </label>
               <input
                 id="manual-daily-steps"
@@ -647,13 +947,13 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           >
             <div className="flex items-center justify-between">
               <h4 id="cardio-diary-title" className="text-xs font-bold text-white uppercase tracking-wider">
-                Today's Cardio Diary
+                Cardio Diary for {selectedDate}
               </h4>
               {activities.length > 0 && (
                 <button
                   type="button"
                   onClick={() => setShowClearConfirm(true)}
-                  aria-label="Clear all cardio sessions logged today"
+                  aria-label="Clear all cardio sessions logged for this day"
                   className="min-h-[44px] text-xs text-neutral-400 hover:text-white flex items-center gap-1 font-mono p-2 focus:outline-none focus:ring-2 focus:ring-white rounded-lg"
                 >
                   <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
@@ -668,7 +968,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 aria-labelledby="clear-cardio-title"
                 className="p-4 rounded-xl bg-neutral-900 border border-neutral-700 space-y-2 animate-fadeIn font-sans"
               >
-                <p id="clear-cardio-title" className="text-xs text-white font-bold">Clear all cardio logged today?</p>
+                <p id="clear-cardio-title" className="text-xs text-white font-bold">Clear all cardio logged for this day?</p>
                 <div className="flex justify-end gap-2 pt-1">
                   <button
                     onClick={() => setShowClearConfirm(false)}
@@ -692,7 +992,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
             {activities.length === 0 ? (
               <div className="p-6 text-center text-neutral-400 font-sans border border-dashed border-neutral-800 rounded-xl space-y-2">
                 <Flame className="w-8 h-8 mx-auto text-neutral-600" aria-hidden="true" />
-                <p className="text-xs font-bold text-neutral-200">No Cardio Logged Today</p>
+                <p className="text-xs font-bold text-neutral-200">No Cardio Logged for this Date</p>
                 <p className="text-[11px] text-neutral-400 max-w-xs mx-auto">
                   Select an activity above (Swimming, Running, Incline Treadmill) to calculate MET burn.
                 </p>
@@ -737,7 +1037,9 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
         </div>
       )}
 
-      {/* SECTION 3: DATA BACKUP & SETTINGS */}
+      {/* ========================================================================= */}
+      {/* SECTION 4: DATA BACKUP & SETTINGS */}
+      {/* ========================================================================= */}
       {activeSection === 'settings' && (
         <div 
           role="tabpanel"

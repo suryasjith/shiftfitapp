@@ -29,19 +29,21 @@ export const App: React.FC = () => {
   const [isReady, setIsReady] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState<NavTab>('today');
   
+  // Real calendar anchor for today
   const todayStr = useMemo(() => RotaEngine.formatDate(new Date()), []);
+  // Universal Date State: allows browsing yesterday, past days, or future shifts
+  const [selectedDate, setSelectedDate] = useState<string>(todayStr);
 
-  // Core App State
+  // Core App State (All IndexedDB Historical Data)
   const [profile, setProfile] = useState<UserProfile>(DEFAULT_PROFILE);
   const [customShifts, setCustomShifts] = useState<Record<string, ShiftDay>>({});
   const [workouts, setWorkouts] = useState<Record<string, WorkoutSession>>({});
   const [nutritions, setNutritions] = useState<Record<string, NutritionLog>>({});
-  const [hydration, setHydration] = useState<HydrationLog | null>(null);
+  const [allHydration, setAllHydration] = useState<Record<string, HydrationLog>>({});
   const [weights, setWeights] = useState<Record<string, BodyweightEntry>>({});
-  const [activities, setActivities] = useState<ActivityEntry[]>([]);
-  const [dailySteps, setDailySteps] = useState<DailyStepsEntry | null>(null);
+  const [allActivities, setAllActivities] = useState<Record<string, ActivityEntry[]>>({});
+  const [allSteps, setAllSteps] = useState<Record<string, DailyStepsEntry>>({});
   const [dailyFatigueLogs, setDailyFatigueLogs] = useState<Record<string, number>>({});
-  const [currentFatigue, setCurrentFatigue] = useState<number>(3);
 
   // Modals & Contextual Overlays
   const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(false);
@@ -67,8 +69,9 @@ export const App: React.FC = () => {
       const loadedWorkouts = await storage.getWorkouts();
       const loadedNutrition = await storage.getNutrition();
       const loadedWeight = await storage.getWeightHistory();
-      const loadedActivities = await storage.getActivitiesByDate(todayStr);
-      const loadedSteps = await storage.getStepsByDate(todayStr);
+      const loadedActivitiesMap = await storage.getAllActivities();
+      const loadedStepsMap = await storage.getAllSteps();
+      const loadedHydrationMap = await storage.getAll<HydrationLog>('hydration');
       const loadedFatigueAll = await storage.getAll<number>('dailyFatigue');
 
       setProfile(loadedProfile);
@@ -76,28 +79,10 @@ export const App: React.FC = () => {
       setWorkouts(loadedWorkouts);
       setNutritions(loadedNutrition);
       setWeights(loadedWeight);
-      setActivities(loadedActivities);
-      setDailySteps(loadedSteps);
+      setAllActivities(loadedActivitiesMap);
+      setAllSteps(loadedStepsMap);
+      setAllHydration(loadedHydrationMap);
       setDailyFatigueLogs(loadedFatigueAll);
-
-      const todayFatigue = loadedFatigueAll[todayStr];
-      if (todayFatigue !== undefined) {
-        setCurrentFatigue(todayFatigue);
-      }
-
-      const todayHydro = await storage.getHydrationByDate(todayStr);
-      if (todayHydro) {
-        setHydration(todayHydro);
-      } else {
-        const initialHydro: HydrationLog = {
-          date: todayStr,
-          targetMl: loadedProfile.dailyWaterTargetMl || 3800,
-          currentMl: 0,
-          drinks: [],
-        };
-        setHydration(initialHydro);
-        await storage.saveHydration(initialHydro);
-      }
 
       // First-time onboarding overlay check
       const hasOnboarded = localStorage.getItem('shiftfit_onboarded_v2');
@@ -109,39 +94,44 @@ export const App: React.FC = () => {
     }
 
     loadData();
-  }, [todayStr]);
+  }, []);
 
   const handleDismissOnboarding = useCallback(() => {
     setIsOnboardingOpen(false);
     localStorage.setItem('shiftfit_onboarded_v2', 'true');
   }, []);
 
-  // Memoized Workout Generation (Vercel React Best Practices)
-  const todayWorkout = useMemo(() => {
+  // Selected Date Lookups (Vercel React Best Practices - Memoized Date Switching)
+  const currentDateFatigue = dailyFatigueLogs[selectedDate] ?? 3;
+
+  const currentDateWorkout = useMemo(() => {
     if (!isReady) return null;
-    const existing = workouts[todayStr];
+    const existing = workouts[selectedDate];
     if (existing) {
       return existing;
     }
-    return RotaEngine.generateWorkoutForDate(todayStr, profile, customShifts, currentFatigue);
-  }, [isReady, workouts, todayStr, profile, customShifts, currentFatigue]);
+    return RotaEngine.generateWorkoutForDate(selectedDate, profile, customShifts, currentDateFatigue);
+  }, [isReady, workouts, selectedDate, profile, customShifts, currentDateFatigue]);
 
-  const todayNutrition = nutritions[todayStr] || null;
-  const todayWeight = weights[todayStr] || null;
+  const currentDateNutrition = nutritions[selectedDate] || null;
+  const currentDateWeight = weights[selectedDate] || null;
+  const currentDateHydration = allHydration[selectedDate] || null;
+  const currentDateActivities = allActivities[selectedDate] || [];
+  const currentDateSteps = allSteps[selectedDate] || null;
 
-  // Active Burn Calculation Memoized (Steps + Cardio Activities)
-  const currentEffectiveWeightKg = todayWeight?.weightKg || profile.currentWeightKg || 76.4;
+  // Active Burn Calculation Memoized (Steps + Cardio Activities for Selected Date)
+  const currentEffectiveWeightKg = currentDateWeight?.weightKg || profile.currentWeightKg || 76.4;
   const stepBurn = useMemo(() => {
-    return ActivityEngine.calculateStepCalories(dailySteps?.stepCount || 0, currentEffectiveWeightKg).activeStepCalories;
-  }, [dailySteps?.stepCount, currentEffectiveWeightKg]);
+    return ActivityEngine.calculateStepCalories(currentDateSteps?.stepCount || 0, currentEffectiveWeightKg).activeStepCalories;
+  }, [currentDateSteps?.stepCount, currentEffectiveWeightKg]);
 
   const cardioBurn = useMemo(() => {
-    return activities.reduce((acc, a) => acc + (a.caloriesBurned || 0), 0);
-  }, [activities]);
+    return currentDateActivities.reduce((acc, a) => acc + (a.caloriesBurned || 0), 0);
+  }, [currentDateActivities]);
 
   const totalActiveBurn = stepBurn + cardioBurn;
 
-  // Stable Handlers (Vercel React Best Practices)
+  // Stable Handlers
   const handleSaveWorkout = useCallback(async (w: WorkoutSession) => {
     setWorkouts((prev) => ({ ...prev, [w.date]: w }));
     await storage.saveWorkout(w);
@@ -165,7 +155,7 @@ export const App: React.FC = () => {
   }, []);
 
   const handleSaveHydration = useCallback(async (log: HydrationLog) => {
-    setHydration(log);
+    setAllHydration((prev) => ({ ...prev, [log.date]: log }));
     await storage.saveHydration(log);
   }, []);
 
@@ -173,63 +163,62 @@ export const App: React.FC = () => {
     setCustomShifts((prev) => {
       const updated = { ...prev, [shift.date]: shift };
       storage.saveShift(shift);
-      const recalculated = RotaEngine.generateWorkoutForDate(shift.date, profile, updated, currentFatigue);
+      const fatigue = dailyFatigueLogs[shift.date] ?? 3;
+      const recalculated = RotaEngine.generateWorkoutForDate(shift.date, profile, updated, fatigue);
       setWorkouts((wPrev) => ({ ...wPrev, [shift.date]: recalculated }));
       storage.saveWorkout(recalculated);
       return updated;
     });
-  }, [profile, currentFatigue]);
+  }, [profile, dailyFatigueLogs]);
 
   const handleUpdateTemplate = useCallback(async (newTemplate: ShiftType[]) => {
     const updatedProfile = { ...profile, twoWeekTemplate: newTemplate };
     setProfile(updatedProfile);
     await storage.saveProfile(updatedProfile);
 
-    // Recalculate today's workout
-    const recalculated = RotaEngine.generateWorkoutForDate(todayStr, updatedProfile, customShifts, currentFatigue);
-    setWorkouts((prev) => ({ ...prev, [todayStr]: recalculated }));
+    // Recalculate workout for selected date
+    const recalculated = RotaEngine.generateWorkoutForDate(selectedDate, updatedProfile, customShifts, currentDateFatigue);
+    setWorkouts((prev) => ({ ...prev, [selectedDate]: recalculated }));
     await storage.saveWorkout(recalculated);
-  }, [profile, todayStr, customShifts, currentFatigue]);
+  }, [profile, selectedDate, customShifts, currentDateFatigue]);
 
   const handleSaveFatigue = useCallback(async (score: number) => {
-    setCurrentFatigue(score);
-    setDailyFatigueLogs((prev) => ({ ...prev, [todayStr]: score }));
-    await storage.saveDailyFatigue(todayStr, score);
+    setDailyFatigueLogs((prev) => ({ ...prev, [selectedDate]: score }));
+    await storage.saveDailyFatigue(selectedDate, score);
 
-    const regenerated = RotaEngine.generateWorkoutForDate(todayStr, profile, customShifts, score);
-    setWorkouts((prev) => ({ ...prev, [todayStr]: regenerated }));
+    const regenerated = RotaEngine.generateWorkoutForDate(selectedDate, profile, customShifts, score);
+    setWorkouts((prev) => ({ ...prev, [selectedDate]: regenerated }));
     await storage.saveWorkout(regenerated);
-  }, [todayStr, profile, customShifts]);
+  }, [selectedDate, profile, customShifts]);
 
   const handleSaveActivity = useCallback(async (activity: ActivityEntry) => {
     const updated = await storage.saveActivity(activity);
-    setActivities(updated);
+    setAllActivities((prev) => ({ ...prev, [activity.date]: updated }));
   }, []);
 
   const handleDeleteActivity = useCallback(async (id: string) => {
-    const updated = await storage.deleteActivity(id, todayStr);
-    setActivities(updated);
-  }, [todayStr]);
+    const updated = await storage.deleteActivity(id, selectedDate);
+    setAllActivities((prev) => ({ ...prev, [selectedDate]: updated }));
+  }, [selectedDate]);
 
   const handleClearActivities = useCallback(async () => {
-    await storage.clearActivitiesForDate(todayStr);
-    setActivities([]);
-  }, [todayStr]);
+    await storage.clearActivitiesForDate(selectedDate);
+    setAllActivities((prev) => ({ ...prev, [selectedDate]: [] }));
+  }, [selectedDate]);
 
   const handleSaveSteps = useCallback(async (entry: DailyStepsEntry) => {
     await storage.saveSteps(entry);
-    setDailySteps(entry);
+    setAllSteps((prev) => ({ ...prev, [entry.date]: entry }));
   }, []);
 
   const handleUpdateProfile = useCallback(async (p: UserProfile) => {
     setProfile(p);
     await storage.saveProfile(p);
 
-    // Recalculate today's workout with new profile / goal
-    const recalculated = RotaEngine.generateWorkoutForDate(todayStr, p, customShifts, currentFatigue);
-    setWorkouts((prev) => ({ ...prev, [todayStr]: recalculated }));
+    const recalculated = RotaEngine.generateWorkoutForDate(selectedDate, p, customShifts, currentDateFatigue);
+    setWorkouts((prev) => ({ ...prev, [selectedDate]: recalculated }));
     await storage.saveWorkout(recalculated);
-  }, [todayStr, customShifts, currentFatigue]);
+  }, [selectedDate, customShifts, currentDateFatigue]);
 
   const handleStartRestTimer = useCallback((seconds: number, exerciseName: string) => {
     setRestTimerState({
@@ -269,20 +258,22 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-neutral-100 flex flex-col max-w-lg mx-auto relative select-none">
-      {/* Top Header - Spacious with Dynamic Island Clearance & 'i' Contextual Tab Guide */}
+      {/* Top Header - Spacious with Dynamic Island Clearance, Date Switcher & 'i' Contextual Tab Guide */}
       <Header
         todayStr={todayStr}
+        selectedDate={selectedDate}
         profile={profile}
         customShifts={customShifts}
         currentTab={currentTab}
+        onSelectDate={setSelectedDate}
         onExportBackup={handleExportBackup}
       />
 
-      {/* Main Content Area: 4 Distinct Accessible Tabs */}
+      {/* Main Content Area: 4 Distinct Accessible Tabs for Selected Date */}
       <main className="flex-1 px-4 pt-3 pb-8">
         <InstallBanner />
 
-        {/* Tab 1: Today Dashboard (Minimalist Focus) */}
+        {/* Tab 1: Today / Selected Day Dashboard (Minimalist Focus) */}
         {currentTab === 'today' && (
           <div 
             role="tabpanel" 
@@ -292,24 +283,24 @@ export const App: React.FC = () => {
             className="outline-none"
           >
             <DashboardTab
-              todayStr={todayStr}
+              todayStr={selectedDate}
               profile={profile}
               customShifts={customShifts}
-              todayWorkout={todayWorkout}
-              todayNutrition={todayNutrition}
-              todayHydration={hydration}
-              todayWeight={todayWeight}
-              currentFatigue={currentFatigue}
+              todayWorkout={currentDateWorkout}
+              todayNutrition={currentDateNutrition}
+              todayHydration={currentDateHydration}
+              todayWeight={currentDateWeight}
+              currentFatigue={currentDateFatigue}
               onUpdateFatigue={handleSaveFatigue}
               onNavigateTab={setCurrentTab}
-              onSaveWeight={(val) => handleSaveWeight({ date: todayStr, weightKg: val })}
+              onSaveWeight={(val) => handleSaveWeight({ date: selectedDate, weightKg: val })}
               onAddWater={(ml) => {
-                const current = hydration?.currentMl || 0;
+                const current = currentDateHydration?.currentMl || 0;
                 handleSaveHydration({
-                  date: todayStr,
+                  date: selectedDate,
                   targetMl: profile.dailyWaterTargetMl || 3800,
                   currentMl: current + ml,
-                  drinks: [...(hydration?.drinks || []), { time: 'Now', amountMl: ml }],
+                  drinks: [...(currentDateHydration?.drinks || []), { time: 'Now', amountMl: ml }],
                 });
               }}
             />
@@ -326,11 +317,11 @@ export const App: React.FC = () => {
             className="outline-none"
           >
             <WorkoutTab
-              todayStr={todayStr}
-              workout={todayWorkout}
+              todayStr={selectedDate}
+              workout={currentDateWorkout}
               profile={profile}
               customShifts={customShifts}
-              currentFatigue={currentFatigue}
+              currentFatigue={currentDateFatigue}
               onSaveWorkout={handleSaveWorkout}
               onStartRestTimer={handleStartRestTimer}
               onOpenFatigueModal={() => setIsFatigueModalOpen(true)}
@@ -350,11 +341,11 @@ export const App: React.FC = () => {
             className="outline-none"
           >
             <NutritionTab
-              todayStr={todayStr}
+              todayStr={selectedDate}
               profile={profile}
               customShifts={customShifts}
-              nutrition={todayNutrition}
-              hydration={hydration}
+              nutrition={currentDateNutrition}
+              hydration={currentDateHydration}
               activeExpenditureCalories={totalActiveBurn}
               onSaveNutrition={handleSaveNutrition}
               onSaveHydration={handleSaveHydration}
@@ -362,7 +353,7 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* Tab 4: Progress (Trends, Analytics, Cardio, Steps & Backup) */}
+        {/* Tab 4: Progress (Trends, Past Days Archive, Cardio, Steps & Backup) */}
         {currentTab === 'progress' && (
           <div 
             role="tabpanel" 
@@ -373,15 +364,21 @@ export const App: React.FC = () => {
           >
             <ProgressTab
               todayStr={todayStr}
+              selectedDate={selectedDate}
               profile={profile}
               weights={weights}
               nutritions={nutritions}
               workouts={workouts}
               shifts={customShifts}
               fatigueLogs={dailyFatigueLogs}
-              activities={activities}
-              dailySteps={dailySteps}
-              todayWeight={todayWeight}
+              activities={currentDateActivities}
+              dailySteps={currentDateSteps}
+              todayWeight={currentDateWeight}
+              allActivities={allActivities}
+              allSteps={allSteps}
+              allHydration={allHydration}
+              onSelectDate={setSelectedDate}
+              onNavigateTab={setCurrentTab}
               onSaveWeight={handleSaveWeight}
               onSaveActivity={handleSaveActivity}
               onDeleteActivity={handleDeleteActivity}
@@ -405,7 +402,7 @@ export const App: React.FC = () => {
 
       {/* Daily 1-10 Fatigue Modal (Alternative Trigger) */}
       <FatigueModal
-        initialScore={currentFatigue}
+        initialScore={currentDateFatigue}
         isOpen={isFatigueModalOpen}
         onClose={() => setIsFatigueModalOpen(false)}
         onSave={handleSaveFatigue}

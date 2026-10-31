@@ -505,8 +505,12 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
         >
           <Info className="w-5 h-5 text-neutral-400 shrink-0 mt-0.5" aria-hidden="true" />
           <div className="text-xs text-neutral-300 leading-relaxed">
-            <strong className="text-white block mb-0.5">Ready to Train:</strong>
-            Tap Exercise #1 below, type your weight and reps, then tap <strong className="text-white">Complete</strong>. The countdown rest timer will automatically guide your recovery.
+            <strong className="text-white block mb-0.5">Session Overview for {todayStr}:</strong>
+            {todayStr === RotaEngine.formatDate(new Date()) ? (
+              <>Tap Exercise #1 below, type your weight and reps, then tap <strong className="text-white">Complete</strong>. The countdown rest timer will automatically guide your recovery.</>
+            ) : (
+              <>No completed sets were recorded for this date. You can review scheduled movements below or retroactively log your weights and sets.</>
+            )}
           </div>
         </div>
       )}
