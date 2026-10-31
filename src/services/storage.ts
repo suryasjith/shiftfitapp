@@ -339,6 +339,7 @@ class StorageService {
     const shifts = await this.getShifts();
     const workouts = await this.getWorkouts();
     const nutrition = await this.getNutrition();
+    const hydration = await this.getAll<HydrationLog>('hydration');
     const weight = await this.getWeightHistory();
     const fatigue = await this.getAll<number>('dailyFatigue');
     const activities = await this.getAllActivities();
@@ -352,6 +353,7 @@ class StorageService {
       shifts,
       workouts,
       nutrition,
+      hydration,
       weight,
       fatigue,
       activities,
@@ -374,8 +376,14 @@ class StorageService {
       if (data.nutrition) {
         for (const [k, v] of Object.entries(data.nutrition)) await this.set('nutrition', k, v);
       }
+      if (data.hydration) {
+        for (const [k, v] of Object.entries(data.hydration)) await this.set('hydration', k, v);
+      }
       if (data.weight) {
         for (const [k, v] of Object.entries(data.weight)) await this.set('weight', k, v);
+      }
+      if (data.fatigue) {
+        for (const [k, v] of Object.entries(data.fatigue)) await this.set('dailyFatigue', k, v);
       }
       if (data.activities) {
         for (const [k, v] of Object.entries(data.activities)) await this.set('activities', k, v);

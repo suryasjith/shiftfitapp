@@ -24,7 +24,8 @@ import {
   AlertCircle,
   Calendar,
   Sparkles,
-  Info
+  Info,
+  Play
 } from 'lucide-react';
 import { soundManager } from '../../services/audioTimer';
 
@@ -517,7 +518,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
 
       {/* 5. Exercises List with Obvious Action Verbs & Progressive Disclosure */}
       <div 
-        role="feed"
+        role="list"
         aria-label="Scheduled Exercises"
         className="space-y-3"
       >
@@ -531,6 +532,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
           return (
             <article 
               key={exIdx}
+              role="listitem"
               aria-labelledby={`exercise-name-${exIdx}`}
               className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                 isDone 
@@ -540,16 +542,16 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                   : 'bg-neutral-950 border-neutral-850'
               }`}
             >
-              {/* Exercise Accordion Bar */}
-              <button 
-                type="button"
-                id={`exercise-header-${exIdx}`}
-                aria-expanded={isExpanded}
-                aria-controls={`exercise-panel-${exIdx}`}
-                className="w-full min-h-[48px] p-4 flex items-start justify-between text-left hover:bg-neutral-900/70 transition-colors focus:outline-none focus:ring-2 focus:ring-white"
-                onClick={() => setExpandedExerciseIndex(isExpanded ? null : exIdx)}
-              >
-                <div className="flex items-start gap-3">
+              {/* Exercise Accordion Bar (Semantic Container, No Nested Links) */}
+              <div className="w-full min-h-[48px] p-4 flex items-start justify-between text-left hover:bg-neutral-900/70 transition-colors">
+                <button
+                  type="button"
+                  id={`exercise-header-${exIdx}`}
+                  aria-expanded={isExpanded}
+                  aria-controls={`exercise-panel-${exIdx}`}
+                  className="flex-1 flex items-start gap-3 text-left focus:outline-none focus:ring-1 focus:ring-white rounded pr-2"
+                  onClick={() => setExpandedExerciseIndex(isExpanded ? null : exIdx)}
+                >
                   <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold font-mono mt-0.5 shrink-0 ${
                     isDone 
                       ? 'bg-white text-black' 
@@ -573,38 +575,73 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                       {ex.targetMuscle} • {ex.restSecs}s Rest
                     </p>
                   </div>
-                </div>
+                </button>
 
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-xs font-mono font-bold text-neutral-300">
-                    {completedCount}/{ex.sets.length} sets
-                  </span>
-                  {isExpanded ? (
-                    <ChevronUp className="w-4 h-4 text-neutral-400" aria-hidden="true" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-neutral-400" aria-hidden="true" />
-                  )}
+                <div className="flex items-center gap-2.5 shrink-0">
+                  {/* Standalone Sibling Tutorial Action (Valid HTML, accessible touch target) */}
+                  <a
+                    href={`https://www.youtube.com/results?search_query=${encodeURIComponent(displayName + ' form tutorial')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      soundManager.playTap();
+                    }}
+                    aria-label={`Watch form tutorial video for ${displayName} on YouTube`}
+                    className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-none bg-neutral-900 hover:bg-neutral-800 border border-neutral-750 text-xs font-mono text-neutral-300 hover:text-white transition-colors active:scale-95"
+                  >
+                    <Play className="w-3 h-3 fill-red-500 stroke-red-500 shrink-0" aria-hidden="true" />
+                    <span className="hidden sm:inline">Form</span>
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => setExpandedExerciseIndex(isExpanded ? null : exIdx)}
+                    aria-label={isExpanded ? `Collapse ${displayName}` : `Expand ${displayName}`}
+                    className="min-h-[44px] min-w-[44px] flex items-center justify-center text-xs font-mono font-bold text-neutral-300 hover:text-white"
+                  >
+                    <span className="mr-1">{completedCount}/{ex.sets.length}</span>
+                    {isExpanded ? (
+                      <ChevronUp className="w-4 h-4 text-neutral-400" aria-hidden="true" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-neutral-400" aria-hidden="true" />
+                    )}
+                  </button>
                 </div>
-              </button>
+              </div>
 
               {/* Expanded Set Logger */}
               {isExpanded && (
                 <div id={`exercise-panel-${exIdx}`} className="px-4 pb-4 pt-2 border-t border-neutral-850 space-y-3">
                   <div className="flex items-center justify-between gap-2 pt-1">
-                    <span className="text-xs text-neutral-400 font-mono truncate max-w-[180px]">
+                    <span className="text-xs text-neutral-400 font-mono truncate max-w-[150px]">
                       {def?.primaryEquipment || 'Free weights'}
                     </span>
 
-                    {/* Swap Exercise Button (min 44px touch target) */}
-                    <button
-                      type="button"
-                      onClick={() => setActiveSwapExerciseIndex(exIdx)}
-                      aria-label={`Swap ${displayName} with alternate equipment or movement`}
-                      className="min-h-[44px] px-3 py-1.5 rounded-lg border border-neutral-750 bg-neutral-900 hover:border-neutral-500 text-white text-xs font-medium flex items-center gap-1.5 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-white"
-                    >
-                      <ArrowRightLeft className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
-                      <span>Swap Exercise</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {/* Secondary Quick Tutorial Action */}
+                      <a
+                        href={`https://www.youtube.com/results?search_query=${encodeURIComponent(displayName + ' form tutorial')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Open YouTube form tutorial for ${displayName}`}
+                        className="min-h-[44px] px-2.5 py-1.5 rounded-none border border-neutral-750 bg-neutral-900 hover:border-neutral-500 text-neutral-300 hover:text-white text-xs font-mono flex items-center gap-1.5 active:scale-95 transition-all"
+                      >
+                        <Play className="w-3 h-3 fill-red-500 stroke-red-500" aria-hidden="true" />
+                        <span>Tutorial</span>
+                      </a>
+
+                      {/* Swap Exercise Button (min 44px touch target) */}
+                      <button
+                        type="button"
+                        onClick={() => setActiveSwapExerciseIndex(exIdx)}
+                        aria-label={`Swap ${displayName} with alternate equipment or movement`}
+                        className="min-h-[44px] px-3 py-1.5 rounded-none border border-neutral-750 bg-neutral-900 hover:border-neutral-500 text-white text-xs font-mono font-bold flex items-center gap-1.5 active:scale-95 transition-all focus:outline-none focus:ring-1 focus:ring-white"
+                      >
+                        <ArrowRightLeft className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
+                        <span>Swap</span>
+                      </button>
+                    </div>
                   </div>
 
                   {def?.tips && (

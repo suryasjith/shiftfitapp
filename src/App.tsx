@@ -48,6 +48,7 @@ export const App: React.FC = () => {
   // Modals & Contextual Overlays
   const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(false);
   const [isFatigueModalOpen, setIsFatigueModalOpen] = useState<boolean>(false);
+  const [fatigueModalSuccessCallback, setFatigueModalSuccessCallback] = useState<(() => void) | null>(null);
   const [restTimerState, setRestTimerState] = useState<{
     isRunning: boolean;
     seconds: number;
@@ -176,20 +177,45 @@ export const App: React.FC = () => {
     setProfile(updatedProfile);
     await storage.saveProfile(updatedProfile);
 
-    // Recalculate workout for selected date
-    const recalculated = RotaEngine.generateWorkoutForDate(selectedDate, updatedProfile, customShifts, currentDateFatigue);
-    setWorkouts((prev) => ({ ...prev, [selectedDate]: recalculated }));
-    await storage.saveWorkout(recalculated);
-  }, [profile, selectedDate, customShifts, currentDateFatigue]);
+    // Only recalculate workout if session is unstarted or empty
+    const existingSession = workouts[selectedDate];
+    const hasLoggedSets = existingSession && (
+      existingSession.completed || 
+      existingSession.exercises.some(e => e.sets.some(s => s.completed || s.weightKg > 0 || s.reps > 0))
+    );
+
+    if (!hasLoggedSets) {
+      const recalculated = RotaEngine.generateWorkoutForDate(selectedDate, updatedProfile, customShifts, currentDateFatigue);
+      setWorkouts((prev) => ({ ...prev, [selectedDate]: recalculated }));
+      await storage.saveWorkout(recalculated);
+    }
+  }, [profile, selectedDate, customShifts, currentDateFatigue, workouts]);
 
   const handleSaveFatigue = useCallback(async (score: number) => {
     setDailyFatigueLogs((prev) => ({ ...prev, [selectedDate]: score }));
     await storage.saveDailyFatigue(selectedDate, score);
 
-    const regenerated = RotaEngine.generateWorkoutForDate(selectedDate, profile, customShifts, score);
-    setWorkouts((prev) => ({ ...prev, [selectedDate]: regenerated }));
-    await storage.saveWorkout(regenerated);
-  }, [selectedDate, profile, customShifts]);
+    // Only regenerate workout if session is unstarted or empty to prevent clobbering in-progress sets
+    const existingSession = workouts[selectedDate];
+    const hasLoggedSets = existingSession && (
+      existingSession.completed || 
+      existingSession.exercises.some(e => e.sets.some(s => s.completed || s.weightKg > 0 || s.reps > 0))
+    );
+
+    if (!hasLoggedSets) {
+      const regenerated = RotaEngine.generateWorkoutForDate(selectedDate, profile, customShifts, score);
+      setWorkouts((prev) => ({ ...prev, [selectedDate]: regenerated }));
+      await storage.saveWorkout(regenerated);
+    }
+  }, [selectedDate, profile, customShifts, workouts]);
+
+  // Trigger Pre-Workout Fatigue Check & Route to Workout
+  const handleOpenPreWorkoutFatigue = useCallback(() => {
+    setFatigueModalSuccessCallback(() => () => {
+      setCurrentTab('workout');
+    });
+    setIsFatigueModalOpen(true);
+  }, []);
 
   const handleSaveActivity = useCallback(async (activity: ActivityEntry) => {
     const updated = await storage.saveActivity(activity);
@@ -215,10 +241,19 @@ export const App: React.FC = () => {
     setProfile(p);
     await storage.saveProfile(p);
 
-    const recalculated = RotaEngine.generateWorkoutForDate(selectedDate, p, customShifts, currentDateFatigue);
-    setWorkouts((prev) => ({ ...prev, [selectedDate]: recalculated }));
-    await storage.saveWorkout(recalculated);
-  }, [selectedDate, customShifts, currentDateFatigue]);
+    // Only recalculate workout if session is unstarted or empty
+    const existingSession = workouts[selectedDate];
+    const hasLoggedSets = existingSession && (
+      existingSession.completed || 
+      existingSession.exercises.some(e => e.sets.some(s => s.completed || s.weightKg > 0 || s.reps > 0))
+    );
+
+    if (!hasLoggedSets) {
+      const recalculated = RotaEngine.generateWorkoutForDate(selectedDate, p, customShifts, currentDateFatigue);
+      setWorkouts((prev) => ({ ...prev, [selectedDate]: recalculated }));
+      await storage.saveWorkout(recalculated);
+    }
+  }, [selectedDate, customShifts, currentDateFatigue, workouts]);
 
   const handleStartRestTimer = useCallback((seconds: number, exerciseName: string) => {
     setRestTimerState({
@@ -294,6 +329,7 @@ export const App: React.FC = () => {
               onUpdateFatigue={handleSaveFatigue}
               onNavigateTab={setCurrentTab}
               onSaveWeight={(val) => handleSaveWeight({ date: selectedDate, weightKg: val })}
+              onOpenFatigueModal={handleOpenPreWorkoutFatigue}
               onAddWater={(ml) => {
                 const current = currentDateHydration?.currentMl || 0;
                 handleSaveHydration({
@@ -400,12 +436,21 @@ export const App: React.FC = () => {
         onCancel={() => setRestTimerState((prev) => ({ ...prev, isRunning: false }))}
       />
 
-      {/* Daily 1-10 Fatigue Modal (Alternative Trigger) */}
+      {/* Daily 1-10 Fatigue Modal (Alternative Trigger & Pre-Workout Check) */}
       <FatigueModal
         initialScore={currentDateFatigue}
         isOpen={isFatigueModalOpen}
-        onClose={() => setIsFatigueModalOpen(false)}
+        onClose={() => {
+          setIsFatigueModalOpen(false);
+          setFatigueModalSuccessCallback(null);
+        }}
         onSave={handleSaveFatigue}
+        onConfirmSuccess={() => {
+          if (fatigueModalSuccessCallback) {
+            fatigueModalSuccessCallback();
+            setFatigueModalSuccessCallback(null);
+          }
+        }}
       />
 
       {/* First-Time Onboarding & Profile Setup Overlay */}
