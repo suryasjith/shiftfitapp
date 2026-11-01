@@ -68,6 +68,7 @@ export interface ExerciseLog {
   selectedAlternative?: string;
   equipmentTaken: boolean;
   prescribedSets: number;
+  targetReps?: string;
   restSecs: number;
   suggestedWeightKg?: number;
   suggestedWeightNote?: string;

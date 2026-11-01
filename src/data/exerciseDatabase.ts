@@ -546,4 +546,70 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
       { name: 'Glute Bridge', equipment: 'Mat & Light Dumbbell', cue: 'Direct glute contraction with stable floor support.' }
     ]
   },
+  'barbell_hip_thrust': {
+    id: 'barbell_hip_thrust',
+    name: 'Barbell Hip Thrust',
+    targetMuscle: 'Hamstrings & Glutes (Hips & Posterior)',
+    primaryEquipment: 'Barbell & Padded Bench',
+    mechanics: 'Compound',
+    cnsLoad: 'Moderate',
+    defaultSets: 4,
+    defaultReps: '10-12',
+    defaultRestSecs: 90,
+    tips: 'Rest upper back against bench edge across shoulder blades. Place bar across hip crease with thick pad. Drive through heels to full hip extension, tucking chin and squeezing glutes at the peak for 1 second. Avoid hyperextending lumbar spine.',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
+    formPoints: [
+      'Maintain ribcage down and chin tucked toward chest to protect lumbar spine.',
+      'Drive powerfully through heels until hips are fully extended parallel with floor.',
+      'Pause for a hard 1-second glute squeeze at apex before controlled descent.'
+    ],
+    alternatives: [
+      { name: 'Dumbbell Glute Bridge', equipment: 'Mat & Heavy Dumbbell', cue: 'Floor-based bridge with zero bench setup.' },
+      { name: 'Cable Glute Pull-Through', equipment: 'Cable Station & Rope', cue: 'Standing hip extension with continuous cable tension.' }
+    ]
+  },
+  'thigh_abductor_machine': {
+    id: 'thigh_abductor_machine',
+    name: 'Seated Hip Abductor Machine',
+    targetMuscle: 'Hamstrings & Glutes (Hips & Posterior)',
+    primaryEquipment: 'Abductor Machine',
+    mechanics: 'Isolation',
+    cnsLoad: 'Low',
+    defaultSets: 3,
+    defaultReps: '12-15',
+    defaultRestSecs: 60,
+    tips: 'Sit tall with lower back supported against pad. Press knees outward against pads with control, holding maximum abduction for 1 full second to recruit upper glute fibers. Control 2-second return without letting stack clank.',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Thigh_Abductor/0.jpg',
+    formPoints: [
+      'Drive with the outer knees rather than pushing with ankles or feet.',
+      'Squeeze outer glutes (gluteus medius) firmly at peak contraction.',
+      'Control eccentric return slowly to maintain time under tension.'
+    ],
+    alternatives: [
+      { name: 'Standing Cable Glute Kickback', equipment: 'Cable Ankle Cuff', cue: 'Single-leg 45-degree kickback for glute isolation.' },
+      { name: 'Banded Lateral Monster Walk', equipment: 'Mini Loop Band', cue: 'Athletic half-squat lateral steps under tension.' }
+    ]
+  },
+  'cable_glute_kickback': {
+    id: 'cable_glute_kickback',
+    name: 'Single-Leg Cable Glute Kickback',
+    targetMuscle: 'Hamstrings & Glutes (Hips & Posterior)',
+    primaryEquipment: 'Low Cable Ankle Strap',
+    mechanics: 'Isolation',
+    cnsLoad: 'Low',
+    defaultSets: 3,
+    defaultReps: '12-15',
+    defaultRestSecs: 60,
+    tips: 'Attach ankle cuff to low cable. Hinge slightly at hips while bracing core against machine frame. Kick working leg back at a slight 30-degree outward angle, squeezing glute at peak. Do not swing or hyperextend lower back.',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Legged_Cable_Kickback/0.jpg',
+    formPoints: [
+      'Keep core braced and spine neutral; movement comes strictly from hip joint.',
+      'Extend leg back and slightly out to align with natural glute muscle fibers.',
+      'Hold peak squeeze for 1 second before slow controlled return.'
+    ],
+    alternatives: [
+      { name: 'Seated Hip Abductor Machine', equipment: 'Abductor Machine', cue: 'Guided bilateral hip abduction.' },
+      { name: 'Dumbbell Romanian Deadlift', equipment: 'Dumbbells', cue: 'Hip hinge targeting hamstrings and glutes.' }
+    ]
+  },
 };

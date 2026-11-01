@@ -227,6 +227,30 @@ const EXERCISE_CONFIGS: Record<string, ExerciseConfig> = {
     incrementKg: 0,
     unitLabel: 'bodyweight'
   },
+  'barbell_hip_thrust': {
+    loadPattern: 'machine_compound',
+    baseRatio: { male_beginner: 0.35, female_beginner: 0.30 },
+    minWeightKg: 15,
+    maxInitialKg: 60,
+    incrementKg: 5,
+    unitLabel: 'barbell + plates'
+  },
+  'thigh_abductor_machine': {
+    loadPattern: 'machine_isolation',
+    baseRatio: { male_beginner: 0.25, female_beginner: 0.28 },
+    minWeightKg: 10,
+    maxInitialKg: 50,
+    incrementKg: 2.5,
+    unitLabel: 'stack pin'
+  },
+  'cable_glute_kickback': {
+    loadPattern: 'cable_isolation',
+    baseRatio: { male_beginner: 0.08, female_beginner: 0.08 },
+    minWeightKg: 2.5,
+    maxInitialKg: 20,
+    incrementKg: 1.25,
+    unitLabel: 'cable stack pin'
+  },
   'shift_pump_circuit': {
     loadPattern: 'bodyweight_only',
     baseRatio: { male_beginner: 0, female_beginner: 0 },

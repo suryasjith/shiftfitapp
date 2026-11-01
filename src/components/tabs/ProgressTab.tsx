@@ -1096,7 +1096,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
             <button
               onClick={onOpenGuide}
               aria-label="Open profile setup guide and metric preferences"
-              className="min-h-[44px] w-full py-3 rounded-2xl border border-stone-200 bg-stone-50 text-stone-900 dark:text-white font-bold text-xs uppercase tracking-wider hover:bg-stone-100 transition-all flex items-center justify-center gap-2 font-sans focus:outline-none focus:ring-2 focus:ring-white"
+              className="min-h-[44px] w-full py-3 rounded-2xl border border-stone-200 dark:border-white/15 bg-stone-100 dark:bg-stone-900/90 hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-900 dark:text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 font-sans focus:outline-none focus:ring-2 focus:ring-orange-500"
             >
               <Info className="w-4 h-4" aria-hidden="true" />
               <span>Open Profile Setup Guide</span>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ChevronRight, ChevronLeft, Check, AlertTriangle, Clock, Target, Calendar } from 'lucide-react';
 import { UserProfile, FitnessGoal, ShiftType, Gender, ProficiencyLevel } from '../types';
 import { PhysicsEngine } from '../services/physicsEngine';
@@ -29,6 +29,19 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
   const [twoWeekTemplate, setTwoWeekTemplate] = useState<ShiftType[]>(
     profile.twoWeekTemplate || ROTA_PRESETS.fourOnThreeOff
   );
+
+  useEffect(() => {
+    if (isOpen) {
+      setStep(0);
+      setGender(profile.gender || 'male');
+      setProficiency(profile.proficiencyLevel || 'intermediate');
+      setHeightStr(profile.heightCm ? String(profile.heightCm) : '');
+      setCurrentWeightStr(profile.currentWeightKg ? String(profile.currentWeightKg) : '');
+      setDesiredWeightStr(profile.desiredWeightKg ? String(profile.desiredWeightKg) : '');
+      setSelectedGoal(profile.fitnessGoal || 'body_recomposition');
+      setTwoWeekTemplate(profile.twoWeekTemplate || ROTA_PRESETS.fourOnThreeOff);
+    }
+  }, [isOpen, profile]);
 
   if (!isOpen) return null;
 
@@ -149,7 +162,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
               {/* Gender Selector */}
               <div>
                 <label className="text-[10px] text-stone-600 dark:text-stone-400 uppercase font-bold block mb-1">
-                  Biological Gender:
+                  Biological Gender & Biomechanics Engine:
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
@@ -157,23 +170,46 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                     onClick={() => setGender('male')}
                     className={`py-1.5 rounded-xl text-xs font-bold border transition-all ${
                       gender === 'male' 
-                        ? 'bg-terracotta text-white border-orange-500 shadow-xs' 
+                        ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs' 
                         : 'bg-white dark:bg-stone-900 border-stone-200 dark:border-white/15 text-stone-600 dark:text-stone-300 hover:text-stone-900'
                     }`}
                   >
-                    MALE
+                    MALE (♂)
                   </button>
                   <button
                     type="button"
                     onClick={() => setGender('female')}
                     className={`py-1.5 rounded-xl text-xs font-bold border transition-all ${
                       gender === 'female' 
-                        ? 'bg-terracotta text-white border-orange-500 shadow-xs' 
+                        ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs' 
                         : 'bg-white dark:bg-stone-900 border-stone-200 dark:border-white/15 text-stone-600 dark:text-stone-300 hover:text-stone-900'
                     }`}
                   >
-                    FEMALE
+                    FEMALE (♀)
                   </button>
+                </div>
+
+                {/* Biomechanics Constraints Rationale Pill */}
+                <div className="mt-2 p-2.5 rounded-xl bg-stone-100/90 dark:bg-stone-900/90 border border-stone-200/90 dark:border-white/15 text-[10px] leading-relaxed font-mono">
+                  {gender === 'female' ? (
+                    <div className="text-stone-700 dark:text-stone-300">
+                      <span className="font-bold text-orange-600 dark:text-orange-400 font-sans block mb-0.5 uppercase tracking-wider text-[9px]">
+                        ⚡ Female Biomechanics Protocol
+                      </span>
+                      • <strong>Pelvic Q-Angle Adaptation:</strong> Prioritizes Hip Thrusts & Abductors for glute drive & knee stability without spinal compression.<br/>
+                      • <strong>Type I Fiber Profile:</strong> Optimized for 10–15 reps, higher set endurance, and 60–75s metabolic rest.<br/>
+                      • <strong>Upper Body Micro-Loading:</strong> Conservative starting ratios with 1.25kg increments.
+                    </div>
+                  ) : (
+                    <div className="text-stone-700 dark:text-stone-300">
+                      <span className="font-bold text-orange-600 dark:text-orange-400 font-sans block mb-0.5 uppercase tracking-wider text-[9px]">
+                        ⚡ Male Biomechanics Protocol
+                      </span>
+                      • <strong>Hypertrophy Mechanics:</strong> Prioritizes clavicular upper chest mass, quad sweep overload, and lat width.<br/>
+                      • <strong>Type II Fiber Profile:</strong> Calibrated for 6–10 / 8–12 reps with 90–120s ATP recovery periods.<br/>
+                      • <strong>Absolute Load Steps:</strong> Higher compound starting weights with standard 2.5–5kg progressive increments.
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -139,18 +139,28 @@ export class RotaEngine {
         }
       }
 
+      const isFemale = profile.gender === 'female';
+      const isBeginner = profile.proficiencyLevel === 'absolute_beginner';
+
       const offIndex = consecutiveOffs % 3;
       if (offIndex === 0) {
         recommendedWorkoutCategory = 'Push';
-        workoutTitle = 'Heavy Push: Upper Chest & Delts';
+        workoutTitle = isBeginner 
+          ? (isFemale ? 'Foundational Push & Shoulder Sculpt' : 'Foundational Push: Chest & Shoulder Mechanics')
+          : (isFemale ? 'Upper Body Push: Delt Definition & Core' : 'Heavy Push: Upper Chest & Delts');
       } else if (offIndex === 1) {
         recommendedWorkoutCategory = 'Legs';
-        workoutTitle = 'Heavy Legs: Quad Sweep & Hams';
+        workoutTitle = isBeginner 
+          ? (isFemale ? 'Foundational Glutes & Legs: Hip Hinge & Sled Press' : 'Foundational Legs: Quad Press & Knee Stability')
+          : (isFemale ? 'Glute & Posterior Specialization: Hip Thrust & Hams' : 'Heavy Legs: Quad Sweep & Hams');
       } else {
         recommendedWorkoutCategory = 'Pull';
-        workoutTitle = 'Heavy Pull: Lat Width & Arms';
+        workoutTitle = isBeginner 
+          ? (isFemale ? 'Foundational Back & Posture: Cable Lat & Rear Delt Control' : 'Foundational Pull: Lat Pulldown & Joint Control')
+          : (isFemale ? 'Aesthetic V-Taper Pull: Lat Width, Rear Delts & Glutes' : 'Heavy Pull: Lat Width & Arms');
       }
     } else {
+      const isFemale = profile.gender === 'female';
       // Determine consecutive shift day
       let consecutiveShifts = 0;
       for (let lookback = 1; lookback <= 5; lookback++) {
@@ -172,7 +182,7 @@ export class RotaEngine {
         workoutTitle = 'Shift 1: Spine Decompress & Mobility';
       } else if (consecutiveShifts === 1) {
         recommendedWorkoutCategory = 'Shift Maintenance';
-        workoutTitle = 'Shift 2: Express Muscle Pump (20m)';
+        workoutTitle = isFemale ? 'Shift 2: Express Tone & Glute Activation (20m)' : 'Shift 2: Express Muscle Pump (20m)';
       } else {
         recommendedWorkoutCategory = 'Rest';
         workoutTitle = `Shift ${consecutiveShifts + 1}: Deep CNS Recovery`;

@@ -581,7 +581,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                       )}
                     </div>
                     <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5 font-mono">
-                      {ex.targetMuscle} • {ex.restSecs}s Rest
+                      {ex.targetMuscle} • {ex.targetReps ? `${ex.targetReps} reps • ` : ''}{ex.restSecs}s Rest
                     </p>
                   </div>
                 </button>
@@ -815,7 +815,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                               step="1"
                               value={set.reps === 0 || set.reps === undefined ? '' : set.reps}
                               onChange={(e) => handleUpdateSetValue(exIdx, setIdx, 'reps', e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0)}
-                              placeholder="Reps"
+                              placeholder={ex.targetReps ? `${ex.targetReps} reps` : 'Reps'}
                               className="w-full min-h-[44px] bg-white dark:bg-black/90 border border-stone-200 dark:border-white/20 rounded-xl px-2 py-1.5 text-center font-mono text-xs font-bold text-stone-900 dark:text-white placeholder-stone-400 dark:placeholder-stone-600 focus:outline-none focus:border-amber-400 transition-colors"
                             />
                           </div>
