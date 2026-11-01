@@ -390,25 +390,25 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* 7-Day Moving Average & Weight Chart */}
           <section 
             aria-labelledby="weight-progression-heading"
-            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
+            className="rounded-2xl bg-white/80 border border-stone-200/80 p-5 shadow-sm space-y-4"
           >
             <div className="flex items-start justify-between">
               <div>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-400 block">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-stone-500 block">
                   Aesthetic Recomposition
                 </span>
                 <h3 id="weight-progression-heading" className="text-xl font-bold text-stone-900 tracking-tight mt-0.5">
                   Weight Progression
                 </h3>
-                <p className="text-xs text-neutral-400 mt-0.5">
+                <p className="text-xs text-stone-500 mt-0.5">
                   Target Corridor: <strong className="text-stone-900 font-mono">75.0 – 78.0 kg</strong>
                 </p>
               </div>
 
-              <div className="p-3 rounded-2xl bg-neutral-900 border border-neutral-750 text-right">
-                <span className="text-[10px] uppercase font-bold text-neutral-400 block">7-Day Avg</span>
+              <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200 text-right">
+                <span className="text-[10px] uppercase font-bold text-stone-500 block">7-Day Avg</span>
                 <span className="text-base font-black font-mono text-stone-900">
-                  {report.averageWeightKg} <span className="text-xs text-neutral-400">kg</span>
+                  {report.averageWeightKg} <span className="text-xs text-stone-500">kg</span>
                 </span>
               </div>
             </div>
@@ -418,7 +418,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
               <div 
                 role="figure"
                 aria-label="Recent 7-day weight trend bars"
-                className="p-3 bg-neutral-900/60 rounded-2xl border border-neutral-850"
+                className="p-3 bg-stone-50/60 rounded-2xl border border-stone-200"
               >
                 <div className="h-28 w-full flex items-end justify-between gap-1 pt-4 pb-2 px-2">
                   {recent7Weights.map((w, idx) => {
@@ -427,19 +427,19 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                     const pct = Math.max(10, Math.min(100, ((w.weightKg - minW) / (maxW - minW)) * 100));
                     return (
                       <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
-                        <span className="text-[9px] font-mono text-neutral-400">{w.weightKg}</span>
+                        <span className="text-[9px] font-mono text-stone-500">{w.weightKg}</span>
                         <div 
                           className="w-full max-w-[24px] bg-white rounded-2xl-t transition-all duration-300"
                           style={{ height: `${pct}%` }}
                         />
-                        <span className="text-[9px] font-mono text-neutral-400">D{idx + 1}</span>
+                        <span className="text-[9px] font-mono text-stone-500">D{idx + 1}</span>
                       </div>
                     );
                   })}
                 </div>
               </div>
             ) : (
-              <div className="p-4 rounded-2xl bg-neutral-900 border border-neutral-800 text-center text-xs text-neutral-400">
+              <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 text-center text-xs text-stone-500">
                 Log your weight daily to generate your 7-day moving average trend curve.
               </div>
             )}
@@ -458,7 +458,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 value={newWeightInput}
                 onChange={(e) => setNewWeightInput(e.target.value)}
                 placeholder="Enter weight in kg"
-                className="flex-1 min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-2xl px-3 py-2.5 text-xs font-bold text-stone-900 placeholder-neutral-500 focus:outline-none focus:border-white"
+                className="flex-1 min-h-[44px] bg-stone-50 border border-stone-200 rounded-2xl px-3 py-2.5 text-xs font-bold text-stone-900 placeholder-neutral-500 focus:outline-none focus:border-white"
               />
               <button
                 type="submit"
@@ -473,7 +473,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* Goal Timeline Projection & Discipline Warning */}
           <section 
             aria-labelledby="timeline-projection-title"
-            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
+            className="rounded-2xl bg-white/80 border border-stone-200/80 p-5 shadow-sm space-y-3"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -482,23 +482,23 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                   Timeline Projection Engine
                 </h4>
               </div>
-              <span className="text-xs font-mono text-neutral-400">
+              <span className="text-xs font-mono text-stone-500">
                 {currentEffectiveWeight}kg &rarr; {desiredWeight}kg
               </span>
             </div>
 
             <div className="grid grid-cols-2 gap-3 text-left">
-              <div className="p-3 rounded-2xl bg-neutral-900 border border-neutral-800">
-                <span className="text-[10px] text-neutral-400 uppercase font-bold block">Average Timeline</span>
+              <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200">
+                <span className="text-[10px] text-stone-500 uppercase font-bold block">Average Timeline</span>
                 <span className="text-sm font-black text-stone-900 font-mono mt-0.5 block">
                   {timeline.mode === 'maintenance' ? '0 Weeks' : `~${timeline.averageWeeks} Wks`}
                 </span>
-                <span className="text-[10px] text-neutral-400 font-mono block">
+                <span className="text-[10px] text-stone-500 font-mono block">
                   {timeline.averageRateKgPerWeek} kg/wk
                 </span>
               </div>
 
-              <div className="p-3 rounded-2xl bg-neutral-900 border border-neutral-750">
+              <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-stone-900 uppercase font-bold">Optimal Rate</span>
                   <span className="text-[8px] bg-white text-black font-bold px-1 rounded-2xl">FAST</span>
@@ -506,7 +506,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 <span className="text-sm font-black text-stone-900 font-mono mt-0.5 block">
                   {timeline.mode === 'maintenance' ? '0 Weeks' : `~${timeline.optimalWeeks} Wks`}
                 </span>
-                <span className="text-[10px] text-neutral-300 font-mono block">
+                <span className="text-[10px] text-stone-600 font-mono block">
                   {timeline.optimalRateKgPerWeek} kg/wk
                 </span>
               </div>
@@ -515,13 +515,13 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
             {/* Discipline Warning */}
             <div 
               role="alert"
-              className="p-3 rounded-2xl bg-black border border-neutral-750 space-y-1"
+              className="p-3 rounded-2xl bg-black border border-stone-200 space-y-1"
             >
               <div className="flex items-center gap-1.5 text-stone-900 font-bold text-[10px] uppercase">
                 <AlertTriangle className="w-3.5 h-3.5 text-stone-900" aria-hidden="true" />
                 <span>Discipline Warning</span>
               </div>
-              <p className="text-[11px] text-neutral-300 leading-relaxed">
+              <p className="text-[11px] text-stone-600 leading-relaxed">
                 WARNING: The optimal timeline is strictly theoretical and is only achievable with absolute discipline, zero missed sessions, and perfect macro adherence.
               </p>
             </div>
@@ -530,7 +530,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* Actionable Weekly Insights */}
           <section 
             aria-labelledby="weekly-review-title"
-            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
+            className="rounded-2xl bg-white/80 border border-stone-200/80 p-5 shadow-sm space-y-3"
           >
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-stone-900" aria-hidden="true" />
@@ -541,7 +541,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
             <div className="space-y-2">
               {report.actionableInsights.map((insight, idx) => (
-                <div key={idx} className="p-3 rounded-2xl bg-neutral-900 border border-neutral-850 text-xs text-neutral-300 leading-relaxed">
+                <div key={idx} className="p-3 rounded-2xl bg-stone-50 border border-stone-200 text-xs text-stone-600 leading-relaxed">
                   {insight}
                 </div>
               ))}
@@ -560,14 +560,14 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           aria-labelledby="subtab-history"
           className="space-y-4 animate-fadeIn"
         >
-          <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-2">
+          <div className="rounded-2xl bg-white/80 border border-stone-200/80 p-5 shadow-sm space-y-2">
             <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-stone-900" aria-hidden="true" />
               <h3 className="text-base font-bold text-stone-900 tracking-tight">
                 Past Days History Archive
               </h3>
             </div>
-            <p className="text-xs text-neutral-400 leading-relaxed">
+            <p className="text-xs text-stone-500 leading-relaxed">
               Browse what you trained, ate, and logged on previous days. Days with zero inputs are cleanly detailed so you can audit off-shifts and rest periods.
             </p>
           </div>
@@ -595,8 +595,8 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                   key={item.dateStr}
                   className={`rounded-2xl border p-4 transition-all duration-200 space-y-3.5 ${
                     isSelected 
-                      ? 'bg-neutral-950 border-white shadow-lg' 
-                      : 'bg-neutral-950 border-neutral-800 hover:border-neutral-700'
+                      ? 'bg-stone-50 border-white shadow-lg' 
+                      : 'bg-stone-50 border-stone-200 hover:border-stone-200'
                   }`}
                 >
                   {/* Card Header: Date & Shift Info */}
@@ -609,7 +609,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                           </span>
                         )}
                         {isYesterday && (
-                          <span className="px-2 py-0.5 rounded-2xl text-[9px] font-bold border border-neutral-700 bg-neutral-900 text-neutral-300 font-mono">
+                          <span className="px-2 py-0.5 rounded-2xl text-[9px] font-bold border border-stone-200 bg-stone-50 text-stone-600 font-mono">
                             YESTERDAY
                           </span>
                         )}
@@ -618,19 +618,19 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                         </span>
                       </div>
 
-                      <span className="text-[11px] text-neutral-400 font-mono mt-0.5 block">
+                      <span className="text-[11px] text-stone-500 font-mono mt-0.5 block">
                         {item.dayInfo.isShiftDay ? '12H Day Shift' : 'Off-Day Training'} • Cycle Day {item.dayInfo.cycleDayIndex + 1}/14
                       </span>
                     </div>
 
                     <div className="flex items-center gap-1.5">
                       {item.hasInputs ? (
-                        <span className="px-2 py-0.5 rounded-2xl text-[9px] font-mono font-bold bg-neutral-900 border border-neutral-750 text-neutral-200 flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-2xl text-[9px] font-mono font-bold bg-stone-50 border border-stone-200 text-stone-700 flex items-center gap-1">
                           <Check className="w-3 h-3 text-stone-900" aria-hidden="true" />
                           <span>Logged</span>
                         </span>
                       ) : (
-                        <span className="px-2 py-0.5 rounded-2xl text-[9px] font-mono text-neutral-400 border border-neutral-850 bg-neutral-900/60">
+                        <span className="px-2 py-0.5 rounded-2xl text-[9px] font-mono text-stone-500 border border-stone-200 bg-stone-50/60">
                           0 Inputs (Rest)
                         </span>
                       )}
@@ -640,9 +640,9 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                   {/* Daily Records Grid: Workout, Food, Water, Steps, Weight */}
                   <div className="grid grid-cols-2 gap-2 text-xs font-mono">
                     {/* 1. Workout Record */}
-                    <div className="p-2.5 rounded-2xl bg-neutral-900/80 border border-neutral-850 space-y-1">
-                      <div className="flex items-center gap-1.5 text-neutral-400 text-[10px] font-bold uppercase">
-                        <Dumbbell className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
+                    <div className="p-2.5 rounded-2xl bg-stone-50/80 border border-stone-200 space-y-1">
+                      <div className="flex items-center gap-1.5 text-stone-500 text-[10px] font-bold uppercase">
+                        <Dumbbell className="w-3.5 h-3.5 text-stone-600" aria-hidden="true" />
                         <span>Workout</span>
                       </div>
                       {item.completedSets > 0 ? (
@@ -650,21 +650,21 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                           <span className="text-stone-900 font-bold block truncate">
                             {item.workout?.title || item.dayInfo.workoutTitle}
                           </span>
-                          <span className="text-[10px] text-neutral-300 block">
+                          <span className="text-[10px] text-stone-600 block">
                             {item.completedSets}/{item.totalSets} sets • {Math.round(item.tonnage).toLocaleString()} kg
                           </span>
                         </div>
                       ) : (
-                        <span className="text-[11px] text-neutral-400 block italic">
+                        <span className="text-[11px] text-stone-500 block italic">
                           No sets logged
                         </span>
                       )}
                     </div>
 
                     {/* 2. Food & Fuel Record */}
-                    <div className="p-2.5 rounded-2xl bg-neutral-900/80 border border-neutral-850 space-y-1">
-                      <div className="flex items-center gap-1.5 text-neutral-400 text-[10px] font-bold uppercase">
-                        <Utensils className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
+                    <div className="p-2.5 rounded-2xl bg-stone-50/80 border border-stone-200 space-y-1">
+                      <div className="flex items-center gap-1.5 text-stone-500 text-[10px] font-bold uppercase">
+                        <Utensils className="w-3.5 h-3.5 text-stone-600" aria-hidden="true" />
                         <span>Fuel & Macros</span>
                       </div>
                       {item.foodCount > 0 || item.calories > 0 ? (
@@ -672,21 +672,21 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                           <span className="text-stone-900 font-bold block">
                             {item.calories} kcal
                           </span>
-                          <span className="text-[10px] text-neutral-300 block">
+                          <span className="text-[10px] text-stone-600 block">
                             {item.protein}g Protein ({item.foodCount} foods)
                           </span>
                         </div>
                       ) : (
-                        <span className="text-[11px] text-neutral-400 block italic">
+                        <span className="text-[11px] text-stone-500 block italic">
                           No meals logged (0 kcal)
                         </span>
                       )}
                     </div>
 
                     {/* 3. Steps & Cardio Record */}
-                    <div className="p-2.5 rounded-2xl bg-neutral-900/80 border border-neutral-850 space-y-1">
-                      <div className="flex items-center gap-1.5 text-neutral-400 text-[10px] font-bold uppercase">
-                        <Footprints className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
+                    <div className="p-2.5 rounded-2xl bg-stone-50/80 border border-stone-200 space-y-1">
+                      <div className="flex items-center gap-1.5 text-stone-500 text-[10px] font-bold uppercase">
+                        <Footprints className="w-3.5 h-3.5 text-stone-600" aria-hidden="true" />
                         <span>Steps & Cardio</span>
                       </div>
                       {item.stepCount > 0 || item.cardioCalories > 0 ? (
@@ -694,28 +694,28 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                           <span className="text-stone-900 font-bold block">
                             {item.stepCount.toLocaleString()} steps
                           </span>
-                          <span className="text-[10px] text-neutral-300 block">
+                          <span className="text-[10px] text-stone-600 block">
                             +{item.cardioCalories} kcal cardio
                           </span>
                         </div>
                       ) : (
-                        <span className="text-[11px] text-neutral-400 block italic">
+                        <span className="text-[11px] text-stone-500 block italic">
                           0 steps / cardio
                         </span>
                       )}
                     </div>
 
                     {/* 4. Hydration & Weight Record */}
-                    <div className="p-2.5 rounded-2xl bg-neutral-900/80 border border-neutral-850 space-y-1">
-                      <div className="flex items-center gap-1.5 text-neutral-400 text-[10px] font-bold uppercase">
-                        <Droplets className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
+                    <div className="p-2.5 rounded-2xl bg-stone-50/80 border border-stone-200 space-y-1">
+                      <div className="flex items-center gap-1.5 text-stone-500 text-[10px] font-bold uppercase">
+                        <Droplets className="w-3.5 h-3.5 text-stone-600" aria-hidden="true" />
                         <span>Fluid & Weight</span>
                       </div>
                       <div>
                         <span className="text-stone-900 font-bold block">
                           {item.waterMl > 0 ? `${(item.waterMl / 1000).toFixed(1)}L water` : 'No water'}
                         </span>
-                        <span className="text-[10px] text-neutral-300 block">
+                        <span className="text-[10px] text-stone-600 block">
                           {item.weight?.weightKg ? `${item.weight.weightKg} kg` : 'Weight: —'} • {item.fatigue !== null ? `RPE ${item.fatigue}/10` : 'RPE: —'}
                         </span>
                       </div>
@@ -732,7 +732,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                     aria-label={`Open full dashboard and workout details for ${formattedDate}`}
                     className={`min-h-[44px] w-full py-2.5 px-3 rounded-2xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white ${
                       isSelected
-                        ? 'bg-neutral-800 text-stone-900 border border-neutral-700'
+                        ? 'bg-stone-100 text-stone-900 border border-stone-200'
                         : 'bg-white text-black hover:bg-neutral-200'
                     }`}
                   >
@@ -759,23 +759,23 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* Manual Daily Steps (iOS HealthKit Bypass) */}
           <section 
             aria-labelledby="daily-steps-title"
-            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
+            className="rounded-2xl bg-white/80 border border-stone-200/80 p-5 shadow-sm space-y-3"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-2xl bg-neutral-900 border border-neutral-750 flex items-center justify-center text-stone-900">
+                <div className="w-8 h-8 rounded-2xl bg-stone-50 border border-stone-200 flex items-center justify-center text-stone-900">
                   <Footprints className="w-4 h-4 text-stone-900" aria-hidden="true" />
                 </div>
                 <div>
                   <h4 id="daily-steps-title" className="text-xs font-bold text-stone-900 uppercase tracking-wider">
                     Total Daily Steps
                   </h4>
-                  <p className="text-[11px] text-neutral-400">Manual pedometer log for {selectedDate}</p>
+                  <p className="text-[11px] text-stone-500">Manual pedometer log for {selectedDate}</p>
                 </div>
               </div>
 
               {currentStepCount > 0 && (
-                <span className="text-xs font-bold text-stone-900 font-mono bg-neutral-900 px-2.5 py-1 rounded-2xl border border-neutral-750">
+                <span className="text-xs font-bold text-stone-900 font-mono bg-stone-50 px-2.5 py-1 rounded-2xl border border-stone-200">
                   {currentStepCount.toLocaleString()} steps
                 </span>
               )}
@@ -794,7 +794,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 value={stepInputStr}
                 onChange={(e) => setStepInputStr(e.target.value)}
                 placeholder="Enter step count (e.g. 8500)"
-                className="flex-1 min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-2xl px-3 py-2.5 text-xs font-bold text-stone-900 placeholder-neutral-500 focus:outline-none focus:border-white"
+                className="flex-1 min-h-[44px] bg-stone-50 border border-stone-200 rounded-2xl px-3 py-2.5 text-xs font-bold text-stone-900 placeholder-neutral-500 focus:outline-none focus:border-white"
               />
               <button
                 type="submit"
@@ -807,12 +807,12 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
             {/* Quick Increment Pills (min 44px touch target) */}
             <div className="flex items-center gap-1.5 flex-wrap pt-1">
-              <span className="text-[10px] text-neutral-400 uppercase font-bold mr-1">Quick Add:</span>
+              <span className="text-[10px] text-stone-500 uppercase font-bold mr-1">Quick Add:</span>
               <button
                 type="button"
                 onClick={() => handleAddStepIncrement(1000)}
                 aria-label="Add 1000 steps"
-                className="min-h-[44px] px-3 py-1.5 rounded-2xl bg-neutral-900 hover:bg-neutral-850 text-stone-900 text-xs font-bold border border-neutral-800 focus:outline-none focus:ring-2 focus:ring-white"
+                className="min-h-[44px] px-3 py-1.5 rounded-2xl bg-stone-50 hover:bg-stone-100 text-stone-900 text-xs font-bold border border-stone-200 focus:outline-none focus:ring-2 focus:ring-white"
               >
                 +1,000
               </button>
@@ -820,7 +820,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 type="button"
                 onClick={() => handleAddStepIncrement(2500)}
                 aria-label="Add 2500 steps"
-                className="min-h-[44px] px-3 py-1.5 rounded-2xl bg-neutral-900 hover:bg-neutral-850 text-stone-900 text-xs font-bold border border-neutral-800 focus:outline-none focus:ring-2 focus:ring-white"
+                className="min-h-[44px] px-3 py-1.5 rounded-2xl bg-stone-50 hover:bg-stone-100 text-stone-900 text-xs font-bold border border-stone-200 focus:outline-none focus:ring-2 focus:ring-white"
               >
                 +2,500
               </button>
@@ -828,13 +828,13 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 type="button"
                 onClick={() => handleAddStepIncrement(5000)}
                 aria-label="Add 5000 steps"
-                className="min-h-[44px] px-3 py-1.5 rounded-2xl bg-neutral-900 hover:bg-neutral-850 text-stone-900 text-xs font-bold border border-neutral-800 focus:outline-none focus:ring-2 focus:ring-white"
+                className="min-h-[44px] px-3 py-1.5 rounded-2xl bg-stone-50 hover:bg-stone-100 text-stone-900 text-xs font-bold border border-stone-200 focus:outline-none focus:ring-2 focus:ring-white"
               >
                 +5,000
               </button>
             </div>
 
-            <div className="pt-2 border-t border-neutral-850 flex items-center justify-between text-xs text-neutral-400 font-mono">
+            <div className="pt-2 border-t border-stone-200 flex items-center justify-between text-xs text-stone-500 font-mono">
               <span>Total Steps Burn: <strong className="text-stone-900">{stepCalc.totalStepCalories} kcal</strong></span>
               <span>Active Burn (&gt;3.5k): <strong className="text-stone-900">+{stepCalc.activeStepCalories} kcal</strong></span>
             </div>
@@ -843,7 +843,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* Log Cardio Movement Form (MET Engine) */}
           <section 
             aria-labelledby="cardio-movement-heading"
-            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
+            className="rounded-2xl bg-white/80 border border-stone-200/80 p-5 shadow-sm space-y-4"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -852,14 +852,14 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                   Log Cardio Movement
                 </h4>
               </div>
-              <span className="text-xs font-mono font-bold text-neutral-400">
+              <span className="text-xs font-mono font-bold text-stone-500">
                 MET {currentMeta.met.toFixed(1)}
               </span>
             </div>
 
             <form onSubmit={handleLogCardioSubmit} className="space-y-3">
               <div>
-                <label htmlFor="cardio-movement-select" className="text-[10px] uppercase font-bold text-neutral-400 block mb-1">
+                <label htmlFor="cardio-movement-select" className="text-[10px] uppercase font-bold text-stone-500 block mb-1">
                   Movement Type
                 </label>
                 <select
@@ -870,7 +870,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                     setSelectedType(t);
                     setDurationStr('');
                   }}
-                  className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-2xl px-3 py-2.5 text-xs font-bold text-stone-900 focus:outline-none focus:border-white"
+                  className="w-full min-h-[44px] bg-stone-50 border border-stone-200 rounded-2xl px-3 py-2.5 text-xs font-bold text-stone-900 focus:outline-none focus:border-white"
                 >
                   {Object.values(ACTIVITY_MET_TABLE).map((item) => (
                     <option key={item.type} value={item.type}>
@@ -882,7 +882,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label htmlFor="cardio-duration-minutes" className="text-[10px] uppercase font-bold text-neutral-400 block mb-1">
+                  <label htmlFor="cardio-duration-minutes" className="text-[10px] uppercase font-bold text-stone-500 block mb-1">
                     Duration (Minutes)
                   </label>
                   <input
@@ -894,13 +894,13 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                     value={durationStr}
                     onChange={(e) => setDurationStr(e.target.value)}
                     placeholder="Minutes (e.g. 30)"
-                    className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-2xl px-3 py-2 text-xs font-bold text-stone-900 placeholder-neutral-500 focus:outline-none focus:border-white text-center"
+                    className="w-full min-h-[44px] bg-stone-50 border border-stone-200 rounded-2xl px-3 py-2 text-xs font-bold text-stone-900 placeholder-neutral-500 focus:outline-none focus:border-white text-center"
                     required
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="cardio-distance-km" className="text-[10px] uppercase font-bold text-neutral-400 block mb-1">
+                  <label htmlFor="cardio-distance-km" className="text-[10px] uppercase font-bold text-stone-500 block mb-1">
                     Distance (km)
                   </label>
                   <input
@@ -913,14 +913,14 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                     onChange={(e) => setDistanceStr(e.target.value)}
                     placeholder="km (optional)"
                     disabled={!currentMeta.supportsDistance}
-                    className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-2xl px-3 py-2 text-xs font-bold text-stone-900 placeholder-neutral-500 disabled:opacity-30 focus:outline-none focus:border-white text-center"
+                    className="w-full min-h-[44px] bg-stone-50 border border-stone-200 rounded-2xl px-3 py-2 text-xs font-bold text-stone-900 placeholder-neutral-500 disabled:opacity-30 focus:outline-none focus:border-white text-center"
                   />
                 </div>
               </div>
 
               {/* Calculated Calories Live Preview */}
-              <div className="p-3 rounded-2xl bg-neutral-900 border border-neutral-800 flex items-center justify-between font-mono">
-                <span className="text-xs text-neutral-400">
+              <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200 flex items-center justify-between font-mono">
+                <span className="text-xs text-stone-500">
                   {currentMeta.met} MET × {currentEffectiveWeight}kg × ({parsedDuration}/60h)
                 </span>
                 <span className="text-sm font-bold text-stone-900">
@@ -943,7 +943,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* Today's Logged Cardio Sessions */}
           <section 
             aria-labelledby="cardio-diary-title"
-            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
+            className="rounded-2xl bg-white/80 border border-stone-200/80 p-5 shadow-sm space-y-3"
           >
             <div className="flex items-center justify-between">
               <h4 id="cardio-diary-title" className="text-xs font-bold text-stone-900 uppercase tracking-wider">
@@ -954,7 +954,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                   type="button"
                   onClick={() => setShowClearConfirm(true)}
                   aria-label="Clear all cardio sessions logged for this day"
-                  className="min-h-[44px] text-xs text-neutral-400 hover:text-stone-900 flex items-center gap-1 font-mono p-2 focus:outline-none focus:ring-2 focus:ring-white rounded-2xl"
+                  className="min-h-[44px] text-xs text-stone-500 hover:text-stone-900 flex items-center gap-1 font-mono p-2 focus:outline-none focus:ring-2 focus:ring-white rounded-2xl"
                 >
                   <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
                   <span>Start Fresh</span>
@@ -966,13 +966,13 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
               <div 
                 role="alertdialog"
                 aria-labelledby="clear-cardio-title"
-                className="p-4 rounded-2xl bg-neutral-900 border border-neutral-700 space-y-2 animate-fadeIn font-sans"
+                className="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-2 animate-fadeIn font-sans"
               >
                 <p id="clear-cardio-title" className="text-xs text-stone-900 font-bold">Clear all cardio logged for this day?</p>
                 <div className="flex justify-end gap-2 pt-1">
                   <button
                     onClick={() => setShowClearConfirm(false)}
-                    className="min-h-[44px] px-3.5 py-1.5 rounded-2xl border border-neutral-750 text-xs text-neutral-300"
+                    className="min-h-[44px] px-3.5 py-1.5 rounded-2xl border border-stone-200 text-xs text-stone-600"
                   >
                     Cancel
                   </button>
@@ -990,10 +990,10 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
             )}
 
             {activities.length === 0 ? (
-              <div className="p-6 text-center text-neutral-400 font-sans border border-dashed border-neutral-800 rounded-2xl space-y-2">
+              <div className="p-6 text-center text-stone-500 font-sans border border-dashed border-stone-200 rounded-2xl space-y-2">
                 <Flame className="w-8 h-8 mx-auto text-neutral-600" aria-hidden="true" />
-                <p className="text-xs font-bold text-neutral-200">No Cardio Logged for this Date</p>
-                <p className="text-[11px] text-neutral-400 max-w-xs mx-auto">
+                <p className="text-xs font-bold text-stone-700">No Cardio Logged for this Date</p>
+                <p className="text-[11px] text-stone-500 max-w-xs mx-auto">
                   Select an activity above (Swimming, Running, Incline Treadmill) to calculate MET burn.
                 </p>
               </div>
@@ -1006,12 +1006,12 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 {activities.map((act) => (
                   <div key={act.id} role="listitem" className="py-2.5 flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-2xl bg-neutral-900 border border-neutral-800 flex items-center justify-center shrink-0">
+                      <div className="w-7 h-7 rounded-2xl bg-stone-50 border border-stone-200 flex items-center justify-center shrink-0">
                         {getActivityIcon(act.category)}
                       </div>
                       <div>
                         <span className="text-stone-900 font-bold block">{act.title}</span>
-                        <span className="text-[10px] text-neutral-400 font-mono">
+                        <span className="text-[10px] text-stone-500 font-mono">
                           {act.durationMinutes} min {act.distanceKm ? `• ${act.distanceKm} km` : ''} • {act.timeLogged}
                         </span>
                       </div>
@@ -1024,7 +1024,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                       <button
                         onClick={() => onDeleteActivity(act.id)}
                         aria-label={`Delete ${act.title} session`}
-                        className="min-h-[44px] min-w-[44px] flex items-center justify-center text-neutral-400 hover:text-stone-900 p-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-white"
+                        className="min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-500 hover:text-stone-900 p-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-white"
                       >
                         <Trash2 className="w-4 h-4" aria-hidden="true" />
                       </button>
@@ -1050,7 +1050,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* Offline Database Export */}
           <section 
             aria-labelledby="offline-database-heading"
-            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
+            className="rounded-2xl bg-white/80 border border-stone-200/80 p-5 shadow-sm space-y-4"
           >
             <div className="flex items-center gap-2">
               <Database className="w-4 h-4 text-stone-900" aria-hidden="true" />
@@ -1059,7 +1059,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
               </h4>
             </div>
 
-            <p className="text-xs text-neutral-300 leading-relaxed">
+            <p className="text-xs text-stone-600 leading-relaxed">
               All your workout logs, 14-day shift schedules, nutrition items, and bodyweight history are stored locally in your device's IndexedDB. Download a complete backup anytime.
             </p>
 
@@ -1076,19 +1076,19 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* Profile Metrics Summary */}
           <section 
             aria-labelledby="profile-metrics-heading"
-            className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3 font-mono"
+            className="rounded-2xl bg-white/80 border border-stone-200/80 p-5 shadow-sm space-y-3 font-mono"
           >
             <h4 id="profile-metrics-heading" className="text-xs font-bold text-stone-900 uppercase tracking-wider font-sans">
               User Profile Metrics
             </h4>
 
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-3 rounded-2xl bg-neutral-900 border border-neutral-800">
-                <span className="text-[10px] text-neutral-400 uppercase block">Gender & Height</span>
+              <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200">
+                <span className="text-[10px] text-stone-500 uppercase block">Gender & Height</span>
                 <span className="text-stone-900 font-bold block mt-0.5">{profile.gender} • {profile.heightCm} cm</span>
               </div>
-              <div className="p-3 rounded-2xl bg-neutral-900 border border-neutral-800">
-                <span className="text-[10px] text-neutral-400 uppercase block">Target Corridor</span>
+              <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200">
+                <span className="text-[10px] text-stone-500 uppercase block">Target Corridor</span>
                 <span className="text-stone-900 font-bold block mt-0.5">{profile.targetWeightMinKg}–{profile.targetWeightMaxKg} kg</span>
               </div>
             </div>
@@ -1096,7 +1096,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
             <button
               onClick={onOpenGuide}
               aria-label="Open profile setup guide and metric preferences"
-              className="min-h-[44px] w-full py-3 rounded-2xl border border-neutral-750 bg-neutral-900 text-stone-900 font-bold text-xs uppercase tracking-wider hover:bg-neutral-850 transition-all flex items-center justify-center gap-2 font-sans focus:outline-none focus:ring-2 focus:ring-white"
+              className="min-h-[44px] w-full py-3 rounded-2xl border border-stone-200 bg-stone-50 text-stone-900 font-bold text-xs uppercase tracking-wider hover:bg-stone-100 transition-all flex items-center justify-center gap-2 font-sans focus:outline-none focus:ring-2 focus:ring-white"
             >
               <Info className="w-4 h-4" aria-hidden="true" />
               <span>Open Profile Setup Guide</span>

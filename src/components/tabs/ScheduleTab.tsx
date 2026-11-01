@@ -118,10 +118,10 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
   return (
     <div className="space-y-3.5 pb-24 text-left animate-fadeIn">
       {/* Calendar Header Card */}
-      <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-4 shadow-sm font-mono">
+      <div className="rounded-2xl bg-white/80 border border-stone-200/80 p-4 shadow-sm font-mono">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-2xl bg-neutral-900 border border-neutral-750 text-stone-900">
+            <div className="p-1.5 rounded-2xl bg-stone-50 border border-stone-200 text-stone-900">
               <CalendarIcon className="w-4 h-4" />
             </div>
             <div>
@@ -132,22 +132,22 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
                   content="Loops your 14-day shift pattern infinitely. Tap 'Template' to customize your 2-week cycle, or tap any day on the calendar to add overtime or shift swaps."
                 />
               </div>
-              <p className="text-[10px] text-neutral-400">14-Day Infinite Loop Engine</p>
+              <p className="text-[10px] text-stone-500">14-Day Infinite Loop Engine</p>
             </div>
           </div>
 
           <div className="flex items-center gap-1">
             <button
               onClick={() => setShowTemplateEditor(!showTemplateEditor)}
-              className="px-2 py-1 rounded-2xl border border-neutral-750 bg-neutral-900 text-stone-900 text-[10px] hover:border-neutral-500"
+              className="px-2 py-1 rounded-2xl border border-stone-200 bg-stone-50 text-stone-900 text-[10px] hover:border-neutral-500"
             >
               {showTemplateEditor ? 'Close' : 'Template'}
             </button>
 
-            <div className="flex items-center bg-neutral-900 p-0.5 rounded-2xl border border-neutral-800">
+            <div className="flex items-center bg-stone-50 p-0.5 rounded-2xl border border-stone-200">
               <button
                 onClick={handlePrevMonth}
-                className="p-1 text-neutral-400 hover:text-stone-900"
+                className="p-1 text-stone-500 hover:text-stone-900"
                 aria-label="Previous Month"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
@@ -157,7 +157,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
               </span>
               <button
                 onClick={handleNextMonth}
-                className="p-1 text-neutral-400 hover:text-stone-900"
+                className="p-1 text-stone-500 hover:text-stone-900"
                 aria-label="Next Month"
               >
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -168,7 +168,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
 
         {/* 2-Week Template Drawer */}
         {showTemplateEditor && (
-          <div className="mt-3.5 p-3 rounded-2xl bg-neutral-900 border border-neutral-750 space-y-2.5 animate-slideUp">
+          <div className="mt-3.5 p-3 rounded-2xl bg-stone-50 border border-stone-200 space-y-2.5 animate-slideUp">
             <div className="flex items-center justify-between">
               <span className="text-[10px] uppercase font-bold text-stone-900">14-Day Loop Template</span>
               <ContextualHelp
@@ -180,33 +180,33 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
             <div className="grid grid-cols-3 gap-1">
               <button
                 onClick={() => handleSelectPreset(ROTA_PRESETS.fourOnThreeOff)}
-                className="py-1 rounded-2xl bg-black text-[9px] border border-neutral-800 text-neutral-300 hover:text-stone-900"
+                className="py-1 rounded-2xl bg-stone-100 text-[9px] border border-stone-200 text-stone-700 hover:text-stone-900"
               >
                 4-on / 3-off
               </button>
               <button
                 onClick={() => handleSelectPreset(ROTA_PRESETS.alternatingFourThree)}
-                className="py-1 rounded-2xl bg-black text-[9px] border border-neutral-800 text-neutral-300 hover:text-stone-900"
+                className="py-1 rounded-2xl bg-stone-100 text-[9px] border border-stone-200 text-stone-700 hover:text-stone-900"
               >
                 4-3 / 3-4
               </button>
               <button
                 onClick={() => handleSelectPreset(ROTA_PRESETS.panama223)}
-                className="py-1 rounded-2xl bg-black text-[9px] border border-neutral-800 text-neutral-300 hover:text-stone-900"
+                className="py-1 rounded-2xl bg-stone-100 text-[9px] border border-stone-200 text-stone-700 hover:text-stone-900"
               >
                 2-2-3 Panama
               </button>
             </div>
 
             <div className="space-y-1.5 pt-1">
-              <div className="text-[8px] text-neutral-400 uppercase">Tap any day to toggle (12h &rarr; Night &rarr; Off):</div>
+              <div className="text-[8px] text-stone-500 uppercase">Tap any day to toggle (12h &rarr; Night &rarr; Off):</div>
               <div className="grid grid-cols-7 gap-1 text-center">
                 {(profile.twoWeekTemplate || ROTA_PRESETS.fourOnThreeOff).slice(0, 7).map((s, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleToggleTemplateDay(idx)}
                     className={`p-1 rounded-2xl text-[9px] font-bold border transition-all ${
-                      s === 'off' ? 'bg-black text-neutral-500 border-neutral-800' : 'bg-white text-black border-white'
+                      s === 'off' ? 'bg-black text-stone-400 border-stone-200' : 'bg-white text-black border-white'
                     }`}
                   >
                     <div>D{idx + 1}</div>
@@ -220,7 +220,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
                     key={idx + 7}
                     onClick={() => handleToggleTemplateDay(idx + 7)}
                     className={`p-1 rounded-2xl text-[9px] font-bold border transition-all ${
-                      s === 'off' ? 'bg-black text-neutral-500 border-neutral-800' : 'bg-white text-black border-white'
+                      s === 'off' ? 'bg-black text-stone-400 border-stone-200' : 'bg-white text-black border-white'
                     }`}
                   >
                     <div>D{idx + 8}</div>
@@ -233,7 +233,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
         )}
 
         {/* Days of week header */}
-        <div className="grid grid-cols-7 gap-1 mt-3.5 text-center text-[10px] font-mono font-bold text-neutral-500 uppercase">
+        <div className="grid grid-cols-7 gap-1 mt-3.5 text-center text-[10px] font-mono font-bold text-stone-400 uppercase">
           <span>Mon</span>
           <span>Tue</span>
           <span>Wed</span>
@@ -257,39 +257,39 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
                   isSelected
                     ? 'border-white bg-white text-black font-bold z-10'
                     : isToday
-                    ? 'border-neutral-600 bg-neutral-900 text-stone-900'
-                    : 'border-neutral-850 bg-neutral-950 text-neutral-300 hover:border-neutral-750'
+                    ? 'border-neutral-600 bg-stone-50 text-stone-900'
+                    : 'border-stone-200 bg-stone-50 text-stone-600 hover:border-stone-200'
                 }`}
               >
                 <div className="w-full flex items-center justify-between px-1">
-                  <span className={`text-[10px] font-mono ${isSelected ? 'text-black font-bold' : isToday ? 'text-stone-900 font-bold' : 'text-neutral-400'}`}>
+                  <span className={`text-[10px] font-mono ${isSelected ? 'text-black font-bold' : isToday ? 'text-stone-900 font-bold' : 'text-stone-500'}`}>
                     {d.dayNumber}
                   </span>
                   {d.isOvertime ? (
                     <span className="text-[9px] font-mono font-black">[!]</span>
                   ) : d.isShiftDay ? (
-                    <Sun className={`w-2.5 h-2.5 ${isSelected ? 'text-black' : 'text-neutral-400'}`} />
+                    <Sun className={`w-2.5 h-2.5 ${isSelected ? 'text-black' : 'text-stone-500'}`} />
                   ) : (
-                    <Moon className={`w-2.5 h-2.5 ${isSelected ? 'text-black' : 'text-neutral-300'}`} />
+                    <Moon className={`w-2.5 h-2.5 ${isSelected ? 'text-black' : 'text-stone-600'}`} />
                   )}
                 </div>
 
                 <div className="w-full mt-1">
                   {d.isOvertime ? (
                     <div className={`text-[8px] font-mono font-bold px-0.5 py-0.2 rounded-2xl truncate text-center ${
-                      isSelected ? 'bg-black text-stone-900' : 'bg-neutral-800 text-stone-900'
+                      isSelected ? 'bg-stone-900 text-white' : 'bg-stone-100 text-stone-900'
                     }`}>
                       OT 12h
                     </div>
                   ) : d.isShiftDay ? (
                     <div className={`text-[8px] font-mono px-0.5 py-0.2 rounded-2xl truncate text-center ${
-                      isSelected ? 'bg-neutral-200 text-black' : 'text-neutral-500'
+                      isSelected ? 'bg-neutral-200 text-black' : 'text-stone-400'
                     }`}>
                       Shift
                     </div>
                   ) : (
                     <div className={`text-[8px] font-mono font-bold px-0.5 py-0.2 rounded-2xl truncate text-center ${
-                      isSelected ? 'bg-black text-stone-900' : 'bg-neutral-900 border border-neutral-800 text-neutral-200'
+                      isSelected ? 'bg-stone-900 text-white' : 'bg-stone-50 border border-stone-200 text-stone-700'
                     }`}>
                       {d.recommendedWorkoutCategory}
                     </div>
@@ -302,11 +302,11 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
       </div>
 
       {/* Selected Day Inspector Card */}
-      <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-4 shadow-sm text-left">
+      <div className="rounded-2xl bg-white/80 border border-stone-200/80 p-4 shadow-sm text-left">
         <div className="flex items-start justify-between font-mono">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-neutral-400">
+              <span className="text-[11px] text-stone-500">
                 {new Date(selectedDateStr).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}
               </span>
               {selectedDateStr === todayStr && (
@@ -323,9 +323,9 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
           <div className="flex items-center gap-1">
             <button
               onClick={handleOpenEditModal}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-2xl border border-neutral-750 bg-neutral-900 hover:border-neutral-600 text-stone-900 text-xs font-mono font-medium transition-all active:scale-95"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-2xl border border-stone-200 bg-stone-50 hover:border-neutral-600 text-stone-900 text-xs font-mono font-medium transition-all active:scale-95"
             >
-              <Edit3 className="w-3.5 h-3.5 text-neutral-400" />
+              <Edit3 className="w-3.5 h-3.5 text-stone-500" />
               <span>Override / OT</span>
             </button>
             <ContextualHelp
@@ -336,12 +336,12 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
         </div>
 
         {/* Dynamic Algorithm Workout Routing Box */}
-        <div className="mt-3.5 p-3 rounded-2xl bg-neutral-900 border border-neutral-800">
+        <div className="mt-3.5 p-3 rounded-2xl bg-stone-50 border border-stone-200">
           <div className="flex items-center justify-between mb-1.5 font-mono">
-            <span className="text-[10px] font-bold uppercase text-neutral-400">
+            <span className="text-[10px] font-bold uppercase text-stone-500">
               Prescribed Workout Routing
             </span>
-            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-2xl border border-neutral-700 bg-black text-neutral-300">
+            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-2xl border border-stone-200 bg-black text-stone-600">
               {selectedDayInfo.isShiftDay ? 'CNS RECOVERY' : 'HEAVY LIFTING'}
             </span>
           </div>
@@ -353,7 +353,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
             </h4>
           </div>
 
-          <p className="mt-1 text-xs text-neutral-300 leading-relaxed font-sans">
+          <p className="mt-1 text-xs text-stone-600 leading-relaxed font-sans">
             {selectedDayInfo.isOvertime ? (
               'Overtime shift detected: Algorithm auto-converted heavy session to a 25-minute express workout to preserve nervous system reserve.'
             ) : selectedDayInfo.isShiftDay ? (
@@ -363,8 +363,8 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
             )}
           </p>
 
-          <div className="mt-3 pt-2 border-t border-neutral-850 flex justify-between items-center text-xs font-mono">
-            <span className="text-neutral-500">Category: <strong className="text-stone-900">{selectedDayInfo.recommendedWorkoutCategory}</strong></span>
+          <div className="mt-3 pt-2 border-t border-stone-200 flex justify-between items-center text-xs font-mono">
+            <span className="text-stone-400">Category: <strong className="text-stone-900">{selectedDayInfo.recommendedWorkoutCategory}</strong></span>
             <button
               onClick={() => onNavigateTab('workout')}
               className="text-stone-900 hover:underline font-semibold"
@@ -377,16 +377,16 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
 
       {/* Edit Shift Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-fadeIn">
-          <div className="w-full max-w-sm rounded-2xl bg-black border border-neutral-700 shadow-2xl p-5 text-left font-mono">
-            <div className="flex items-center justify-between pb-3 border-b border-neutral-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-md animate-fadeIn">
+          <div className="w-full max-w-sm rounded-2xl bg-white border border-stone-200 shadow-2xl p-5 text-left font-mono">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200">
               <div>
                 <h3 className="text-sm font-bold text-stone-900 uppercase">Override Specific Day</h3>
-                <p className="text-[11px] text-neutral-400">{selectedDateStr}</p>
+                <p className="text-[11px] text-stone-500">{selectedDateStr}</p>
               </div>
               <button
                 onClick={() => setIsEditModalOpen(false)}
-                className="text-neutral-500 hover:text-stone-900"
+                className="text-stone-400 hover:text-stone-900"
               >
                 ✕
               </button>
@@ -394,7 +394,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
 
             <div className="mt-4 space-y-3">
               <div>
-                <label className="text-xs font-semibold text-neutral-300 block mb-1.5">
+                <label className="text-xs font-semibold text-stone-600 block mb-1.5">
                   Select Shift for this Date:
                 </label>
                 <div className="space-y-1.5">
@@ -415,7 +415,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
                       className={`w-full p-2.5 rounded-2xl border text-left text-xs transition-all ${
                         modalShiftType === option.id
                           ? 'bg-white text-black font-bold border-white'
-                          : 'bg-neutral-900 border-neutral-800 text-neutral-300 hover:border-neutral-700'
+                          : 'bg-stone-50 border-stone-200 text-stone-600 hover:border-stone-200'
                       }`}
                     >
                       {option.label}
@@ -425,7 +425,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
               </div>
 
               <div>
-                <label className="text-xs text-neutral-400 block mb-1">
+                <label className="text-xs text-stone-500 block mb-1">
                   Optional Notes:
                 </label>
                 <input
@@ -433,7 +433,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
                   value={modalNotes}
                   onChange={(e) => setModalNotes(e.target.value)}
                   placeholder="e.g. Extra overtime shift"
-                  className="w-full bg-neutral-900 border border-neutral-750 rounded-2xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-white"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-white"
                 />
               </div>
             </div>
@@ -441,7 +441,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
             <div className="mt-5 flex gap-2">
               <button
                 onClick={() => setIsEditModalOpen(false)}
-                className="flex-1 py-2 rounded-2xl border border-neutral-800 text-neutral-400 text-xs hover:text-stone-900"
+                className="flex-1 py-2 rounded-2xl border border-stone-200 text-stone-500 text-xs hover:text-stone-900"
               >
                 Cancel
               </button>

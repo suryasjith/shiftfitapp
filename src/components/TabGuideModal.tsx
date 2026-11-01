@@ -71,19 +71,19 @@ export const TabGuideModal: React.FC<TabGuideModalProps> = ({
   const data = TAB_GUIDE_DATA[currentTab] || TAB_GUIDE_DATA.today;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-stone-900/40 backdrop-blur-md animate-fadeIn">
       <div 
-        className="w-full max-w-md bg-neutral-950 border border-neutral-800 rounded-2xl-t-2xl sm:rounded-2xl p-5 shadow-2xl text-left animate-slideUp font-sans"
+        className="w-full max-w-md bg-white/80 border border-stone-200/80 rounded-2xl-t-2xl sm:rounded-2xl p-5 shadow-2xl text-left animate-slideUp font-sans"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="flex items-start justify-between pb-3 border-b border-neutral-850">
+        <div className="flex items-start justify-between pb-3 border-b border-stone-200">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-2xl bg-neutral-900 border border-neutral-750 flex items-center justify-center text-stone-900 shrink-0">
+            <div className="w-8 h-8 rounded-2xl bg-stone-50 border border-stone-200 flex items-center justify-center text-stone-900 shrink-0">
               <Info className="w-4 h-4 text-stone-900" />
             </div>
             <div>
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-400 block">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-stone-500 block">
                 {data.badge} Guide
               </span>
               <h3 className="text-base font-bold text-stone-900 tracking-tight">
@@ -94,7 +94,7 @@ export const TabGuideModal: React.FC<TabGuideModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-2xl text-neutral-400 hover:text-stone-900 hover:bg-neutral-900 transition-colors"
+            className="p-1.5 rounded-2xl text-stone-500 hover:text-stone-900 hover:bg-stone-50 transition-colors"
             title="Close Guide"
           >
             <X className="w-5 h-5" />
@@ -103,28 +103,28 @@ export const TabGuideModal: React.FC<TabGuideModalProps> = ({
 
         {/* Modal Body */}
         <div className="py-4 space-y-3.5">
-          <p className="text-xs text-neutral-300 leading-relaxed">
+          <p className="text-xs text-stone-600 leading-relaxed">
             {data.description}
           </p>
 
           {/* Primary Action Callout */}
-          <div className="p-3 rounded-2xl bg-neutral-900 border border-neutral-800 space-y-1">
+          <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200 space-y-1">
             <span className="text-[10px] uppercase font-bold text-stone-900 tracking-wider block">
               What to do on this screen:
             </span>
-            <p className="text-xs text-neutral-300 leading-relaxed font-medium">
+            <p className="text-xs text-stone-600 leading-relaxed font-medium">
               {data.primaryAction}
             </p>
           </div>
 
           {/* Quick Tips */}
           <div className="space-y-1.5">
-            <span className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider block">
+            <span className="text-[10px] uppercase font-bold text-stone-400 tracking-wider block">
               Quick Tips:
             </span>
             {data.quickTips.map((tip, idx) => (
-              <div key={idx} className="flex items-start gap-2 text-xs text-neutral-400">
-                <CheckCircle className="w-3.5 h-3.5 text-neutral-300 shrink-0 mt-0.5" />
+              <div key={idx} className="flex items-start gap-2 text-xs text-stone-500">
+                <CheckCircle className="w-3.5 h-3.5 text-stone-600 shrink-0 mt-0.5" />
                 <span className="leading-snug">{tip}</span>
               </div>
             ))}

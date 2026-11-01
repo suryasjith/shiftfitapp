@@ -241,11 +241,11 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
       <div 
         role="region"
         aria-label="No Workout Loaded"
-        className="p-8 text-center text-neutral-400 font-sans space-y-3"
+        className="p-8 text-center text-stone-500 font-sans space-y-3"
       >
         <Dumbbell className="w-12 h-12 mx-auto text-neutral-600" aria-hidden="true" />
         <h3 className="font-bold text-stone-900 text-sm">No Workout Loaded</h3>
-        <p className="text-xs text-neutral-400 max-w-xs mx-auto">
+        <p className="text-xs text-stone-500 max-w-xs mx-auto">
           Tap "Manage Shift Rota" below to verify your 4-on / 3-off shift pattern.
         </p>
       </div>
@@ -282,7 +282,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
           <button
             onClick={() => setShowResetConfirm(true)}
             aria-label="Reset all sets and timers to start a fresh workout session"
-            className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-2xl border border-stone-200/80 bg-slate-900/60 backdrop-blur-md text-stone-600 hover:text-stone-900 text-xs font-mono font-bold transition-all active:translate-y-[2px] shrink-0 focus:outline-none focus:ring-1 focus:ring-amber-400"
+            className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-2xl border border-stone-200/80 bg-white/70 backdrop-blur-md text-stone-600 hover:text-stone-900 text-xs font-mono font-bold transition-all active:translate-y-[2px] shrink-0 focus:outline-none focus:ring-1 focus:ring-amber-400"
           >
             <RotateCcw className="w-3.5 h-3.5 text-stone-500" aria-hidden="true" />
             <span>Start Fresh</span>
@@ -351,7 +351,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
       {/* 2. PROGRESSIVE DISCLOSURE: Manage 2-Week Shift Calendar */}
       <section 
         aria-label="Shift Rota Management"
-        className="rounded-2xl border border-neutral-800 bg-neutral-950 p-4 shadow-sm"
+        className="rounded-2xl border border-stone-200 bg-stone-50 p-4 shadow-sm"
       >
         <button
           type="button"
@@ -361,27 +361,27 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
           className="min-h-[44px] w-full flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-white rounded-xl"
         >
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-neutral-900 border border-neutral-750 flex items-center justify-center text-stone-900 shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-center text-stone-900 shrink-0">
               <Calendar className="w-4 h-4 text-stone-900" aria-hidden="true" />
             </div>
             <div>
               <span className="text-xs font-bold text-stone-900 uppercase tracking-wider block">
                 Manage 2-Week Shift Rota
               </span>
-              <span className="text-[11px] text-neutral-400 font-normal">
+              <span className="text-[11px] text-stone-500 font-normal">
                 {dayInfo.isShiftDay ? '12h Shift Day Today' : 'Off-Day Today'} • Tap to inspect or amend shift loop
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-mono shrink-0">
+          <div className="flex items-center gap-1.5 text-xs text-stone-500 font-mono shrink-0">
             <span>{showRotaManager ? 'Collapse' : 'Manage'}</span>
             {showRotaManager ? <ChevronUp className="w-4 h-4" aria-hidden="true" /> : <ChevronDown className="w-4 h-4" aria-hidden="true" />}
           </div>
         </button>
 
         {showRotaManager && onSaveShift && onUpdateTemplate && (
-          <div id="shift-rota-container" className="mt-4 pt-4 border-t border-neutral-850 animate-fadeIn">
+          <div id="shift-rota-container" className="mt-4 pt-4 border-t border-stone-200 animate-fadeIn">
             <ScheduleTab
               todayStr={todayStr}
               profile={profile}
@@ -397,7 +397,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
       {/* 3. PROGRESSIVE DISCLOSURE: Session Timing */}
       <section 
         aria-label="Session Duration & Timestamps"
-        className="rounded-2xl border border-neutral-800 bg-neutral-950 p-4 shadow-sm"
+        className="rounded-2xl border border-stone-200 bg-stone-50 p-4 shadow-sm"
       >
         <button
           type="button"
@@ -407,14 +407,14 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
           className="min-h-[44px] w-full flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-white rounded-xl"
         >
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-neutral-900 border border-neutral-750 flex items-center justify-center text-stone-900 shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-center text-stone-900 shrink-0">
               <Clock className="w-4 h-4 text-stone-900" aria-hidden="true" />
             </div>
             <div>
               <span className="text-xs font-bold text-stone-900 uppercase tracking-wider block">
                 Session Timing & Duration
               </span>
-              <span className="text-[11px] text-neutral-400 font-normal">
+              <span className="text-[11px] text-stone-500 font-normal">
                 {workout.actualDurationMin 
                   ? `${workout.actualDurationMin} minutes tracked` 
                   : 'Track start and end times (optional)'}
@@ -422,16 +422,16 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-mono shrink-0">
+          <div className="flex items-center gap-1.5 text-xs text-stone-500 font-mono shrink-0">
             <span>{showTimingManager ? 'Hide' : 'Set Time'}</span>
             {showTimingManager ? <ChevronUp className="w-4 h-4" aria-hidden="true" /> : <ChevronDown className="w-4 h-4" aria-hidden="true" />}
           </div>
         </button>
 
         {showTimingManager && (
-          <div id="timing-container" className="mt-4 pt-4 border-t border-neutral-850 grid grid-cols-3 gap-2.5 animate-fadeIn font-mono">
+          <div id="timing-container" className="mt-4 pt-4 border-t border-stone-200 grid grid-cols-3 gap-2.5 animate-fadeIn font-mono">
             <div>
-              <label htmlFor="workout-start-time" className="text-[9px] uppercase font-bold text-neutral-400 block mb-1">
+              <label htmlFor="workout-start-time" className="text-[9px] uppercase font-bold text-stone-500 block mb-1">
                 Start Time
               </label>
               <div className="flex items-center gap-1">
@@ -440,13 +440,13 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                   type="time"
                   value={workout.startTime || ''}
                   onChange={(e) => handleUpdateTiming('startTime', e.target.value)}
-                  className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-lg px-2 py-1.5 text-xs font-bold text-stone-900 focus:outline-none focus:border-white"
+                  className="w-full min-h-[44px] bg-stone-50 border border-stone-200 rounded-lg px-2 py-1.5 text-xs font-bold text-stone-900 focus:outline-none focus:border-white"
                 />
                 <button
                   type="button"
                   onClick={() => handleSetTimeToNow('startTime')}
                   aria-label="Set workout start time to current time"
-                  className="min-h-[44px] px-2.5 py-1.5 text-[10px] font-bold rounded-lg bg-neutral-850 hover:bg-neutral-800 text-neutral-200 hover:text-stone-900 border border-neutral-750 active:scale-95"
+                  className="min-h-[44px] px-2.5 py-1.5 text-[10px] font-bold rounded-lg bg-stone-100 hover:bg-stone-100 text-stone-700 hover:text-stone-900 border border-stone-200 active:scale-95"
                 >
                   Now
                 </button>
@@ -454,7 +454,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
             </div>
 
             <div>
-              <label htmlFor="workout-end-time" className="text-[9px] uppercase font-bold text-neutral-400 block mb-1">
+              <label htmlFor="workout-end-time" className="text-[9px] uppercase font-bold text-stone-500 block mb-1">
                 End Time
               </label>
               <div className="flex items-center gap-1">
@@ -463,13 +463,13 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                   type="time"
                   value={workout.endTime || ''}
                   onChange={(e) => handleUpdateTiming('endTime', e.target.value)}
-                  className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-lg px-2 py-1.5 text-xs font-bold text-stone-900 focus:outline-none focus:border-white"
+                  className="w-full min-h-[44px] bg-stone-50 border border-stone-200 rounded-lg px-2 py-1.5 text-xs font-bold text-stone-900 focus:outline-none focus:border-white"
                 />
                 <button
                   type="button"
                   onClick={() => handleSetTimeToNow('endTime')}
                   aria-label="Set workout end time to current time"
-                  className="min-h-[44px] px-2.5 py-1.5 text-[10px] font-bold rounded-lg bg-neutral-850 hover:bg-neutral-800 text-neutral-200 hover:text-stone-900 border border-neutral-750 active:scale-95"
+                  className="min-h-[44px] px-2.5 py-1.5 text-[10px] font-bold rounded-lg bg-stone-100 hover:bg-stone-100 text-stone-700 hover:text-stone-900 border border-stone-200 active:scale-95"
                 >
                   Now
                 </button>
@@ -477,7 +477,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
             </div>
 
             <div>
-              <label htmlFor="workout-duration-min" className="text-[9px] uppercase font-bold text-neutral-400 block mb-1">
+              <label htmlFor="workout-duration-min" className="text-[9px] uppercase font-bold text-stone-500 block mb-1">
                 Duration (min)
               </label>
               <input
@@ -491,7 +491,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                   handleUpdateTiming('actualDurationMin', isNaN(val as number) ? undefined : val);
                 }}
                 placeholder="e.g. 50"
-                className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-lg px-2 py-1.5 text-xs font-bold text-stone-900 focus:outline-none focus:border-white text-center"
+                className="w-full min-h-[44px] bg-stone-50 border border-stone-200 rounded-lg px-2 py-1.5 text-xs font-bold text-stone-900 focus:outline-none focus:border-white text-center"
               />
             </div>
           </div>
@@ -503,10 +503,10 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
         <div 
           role="note" 
           aria-label="Workout guidance"
-          className="p-4 rounded-2xl bg-neutral-900/60 border border-neutral-800 flex items-start gap-3"
+          className="p-4 rounded-2xl bg-stone-50/60 border border-stone-200 flex items-start gap-3"
         >
-          <Info className="w-5 h-5 text-neutral-400 shrink-0 mt-0.5" aria-hidden="true" />
-          <div className="text-xs text-neutral-300 leading-relaxed">
+          <Info className="w-5 h-5 text-stone-500 shrink-0 mt-0.5" aria-hidden="true" />
+          <div className="text-xs text-stone-600 leading-relaxed">
             <strong className="text-stone-900 block mb-0.5">Session Overview for {todayStr}:</strong>
             {todayStr === RotaEngine.formatDate(new Date()) ? (
               <>Tap Exercise #1 below, type your weight and reps, then tap <strong className="text-stone-900">Complete</strong>. The countdown rest timer will automatically guide your recovery.</>
@@ -544,7 +544,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
               }`}
             >
               {/* Exercise Accordion Bar (Semantic Container, No Nested Links) */}
-              <div className="w-full min-h-[48px] p-4 flex items-start justify-between text-left hover:bg-slate-900/60 transition-colors">
+              <div className="w-full min-h-[48px] p-4 flex items-start justify-between text-left hover:bg-white/70 transition-colors">
                 <button
                   type="button"
                   id={`exercise-header-${exIdx}`}
@@ -611,7 +611,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                       soundManager.playTap();
                     }}
                     aria-label={`Watch form tutorial video for ${displayName} on YouTube`}
-                    className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center gap-1 px-2.5 py-1 rounded-2xl bg-[#FBF9F5]/70 hover:bg-slate-900 border border-stone-200/80 text-xs font-mono text-stone-600 hover:text-stone-900 transition-all active:translate-y-[2px]"
+                    className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center gap-1 px-2.5 py-1 rounded-2xl bg-[#FBF9F5]/70 hover:bg-stone-100 border border-stone-200/80 text-xs font-mono text-stone-600 hover:text-stone-900 transition-all active:translate-y-[2px]"
                   >
                     <Play className="w-3 h-3 fill-red-500 stroke-red-500 shrink-0" aria-hidden="true" />
                     <span className="hidden sm:inline">YT</span>
@@ -732,7 +732,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                             'Execution: Control the eccentric descent for 2–3 seconds without bouncing.',
                             'Contraction: Drive smoothly into lockout with active muscle engagement.'
                           ]).map((point, ptIdx) => (
-                            <li key={ptIdx} className="flex items-start gap-2.5 bg-slate-900/90 p-2.5 rounded-2xl border border-amber-500/25">
+                            <li key={ptIdx} className="flex items-start gap-2.5 bg-stone-50 p-2.5 rounded-2xl border border-amber-500/25">
                               <span className="w-5 h-5 rounded-2xl bg-terracotta/20 text-terracotta font-mono text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
                                 {ptIdx + 1}
                               </span>
@@ -873,7 +873,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
             <Sparkles className="w-4 h-4 text-stone-900" aria-hidden="true" />
             <span>SESSION COMPLETED!</span>
           </div>
-          <p className="text-xs text-neutral-300">
+          <p className="text-xs text-stone-600">
             Total tonnage: <strong className="text-stone-900 font-mono">{Math.round(currentTonnage).toLocaleString()} kg</strong>. Great workout!
           </p>
         </div>

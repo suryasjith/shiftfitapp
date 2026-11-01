@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserProfile, ShiftDay } from '../types';
 import { NavTab } from './Navbar';
-import { Info, Database, ChevronLeft, ChevronRight, Calendar as CalendarIcon, RotateCcw } from 'lucide-react';
+import { Info, Database, ChevronLeft, ChevronRight, Calendar as CalendarIcon, RotateCcw, Moon, Sun } from 'lucide-react';
 import { TabGuideModal } from './TabGuideModal';
 import { RotaEngine } from '../services/rotaEngine';
 import { soundManager } from '../services/audioTimer';
@@ -25,6 +25,33 @@ export const Header: React.FC<HeaderProps> = ({
   onExportBackup,
 }) => {
   const [isTabGuideOpen, setIsTabGuideOpen] = useState<boolean>(false);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    return document.documentElement.classList.contains('dark');
+  });
+
+  const toggleTheme = () => {
+    soundManager.playTap();
+    const newDark = !isDarkMode;
+    setIsDarkMode(newDark);
+    if (newDark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('shiftfit_theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('shiftfit_theme', 'light');
+    }
+  };
+
+  useEffect(() => {
+    const saved = localStorage.getItem('shiftfit_theme');
+    if (saved === 'dark') {
+      document.documentElement.classList.add('dark');
+      setIsDarkMode(true);
+    } else {
+      document.documentElement.classList.remove('dark');
+      setIsDarkMode(false);
+    }
+  }, []);
 
   const changeDateByDays = (baseDateStr: string, deltaDays: number): string => {
     const d = RotaEngine.parseDate(baseDateStr);
@@ -101,11 +128,25 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Right Action Controls */}
           <div className="flex items-center gap-2">
+            {/* Dark / Light Mode Toggle */}
+            <button
+              onClick={toggleTheme}
+              aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              className="min-h-[44px] min-w-[44px] w-9 h-9 rounded-xl border border-stone-200/80 bg-white/70 dark:bg-slate-800 dark:border-slate-700 backdrop-blur-md hover:bg-white text-stone-700 dark:text-stone-200 flex items-center justify-center transition-all active:scale-95 shadow-xs focus:outline-none focus:ring-2 focus:ring-orange-200"
+              title={isDarkMode ? 'Active: Dark Mode (Tap for Light)' : 'Active: Light Mode (Tap for Dark)'}
+            >
+              {isDarkMode ? (
+                <Sun className="w-4 h-4 text-amber-400 stroke-[2.2px]" aria-hidden="true" />
+              ) : (
+                <Moon className="w-4 h-4 text-stone-700 stroke-[2.2px]" aria-hidden="true" />
+              )}
+            </button>
+
             {/* Offline IndexedDB Status */}
             <button
               onClick={onExportBackup}
               aria-label="Export Offline Database Backup (JSON)"
-              className="min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200/80 bg-white/70 backdrop-blur-md text-stone-700 hover:text-stone-900 hover:bg-white text-[11px] font-sans font-semibold transition-all active:scale-95 shadow-xs focus:outline-none focus:ring-2 focus:ring-orange-200"
+              className="min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200/80 bg-white/70 dark:bg-slate-800 dark:border-slate-700 backdrop-blur-md text-stone-700 dark:text-stone-200 hover:text-stone-900 hover:bg-white text-[11px] font-sans font-semibold transition-all active:scale-95 shadow-xs focus:outline-none focus:ring-2 focus:ring-orange-200"
               title="100% Offline IndexedDB Engine Active. Tap to Export Local Backup."
             >
               <Database className="w-3.5 h-3.5 text-terracotta" aria-hidden="true" />
@@ -115,11 +156,11 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Contextual Tab Guide ('i' Icon) */}
             <button
               onClick={() => setIsTabGuideOpen(true)}
-              className="min-h-[44px] min-w-[44px] w-9 h-9 rounded-xl border border-stone-200/80 bg-white/70 backdrop-blur-md hover:bg-white text-stone-700 flex items-center justify-center transition-all active:scale-95 shadow-xs focus:outline-none focus:ring-2 focus:ring-orange-200"
+              className="min-h-[44px] min-w-[44px] w-9 h-9 rounded-xl border border-stone-200/80 bg-white/70 dark:bg-slate-800 dark:border-slate-700 backdrop-blur-md hover:bg-white text-stone-700 dark:text-stone-200 flex items-center justify-center transition-all active:scale-95 shadow-xs focus:outline-none focus:ring-2 focus:ring-orange-200"
               title="Tab Guide & Instructions"
               aria-label="Open Tab Instructions"
             >
-              <Info className="w-4 h-4 stroke-[2.2px] text-stone-700" aria-hidden="true" />
+              <Info className="w-4 h-4 stroke-[2.2px] text-stone-700 dark:text-stone-200" aria-hidden="true" />
             </button>
           </div>
         </div>

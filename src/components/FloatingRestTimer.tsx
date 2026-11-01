@@ -121,7 +121,7 @@ export const FloatingRestTimer: React.FC<FloatingRestTimerProps> = ({
         <button
           onClick={() => setIsMinimized(true)}
           aria-label="Minimize timer to peek at workout exercises"
-          className="min-h-[44px] text-xs font-mono text-neutral-300 hover:text-stone-900 px-3 py-2 rounded-2xl border border-neutral-800 bg-neutral-900 transition-colors flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+          className="min-h-[44px] text-xs font-mono text-stone-600 hover:text-stone-900 px-3 py-2 rounded-2xl border border-stone-200 bg-stone-100 transition-colors flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-neutral-400"
         >
           <span>Peek Exercises</span>
           <ChevronDown className="w-3.5 h-3.5" aria-hidden="true" />
@@ -161,7 +161,7 @@ export const FloatingRestTimer: React.FC<FloatingRestTimerProps> = ({
           aria-valuemin={0} 
           aria-valuemax={100}
           aria-label="Rest interval progress"
-          className="max-w-xs mx-auto w-full bg-neutral-900 h-2 rounded-2xl overflow-hidden border border-neutral-800"
+          className="max-w-xs mx-auto w-full bg-stone-100 h-2 rounded-2xl overflow-hidden border border-stone-200"
         >
           <div 
             className="h-full bg-white rounded-2xl transition-all duration-1000"
@@ -174,7 +174,7 @@ export const FloatingRestTimer: React.FC<FloatingRestTimerProps> = ({
           <button
             onClick={handleSub15}
             aria-label="Subtract 15 seconds from rest time"
-            className="min-h-[44px] px-4 py-2.5 rounded-2xl bg-neutral-900 hover:bg-neutral-850 border border-neutral-750 text-neutral-200 hover:text-stone-900 text-xs font-mono font-bold transition-all active:scale-95 flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-white"
+            className="min-h-[44px] px-4 py-2.5 rounded-2xl bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-700 hover:text-stone-900 text-xs font-mono font-bold transition-all active:scale-95 flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-white"
           >
             <Minus className="w-4 h-4" aria-hidden="true" />
             <span>-15s</span>
@@ -183,7 +183,7 @@ export const FloatingRestTimer: React.FC<FloatingRestTimerProps> = ({
           <button
             onClick={handleAdd30}
             aria-label="Add 30 seconds to rest time"
-            className="min-h-[44px] px-4 py-2.5 rounded-2xl bg-neutral-900 hover:bg-neutral-850 border border-neutral-750 text-stone-900 text-xs font-mono font-bold transition-all active:scale-95 flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-white"
+            className="min-h-[44px] px-4 py-2.5 rounded-2xl bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-900 text-xs font-mono font-bold transition-all active:scale-95 flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-white"
           >
             <Plus className="w-4 h-4" aria-hidden="true" />
             <span>+30s Rest</span>
