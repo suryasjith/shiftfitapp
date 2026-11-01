@@ -800,7 +800,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                               step="any"
                               value={set.weightKg === 0 || set.weightKg === undefined ? '' : set.weightKg}
                               onChange={(e) => handleUpdateSetValue(exIdx, setIdx, 'weightKg', e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
-                              placeholder="Weight (kg)"
+                              placeholder={ex.suggestedWeightKg ? `${ex.suggestedWeightKg}` : 'kg'}
                               className="w-full min-h-[44px] bg-white dark:bg-black/90 border border-stone-200 dark:border-white/20 rounded-xl px-2 py-1.5 text-center font-mono text-xs font-bold text-stone-900 dark:text-white placeholder-stone-400 dark:placeholder-stone-600 focus:outline-none focus:border-amber-400 transition-colors"
                             />
                           </div>

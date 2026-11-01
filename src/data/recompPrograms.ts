@@ -46,7 +46,7 @@ function createExerciseLog(
 
   const sets = Array.from({ length: baseSets }, (_, i) => ({
     setNumber: i + 1,
-    weightKg: suggestion?.weightKg || 0,
+    weightKg: 0,
     reps: 0,
     completed: false,
     isWarmup: i === 0 && def.cnsLoad === 'High',

@@ -20,6 +20,7 @@ import { FatigueModal } from './components/FatigueModal';
 import { FloatingRestTimer } from './components/FloatingRestTimer';
 import { InstallBanner } from './components/InstallBanner';
 import { OnboardingOverlay } from './components/OnboardingOverlay';
+import { LegalStandardsModal } from './components/LegalStandardsModal';
 import { DashboardTab } from './components/tabs/DashboardTab';
 import { WorkoutTab } from './components/tabs/WorkoutTab';
 import { NutritionTab } from './components/tabs/NutritionTab';
@@ -47,6 +48,7 @@ export const App: React.FC = () => {
 
   // Modals & Contextual Overlays
   const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(false);
+  const [isLegalConsentOpen, setIsLegalConsentOpen] = useState<boolean>(false);
   const [isFatigueModalOpen, setIsFatigueModalOpen] = useState<boolean>(false);
   const [fatigueModalSuccessCallback, setFatigueModalSuccessCallback] = useState<(() => void) | null>(null);
   const [restTimerState, setRestTimerState] = useState<{
@@ -85,16 +87,30 @@ export const App: React.FC = () => {
       setAllHydration(loadedHydrationMap);
       setDailyFatigueLogs(loadedFatigueAll);
 
-      // First-time onboarding overlay check
-      const hasOnboarded = localStorage.getItem('shiftfit_onboarded_v2');
-      if (!hasOnboarded) {
-        setIsOnboardingOpen(true);
+      // First-time legal consent & onboarding overlay check
+      const hasAgreedLegal = localStorage.getItem('shiftfit_legal_agreed_v1');
+      if (!hasAgreedLegal) {
+        setIsLegalConsentOpen(true);
+      } else {
+        const hasOnboarded = localStorage.getItem('shiftfit_onboarded_v2');
+        if (!hasOnboarded) {
+          setIsOnboardingOpen(true);
+        }
       }
 
       setIsReady(true);
     }
 
     loadData();
+  }, []);
+
+  const handleAgreeLegal = useCallback(() => {
+    localStorage.setItem('shiftfit_legal_agreed_v1', 'true');
+    setIsLegalConsentOpen(false);
+    const hasOnboarded = localStorage.getItem('shiftfit_onboarded_v2');
+    if (!hasOnboarded) {
+      setIsOnboardingOpen(true);
+    }
   }, []);
 
   const handleDismissOnboarding = useCallback(() => {
@@ -451,6 +467,12 @@ export const App: React.FC = () => {
             setFatigueModalSuccessCallback(null);
           }
         }}
+      />
+
+      {/* First-Time Legal Standards & Consent Gate */}
+      <LegalStandardsModal
+        isOpen={isLegalConsentOpen}
+        onClose={handleAgreeLegal}
       />
 
       {/* First-Time Onboarding & Profile Setup Overlay */}

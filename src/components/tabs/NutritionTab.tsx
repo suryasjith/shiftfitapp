@@ -270,7 +270,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 flex-wrap mb-1">
-              <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-2xl border border-stone-200/80 bg-white/80 text-sage-700">
+              <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-2xl border border-stone-200/80 bg-emerald-950/70 border-emerald-500/40 text-emerald-400">
                 {dayInfo.isShiftDay ? '12H SHIFT MACROS' : 'OFF-DAY MACROS'}
               </span>
               {activeExpenditureCalories > 0 && (
@@ -280,7 +280,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 </span>
               )}
             </div>
-            <h2 id="fuel-header-title" className="text-xl font-bold text-stone-900 tracking-tight mt-1">
+            <h2 id="fuel-header-title" className="text-xl font-bold text-stone-900 dark:text-white tracking-tight mt-1">
               Daily Fuel & Calories
             </h2>
             <p className="text-xs text-stone-500 mt-0.5">
@@ -292,7 +292,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
           <button
             onClick={() => setShowClearConfirm(true)}
             aria-label="Clear all logged meals for today and start fresh"
-            className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-2xl border border-slate-700 bg-stone-50/80 text-stone-600 hover:text-stone-900 text-xs font-medium transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-teal-400"
+            className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-2xl border border-stone-200/80 dark:border-white/15 bg-stone-100 dark:bg-stone-800/90 text-stone-700 dark:text-stone-200 hover:text-stone-900 dark:hover:text-white text-xs font-medium transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-teal-400"
           >
             <RotateCcw className="w-3.5 h-3.5 text-stone-500" aria-hidden="true" />
             <span>Start Fresh</span>
@@ -305,7 +305,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
             role="alertdialog"
             aria-labelledby="clear-meals-title"
             aria-describedby="clear-meals-desc"
-            className="p-4 rounded-2xl bg-stone-50 border border-stone-200/80 space-y-2 animate-fadeIn font-sans"
+            className="p-4 rounded-2xl bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-white/10 text-stone-900 dark:text-white/80 space-y-2 animate-fadeIn font-sans"
           >
             <div className="flex items-center gap-2 text-xs text-sage-700 font-bold">
               <AlertCircle className="w-4 h-4 text-sage-700" aria-hidden="true" />
@@ -351,7 +351,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
             aria-valuemin={0}
             aria-valuemax={100}
             aria-label="Calories consumed percentage"
-            className="w-full bg-stone-50 h-2.5 rounded-2xl overflow-hidden border border-slate-700/60"
+            className="w-full bg-stone-200 dark:bg-stone-950 h-2.5 rounded-2xl overflow-hidden border border-slate-700/60"
           >
             <div 
               className="h-full rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-400 transition-all duration-300"
@@ -364,18 +364,18 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
       {/* 2. Hydration Checklist Card */}
       <section 
         aria-labelledby="hydration-card-title"
-        className="rounded-2xl bg-white/80 border border-stone-200/80 p-5 shadow-sm space-y-3"
+        className="rounded-2xl bg-white/80 dark:bg-stone-900/80 border border-stone-200/80 dark:border-white/10 p-5 shadow-sm space-y-3"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-2xl bg-stone-50 border border-stone-200 flex items-center justify-center text-stone-900 shrink-0">
-              <Droplets className="w-4 h-4 text-stone-900" aria-hidden="true" />
+            <div className="w-8 h-8 rounded-2xl bg-emerald-950/60 dark:bg-emerald-950/70 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+              <Droplets className="w-4 h-4 text-emerald-400" aria-hidden="true" />
             </div>
             <div>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 block font-bold">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block font-bold">
                 Hydration Tracker
               </span>
-              <h3 id="hydration-card-title" className="text-base font-bold text-stone-900 tracking-tight">
+              <h3 id="hydration-card-title" className="text-base font-bold text-stone-900 dark:text-white tracking-tight">
                 {(currentWater / 1000).toFixed(1)}L <span className="text-xs text-stone-500 font-normal">/ {(targetWater / 1000).toFixed(1)}L</span>
               </h3>
             </div>
@@ -398,10 +398,10 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-label="Water target percentage logged"
-          className="w-full bg-stone-50 h-2 rounded-2xl overflow-hidden border border-stone-200"
+          className="w-full bg-stone-200 dark:bg-stone-950 h-2 rounded-2xl overflow-hidden border border-stone-200"
         >
           <div 
-            className="bg-white h-full rounded-2xl transition-all duration-300"
+            className="bg-emerald-500 h-full rounded-2xl transition-all duration-300"
             style={{ width: `${waterPercent}%` }}
           />
         </div>
@@ -418,7 +418,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
               key={idx}
               onClick={() => handleAddWater(btn.ml)}
               aria-label={`Log ${btn.label} (${btn.desc})`}
-              className="min-h-[48px] py-2 px-1 rounded-2xl bg-stone-50 hover:bg-stone-100 border border-stone-200 text-stone-900 font-bold text-xs active:scale-95 transition-all text-center focus:outline-none focus:ring-2 focus:ring-white"
+              className="min-h-[48px] py-2 px-1 rounded-2xl bg-stone-100 dark:bg-stone-800/90 hover:bg-stone-200 dark:hover:bg-stone-700 border border-stone-200/80 dark:border-white/15 text-stone-900 dark:text-white font-bold text-xs active:scale-95 transition-all text-center focus:outline-none focus:ring-2 focus:ring-white"
             >
               <div>{btn.label}</div>
               <span className="text-[9px] text-stone-500 font-normal block">{btn.desc}</span>
@@ -430,17 +430,17 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
       {/* 3. OpenFoodFacts Search & Quick Food Logger */}
       <section 
         aria-labelledby="database-search-title"
-        className="rounded-2xl bg-white/80 border border-stone-200/80 p-5 shadow-sm space-y-4"
+        className="rounded-2xl bg-white/80 dark:bg-stone-900/80 border border-stone-200/80 dark:border-white/10 p-5 shadow-sm space-y-4"
       >
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-2xl bg-stone-50 border border-stone-200 flex items-center justify-center text-stone-900 shrink-0">
-            <Utensils className="w-4 h-4 text-stone-900" aria-hidden="true" />
+          <div className="w-8 h-8 rounded-2xl bg-emerald-950/60 dark:bg-emerald-950/70 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+            <Utensils className="w-4 h-4 text-emerald-400" aria-hidden="true" />
           </div>
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 block font-bold">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block font-bold">
               Database Search
             </span>
-            <h3 id="database-search-title" className="text-base font-bold text-stone-900 tracking-tight">
+            <h3 id="database-search-title" className="text-base font-bold text-stone-900 dark:text-white tracking-tight">
               Log Meal or Food
             </h3>
           </div>
@@ -451,7 +451,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
           <label htmlFor="food-database-search" className="sr-only">
             Search food or drink in database
           </label>
-          <div className="flex items-center gap-2 bg-stone-50 border border-stone-200 rounded-2xl px-3 py-2.5">
+          <div className="flex items-center gap-2 bg-white/90 dark:bg-stone-950/90 border border-stone-200/80 dark:border-white/15 text-stone-900 dark:text-white rounded-2xl px-3.5 py-3">
             <Search className="w-4 h-4 text-stone-500 shrink-0" aria-hidden="true" />
             <input
               id="food-database-search"
@@ -459,7 +459,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search food (e.g. Chicken breast, Oats, Greek yogurt...)"
-              className="w-full min-h-[32px] bg-transparent text-xs text-stone-900 placeholder-neutral-500 focus:outline-none"
+              className="w-full min-h-[32px] bg-transparent text-xs text-stone-900 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none"
             />
             {isSearching && <span className="text-[10px] text-stone-500 font-mono">Searching...</span>}
           </div>
@@ -499,7 +499,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
 
         {/* Portion Selector Card if Food Selected */}
         {selectedFood && (
-          <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-3 animate-fadeIn">
+          <div className="p-4 rounded-2xl bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-white/10 text-stone-900 dark:text-white space-y-3 animate-fadeIn">
             <div className="flex items-center justify-between">
               <div>
                 <span className="text-xs font-bold text-stone-900 block">{selectedFood.name}</span>
@@ -525,7 +525,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 value={servingGramsStr}
                 onChange={(e) => setServingGramsStr(e.target.value)}
                 placeholder="Grams (e.g. 150)"
-                className="flex-1 min-h-[44px] bg-stone-50 border border-stone-200 rounded-2xl px-3 py-1.5 text-xs font-bold text-stone-900 placeholder-neutral-500 focus:outline-none focus:border-white text-center"
+                className="flex-1 min-h-[44px] bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-white/10 text-stone-900 dark:text-white rounded-2xl px-3 py-1.5 text-xs font-bold text-stone-900 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:border-white text-center"
               />
               <span className="text-xs text-stone-500 font-mono" aria-hidden="true">grams</span>
             </div>
@@ -588,7 +588,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                   type="button"
                   onClick={() => handleAddFixedShiftMeal(meal)}
                   aria-label={`Quick add ${meal.title}: ${meal.proteinGrams}g Protein, ${meal.calories} kcal`}
-                  className="min-h-[48px] w-full p-2.5 rounded-2xl bg-stone-50 hover:bg-stone-100 border border-stone-200 text-left transition-all active:scale-[0.99] flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-white"
+                  className="min-h-[48px] w-full p-2.5 rounded-2xl bg-stone-100 dark:bg-stone-800/80 hover:bg-stone-200 dark:hover:bg-stone-700 border border-stone-200/80 dark:border-white/15 text-left transition-all active:scale-[0.99] flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-white"
                 >
                   <div>
                     <div className="text-xs font-bold text-stone-900">{meal.title}</div>
@@ -607,7 +607,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
       {/* 4. PROGRESSIVE DISCLOSURE: Detailed Macro Breakdown */}
       <section 
         aria-label="Macronutrient Distribution"
-        className="rounded-2xl bg-white/80 border border-stone-200/80 p-5 shadow-sm space-y-4"
+        className="rounded-2xl bg-white/80 dark:bg-stone-900/80 border border-stone-200/80 dark:border-white/10 p-5 shadow-sm space-y-4"
       >
         <button
           type="button"
@@ -617,11 +617,11 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
           className="min-h-[44px] w-full flex items-center justify-between text-left rounded-2xl focus:outline-none focus:ring-2 focus:ring-white"
         >
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-2xl bg-stone-50 border border-stone-200 flex items-center justify-center text-stone-900 shrink-0">
-              <PieChart className="w-4 h-4 text-stone-900" aria-hidden="true" />
+            <div className="w-8 h-8 rounded-2xl bg-emerald-950/60 dark:bg-emerald-950/70 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+              <PieChart className="w-4 h-4 text-emerald-400" aria-hidden="true" />
             </div>
             <div>
-              <span className="text-xs font-bold text-stone-900 uppercase tracking-wider block">
+              <span className="text-xs font-bold text-stone-900 dark:text-white uppercase tracking-wider block">
                 Detailed Macro Breakdown
               </span>
               <span className="text-[11px] text-stone-500 font-normal">
@@ -639,10 +639,10 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
         {showMacroBreakdown && (
           <div id="detailed-macro-panel" className="space-y-3.5 pt-3 border-t border-stone-200 animate-fadeIn font-mono">
             {/* Protein Card */}
-            <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 space-y-2">
+            <div className="p-3.5 rounded-2xl bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-white/10 text-stone-900 dark:text-white space-y-2">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold text-stone-900 uppercase block">Protein</span>
+                  <span className="text-xs font-bold text-stone-900 dark:text-white uppercase block">Protein</span>
                   <span className="text-[10px] text-stone-500">Preserves muscle during shift stress</span>
                 </div>
                 <div className="text-right">
@@ -656,10 +656,10 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label="Protein consumed percentage"
-                className="w-full bg-stone-50 h-2 rounded-2xl overflow-hidden"
+                className="w-full bg-stone-200 dark:bg-stone-950 h-2 rounded-2xl overflow-hidden"
               >
                 <div 
-                  className="bg-white h-full rounded-2xl transition-all"
+                  className="bg-emerald-500 h-full rounded-2xl transition-all"
                   style={{ width: `${Math.min(100, (currentProtein / effectiveTargetProtein) * 100)}%` }}
                 />
               </div>
@@ -667,14 +667,14 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 <button
                   onClick={() => handleAdjustMacro('proteinGrams', 5)}
                   aria-label="Quick adjust plus 5 grams of protein"
-                  className="min-h-[36px] px-2.5 py-1 rounded-2xl bg-stone-100 hover:bg-neutral-750 text-stone-900 text-[10px] font-bold"
+                  className="min-h-[36px] px-2.5 py-1 rounded-2xl bg-stone-200/80 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 border border-stone-300 dark:border-white/10 text-stone-900 dark:text-white text-[10px] font-bold"
                 >
                   +5g
                 </button>
                 <button
                   onClick={() => handleAdjustMacro('proteinGrams', 25)}
                   aria-label="Quick adjust plus 25 grams protein shake"
-                  className="min-h-[36px] px-3 py-1 rounded-2xl bg-stone-100 hover:bg-neutral-750 text-stone-900 text-[10px] font-bold"
+                  className="min-h-[36px] px-3 py-1 rounded-2xl bg-stone-200/80 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 border border-stone-300 dark:border-white/10 text-stone-900 dark:text-white text-[10px] font-bold"
                 >
                   +25g Shake
                 </button>
@@ -682,10 +682,10 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
             </div>
 
             {/* Carbohydrates Card */}
-            <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 space-y-2">
+            <div className="p-3.5 rounded-2xl bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-white/10 text-stone-900 dark:text-white space-y-2">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold text-stone-900 uppercase block">Carbohydrates</span>
+                  <span className="text-xs font-bold text-stone-900 dark:text-white uppercase block">Carbohydrates</span>
                   <span className="text-[10px] text-stone-500">Replenishes muscle glycogen</span>
                 </div>
                 <div className="text-right">
@@ -699,10 +699,10 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label="Carbohydrates consumed percentage"
-                className="w-full bg-stone-50 h-2 rounded-2xl overflow-hidden"
+                className="w-full bg-stone-200 dark:bg-stone-950 h-2 rounded-2xl overflow-hidden"
               >
                 <div 
-                  className="bg-white h-full rounded-2xl transition-all"
+                  className="bg-emerald-500 h-full rounded-2xl transition-all"
                   style={{ width: `${Math.min(100, (currentCarbs / effectiveTargetCarbs) * 100)}%` }}
                 />
               </div>
@@ -710,14 +710,14 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 <button
                   onClick={() => handleAdjustMacro('carbsGrams', 10)}
                   aria-label="Quick adjust plus 10 grams of carbs"
-                  className="min-h-[36px] px-2.5 py-1 rounded-2xl bg-stone-100 hover:bg-neutral-750 text-stone-900 text-[10px] font-bold"
+                  className="min-h-[36px] px-2.5 py-1 rounded-2xl bg-stone-200/80 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 border border-stone-300 dark:border-white/10 text-stone-900 dark:text-white text-[10px] font-bold"
                 >
                   +10g
                 </button>
                 <button
                   onClick={() => handleAdjustMacro('carbsGrams', 30)}
                   aria-label="Quick adjust plus 30 grams oats"
-                  className="min-h-[36px] px-3 py-1 rounded-2xl bg-stone-100 hover:bg-neutral-750 text-stone-900 text-[10px] font-bold"
+                  className="min-h-[36px] px-3 py-1 rounded-2xl bg-stone-200/80 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 border border-stone-300 dark:border-white/10 text-stone-900 dark:text-white text-[10px] font-bold"
                 >
                   +30g Oats
                 </button>
@@ -725,10 +725,10 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
             </div>
 
             {/* Fats Card */}
-            <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 space-y-2">
+            <div className="p-3.5 rounded-2xl bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-white/10 text-stone-900 dark:text-white space-y-2">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold text-stone-900 uppercase block">Fats</span>
+                  <span className="text-xs font-bold text-stone-900 dark:text-white uppercase block">Fats</span>
                   <span className="text-[10px] text-stone-500">Hormonal balance and satiety</span>
                 </div>
                 <div className="text-right">
@@ -742,10 +742,10 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label="Fats consumed percentage"
-                className="w-full bg-stone-50 h-2 rounded-2xl overflow-hidden"
+                className="w-full bg-stone-200 dark:bg-stone-950 h-2 rounded-2xl overflow-hidden"
               >
                 <div 
-                  className="bg-white h-full rounded-2xl transition-all"
+                  className="bg-emerald-500 h-full rounded-2xl transition-all"
                   style={{ width: `${Math.min(100, (currentFats / effectiveTargetFats) * 100)}%` }}
                 />
               </div>
@@ -753,14 +753,14 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 <button
                   onClick={() => handleAdjustMacro('fatsGrams', 5)}
                   aria-label="Quick adjust plus 5 grams of fats"
-                  className="min-h-[36px] px-2.5 py-1 rounded-2xl bg-stone-100 hover:bg-neutral-750 text-stone-900 text-[10px] font-bold"
+                  className="min-h-[36px] px-2.5 py-1 rounded-2xl bg-stone-200/80 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 border border-stone-300 dark:border-white/10 text-stone-900 dark:text-white text-[10px] font-bold"
                 >
                   +5g
                 </button>
                 <button
                   onClick={() => handleAdjustMacro('fatsGrams', 15)}
                   aria-label="Quick adjust plus 15 grams nuts"
-                  className="min-h-[36px] px-3 py-1 rounded-2xl bg-stone-100 hover:bg-neutral-750 text-stone-900 text-[10px] font-bold"
+                  className="min-h-[36px] px-3 py-1 rounded-2xl bg-stone-200/80 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 border border-stone-300 dark:border-white/10 text-stone-900 dark:text-white text-[10px] font-bold"
                 >
                   +15g Nuts
                 </button>
@@ -773,9 +773,9 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
       {/* 5. Today's Logged Items List & Empty State */}
       <section 
         aria-labelledby="food-diary-title"
-        className="rounded-2xl bg-white/80 border border-stone-200/80 p-5 shadow-sm space-y-3"
+        className="rounded-2xl bg-white/80 dark:bg-stone-900/80 border border-stone-200/80 dark:border-white/10 p-5 shadow-sm space-y-3"
       >
-        <h3 id="food-diary-title" className="text-xs font-bold text-stone-900 uppercase tracking-wider">
+        <h3 id="food-diary-title" className="text-xs font-bold text-stone-900 dark:text-white uppercase tracking-wider">
           Today's Food Diary
         </h3>
 
@@ -797,7 +797,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
             {loggedFoods.map((f) => (
               <div key={f.id} role="listitem" className="py-2.5 flex items-center justify-between text-xs">
                 <div>
-                  <span className="text-stone-900 font-bold block">{f.name}</span>
+                  <span className="text-stone-900 dark:text-white font-bold block">{f.name}</span>
                   <span className="text-[10px] text-stone-500">
                     {f.servingGrams > 1 ? `${f.servingGrams}g • ` : ''}{f.timeLogged}
                   </span>
