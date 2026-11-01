@@ -3,6 +3,7 @@ import { UserProfile, ShiftDay } from '../types';
 import { NavTab } from './Navbar';
 import { Info, Database, ChevronLeft, ChevronRight, Calendar as CalendarIcon, RotateCcw, Moon, Sun } from 'lucide-react';
 import { TabGuideModal } from './TabGuideModal';
+import { LegalStandardsModal } from './LegalStandardsModal';
 import { RotaEngine } from '../services/rotaEngine';
 import { soundManager } from '../services/audioTimer';
 
@@ -25,6 +26,7 @@ export const Header: React.FC<HeaderProps> = ({
   onExportBackup,
 }) => {
   const [isTabGuideOpen, setIsTabGuideOpen] = useState<boolean>(false);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     return document.documentElement.classList.contains('dark');
   });
@@ -256,6 +258,13 @@ export const Header: React.FC<HeaderProps> = ({
         isOpen={isTabGuideOpen}
         currentTab={currentTab}
         onClose={() => setIsTabGuideOpen(false)}
+        onOpenLegal={() => setIsLegalModalOpen(true)}
+      />
+
+      {/* Legal & Privacy Standards Modal */}
+      <LegalStandardsModal
+        isOpen={isLegalModalOpen}
+        onClose={() => setIsLegalModalOpen(false)}
       />
     </>
   );
