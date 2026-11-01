@@ -64,7 +64,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     <nav 
       role="navigation"
       aria-label="Main Application Navigation"
-      className="fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 pb-[max(env(safe-area-inset-bottom,16px),16px)] pt-2 px-4 shadow-2xl"
+      className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/80 backdrop-blur-xl border-t border-white/10 pb-[max(env(safe-area-inset-bottom,16px),16px)] pt-2 px-4 shadow-2xl"
     >
       <div 
         role="tablist" 
@@ -83,7 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               aria-controls={`tabpanel-${tab.id}`}
               aria-label={`${tab.label}: ${tab.hint}`}
               onClick={() => onSelectTab(tab.id)}
-              className={`min-h-[48px] flex flex-col items-center justify-center py-2 px-1 rounded-xl transition-all duration-200 relative select-none active:scale-95 focus:outline-none focus:ring-2 focus:ring-slate-400 ${
+              className={`min-h-[48px] flex flex-col items-center justify-center py-2 px-1 rounded-none transition-all duration-150 relative select-none active:translate-y-[1px] focus:outline-none focus:ring-1 focus:ring-white ${
                 isActive
                   ? tab.activeText
                   : 'text-slate-400 hover:text-slate-200'
@@ -92,19 +92,19 @@ export const Navbar: React.FC<NavbarProps> = ({
               {isActive && (
                 <span 
                   aria-hidden="true" 
-                  className={`absolute -top-2 w-6 h-[2.5px] rounded-full transition-all ${tab.indicator}`} 
+                  className={`absolute -top-2 w-8 h-[2px] rounded-none transition-all ${tab.indicator}`} 
                 />
               )}
               <div 
                 aria-hidden="true"
-                className={`p-1.5 rounded-lg border transition-colors ${
+                className={`p-1.5 rounded-none border transition-colors ${
                   isActive ? tab.activeBg : 'bg-transparent border-transparent'
                 }`}
               >
                 <Icon className={`w-5 h-5 ${isActive ? `stroke-[2.2px] ${tab.activeIcon}` : 'stroke-[1.6px] text-slate-400'}`} />
               </div>
-              <span className={`text-[11px] mt-1 tracking-tight font-sans truncate max-w-full ${
-                isActive ? `font-bold ${tab.activeText}` : 'font-medium text-slate-400'
+              <span className={`text-[10px] mt-1 tracking-wider font-mono uppercase truncate max-w-full ${
+                isActive ? `font-black ${tab.activeText}` : 'font-medium text-slate-400'
               }`}>
                 {tab.label}
               </span>

@@ -1,0 +1,69 @@
+# OmniRoute Configuration File
+# Server: Proxy Gateway on Port 8000
+server:
+  host: "127.0.0.1"
+  port: 8000
+  api_base: "http://127.0.0.1:8000/v1"
+  dashboard_url: "http://127.0.0.1:8000"
+
+# Configured Free-Tier AI Providers
+providers:
+  # Provider 1: Groq Cloud (Free Tier)
+  # Free tier offers generous token limits (30 RPM, 14,400 RPD) with sub-second latency
+  - id: "groq"
+    name: "Groq Cloud (Free Tier)"
+    enabled: true
+    provider_type: "openai-compatible"
+    base_url: "https://api.groq.com/openai/v1"
+    api_key: "${GROQ_API_KEY:-gsk_free_tier_placeholder_key}"
+    free_tier: true
+    models:
+      - id: "llama-3.3-70b-versatile"
+        name: "Llama 3.3 70B Versatile"
+        context_length: 128000
+        type: "chat"
+      - id: "llama-3.1-8b-instant"
+        name: "Llama 3.1 8B Instant"
+        context_length: 128000
+        type: "fast"
+      - id: "mixtral-8x7b-32768"
+        name: "Mixtral 8x7B"
+        context_length: 32768
+        type: "chat"
+    rate_limits:
+      rpm: 30
+      rpd: 14400
+
+  # Provider 2: OpenRouter (Free Tier)
+  # OpenRouter hosts community and open-source models with dedicated free `:free` endpoints
+  - id: "openrouter"
+    name: "OpenRouter (Free Tier)"
+    enabled: true
+    provider_type: "openai-compatible"
+    base_url: "https://openrouter.ai/api/v1"
+    api_key: "${OPENROUTER_API_KEY:-sk-or-v1-free_tier_placeholder_key}"
+    free_tier: true
+    models:
+      - id: "meta-llama/llama-3.3-70b-instruct:free"
+        name: "Llama 3.3 70B Instruct (Free)"
+        context_length: 131072
+        type: "chat"
+      - id: "google/gemini-2.0-flash-exp:free"
+        name: "Google Gemini 2.0 Flash Exp (Free)"
+        context_length: 1048576
+        type: "fast"
+      - id: "mistralai/mistral-7b-instruct:free"
+        name: "Mistral 7B Instruct (Free)"
+        context_length: 32768
+        type: "chat"
+    rate_limits:
+      rpm: 20
+      rpd: 200
+
+# Fallback & Resilience Settings
+routing:
+  default_model: "auto/best-coding"
+  auto_fallback: true
+  retry_on_429: true
+  max_retries: 5
+  backoff_base_delay_seconds: 1.0

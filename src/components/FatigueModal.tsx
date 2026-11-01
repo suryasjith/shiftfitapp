@@ -120,11 +120,11 @@ export const FatigueModal: React.FC<FatigueModalProps> = ({
         aria-modal="true"
         aria-labelledby="fatigue-modal-title"
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-sm rounded-2xl bg-slate-900 border border-amber-500/30 shadow-2xl p-6 text-left relative"
+        className="w-full max-w-sm rounded-none bg-slate-900 border border-amber-500/30 shadow-2xl p-6 text-left relative"
       >
         <div className="flex items-center justify-between pb-4 border-b border-slate-800">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400">
+            <div className="p-2 rounded-none bg-amber-500/15 border border-amber-500/30 text-amber-400">
               <Activity className="w-4 h-4 text-amber-400" aria-hidden="true" />
             </div>
             <div>
@@ -137,7 +137,7 @@ export const FatigueModal: React.FC<FatigueModalProps> = ({
           <button 
             type="button"
             onClick={onClose}
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 hover:text-white transition-colors focus:outline-none focus:ring-1 focus:ring-amber-400 rounded-lg"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 hover:text-white transition-colors focus:outline-none focus:ring-1 focus:ring-amber-400 rounded-none"
             aria-label="Close pre-workout fatigue modal"
           >
             <X className="w-5 h-5" aria-hidden="true" />
@@ -153,7 +153,7 @@ export const FatigueModal: React.FC<FatigueModalProps> = ({
             <span className="text-6xl font-black text-amber-400">{score}</span>
             <span className="text-2xl text-slate-500 font-bold">/ 10</span>
           </div>
-          <span className="inline-block mt-3 px-3 py-1 rounded-full text-[11px] font-mono font-bold border border-amber-500/30 bg-amber-500/10 text-amber-300">
+          <span className="inline-block mt-3 px-3 py-1 rounded-none text-[11px] font-mono font-bold border border-amber-500/30 bg-amber-500/10 text-amber-300">
             {readiness.badge}
           </span>
         </div>
@@ -180,7 +180,7 @@ export const FatigueModal: React.FC<FatigueModalProps> = ({
               aria-valuemax={10}
               aria-valuenow={score}
               aria-valuetext={`${score} out of 10, ${readiness.tier}`}
-              className="w-full h-3 bg-slate-800 rounded-full appearance-none cursor-pointer accent-amber-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+              className="w-full h-3 bg-slate-800 rounded-none appearance-none cursor-pointer accent-amber-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
             />
           </div>
           <div className="flex justify-between px-1 mt-1 text-[10px] text-slate-400 font-mono">
@@ -190,7 +190,7 @@ export const FatigueModal: React.FC<FatigueModalProps> = ({
         </div>
 
         {/* Impact Card */}
-        <div className="mt-5 p-4 rounded-xl bg-slate-800/80 border border-amber-500/20 transition-all">
+        <div className="mt-5 p-4 rounded-none bg-slate-800/80 border border-amber-500/20 transition-all">
           <div className="text-xs font-bold uppercase tracking-wider text-slate-100 font-mono mb-1">
             {readiness.tier}
           </div>
@@ -208,14 +208,14 @@ export const FatigueModal: React.FC<FatigueModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="min-h-[48px] flex-1 py-3 px-4 rounded-xl border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white text-xs font-mono font-bold uppercase tracking-wider transition-all active:scale-95 focus:outline-none focus:ring-1 focus:ring-amber-400"
+            className="min-h-[48px] flex-1 py-3 px-4 rounded-none border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white text-xs font-mono font-bold uppercase tracking-wider transition-all active:scale-95 focus:outline-none focus:ring-1 focus:ring-amber-400"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleConfirm}
-            className="min-h-[48px] flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-bold font-mono uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-amber-300"
+            className="min-h-[48px] flex-1 py-3 px-4 rounded-none bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-bold font-mono uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-amber-300"
           >
             <span>Confirm & Start</span>
           </button>

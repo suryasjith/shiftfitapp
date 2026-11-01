@@ -34,11 +34,11 @@ export const EquipmentTakenModal: React.FC<EquipmentTakenModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-md rounded-xl bg-black border border-neutral-700 shadow-2xl p-5 text-left relative max-h-[90vh] flex flex-col">
+      <div className="w-full max-w-md rounded-none bg-black border border-neutral-700 shadow-2xl p-5 text-left relative max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-neutral-800 shrink-0">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-750 text-white">
+            <div className="p-1.5 rounded-none bg-neutral-900 border border-neutral-750 text-white">
               <ArrowRightLeft className="w-4 h-4" />
             </div>
             <div>
@@ -56,7 +56,7 @@ export const EquipmentTakenModal: React.FC<EquipmentTakenModalProps> = ({
         </div>
 
         {/* Current Target Muscle Badge */}
-        <div className="mt-3 p-3 rounded-lg bg-neutral-950 border border-neutral-800 shrink-0">
+        <div className="mt-3 p-3 rounded-none bg-neutral-950 border border-neutral-800 shrink-0">
           <div className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-wider">
             Target Muscle Group
           </div>
@@ -74,7 +74,7 @@ export const EquipmentTakenModal: React.FC<EquipmentTakenModalProps> = ({
           {currentSelectedAlternative && (
             <button
               onClick={handleResetToPrimary}
-              className="w-full p-2.5 rounded-lg border border-neutral-700 bg-neutral-900 hover:bg-neutral-850 text-left transition-all active:scale-[0.99] flex items-center justify-between text-xs font-mono"
+              className="w-full p-2.5 rounded-none border border-neutral-700 bg-neutral-900 hover:bg-neutral-850 text-left transition-all active:scale-[0.99] flex items-center justify-between text-xs font-mono"
             >
               <div>
                 <div className="font-bold text-white">Revert to Original Movement</div>
@@ -94,7 +94,7 @@ export const EquipmentTakenModal: React.FC<EquipmentTakenModalProps> = ({
               <button
                 key={idx}
                 onClick={() => handleSelect(alt)}
-                className={`w-full p-3 rounded-lg border text-left transition-all active:scale-[0.99] ${
+                className={`w-full p-3 rounded-none border text-left transition-all active:scale-[0.99] ${
                   isSelected
                     ? 'bg-white text-black border-white'
                     : 'bg-neutral-950 border-neutral-800 hover:border-neutral-700 text-neutral-200'
@@ -105,7 +105,7 @@ export const EquipmentTakenModal: React.FC<EquipmentTakenModalProps> = ({
                     <div className="text-xs font-bold flex items-center gap-1.5 font-mono">
                       <span>{alt.name}</span>
                       {isSelected && (
-                        <span className="text-[9px] px-1.5 py-0.2 rounded bg-black text-white font-bold font-mono">
+                        <span className="text-[9px] px-1.5 py-0.2 rounded-none bg-black text-white font-bold font-mono">
                           ACTIVE
                         </span>
                       )}
@@ -115,7 +115,7 @@ export const EquipmentTakenModal: React.FC<EquipmentTakenModalProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className={`mt-2 text-[11px] p-2 rounded border leading-relaxed font-sans ${
+                <div className={`mt-2 text-[11px] p-2 rounded-none border leading-relaxed font-sans ${
                   isSelected 
                     ? 'bg-neutral-100 border-neutral-300 text-neutral-800' 
                     : 'bg-neutral-900 border-neutral-850 text-neutral-300'
@@ -131,7 +131,7 @@ export const EquipmentTakenModal: React.FC<EquipmentTakenModalProps> = ({
         <div className="mt-3 pt-3 border-t border-neutral-850 flex justify-end shrink-0">
           <button
             onClick={onClose}
-            className="w-full py-2 rounded-lg border border-neutral-800 hover:border-neutral-700 text-neutral-400 hover:text-white text-xs font-mono transition-all active:scale-95"
+            className="w-full py-2 rounded-none border border-neutral-800 hover:border-neutral-700 text-neutral-400 hover:text-white text-xs font-mono transition-all active:scale-95"
           >
             Close
           </button>
