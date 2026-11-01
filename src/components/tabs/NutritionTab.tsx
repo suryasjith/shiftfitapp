@@ -265,17 +265,17 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
       {/* 1. Primary Header Card: Calories & Fuel Overview (Earthy Mint / Teal Zone) */}
       <section 
         aria-labelledby="fuel-header-title"
-        className="rounded-none glass-fuel border border-teal-500/35 p-5 shadow-sm space-y-4"
+        className="rounded-[4px] glass-card border border-white/10 p-5 shadow-sm space-y-4"
       >
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 flex-wrap mb-1">
-              <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-none border border-teal-500/30 bg-teal-500/10 text-teal-300">
+              <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-[4px] border border-white/10 bg-white/[0.04] text-[#00FF87]">
                 {dayInfo.isShiftDay ? '12H SHIFT MACROS' : 'OFF-DAY MACROS'}
               </span>
               {activeExpenditureCalories > 0 && (
-                <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-none bg-teal-500/20 text-teal-300 border border-teal-500/30 flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3 text-teal-400" aria-hidden="true" />
+                <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-[4px] bg-[#00FF87]/20 text-[#00FF87] border border-white/10 flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3 text-[#00FF87]" aria-hidden="true" />
                   +{activeExpenditureCalories} KCAL EXPENDED
                 </span>
               )}
@@ -284,7 +284,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
               Daily Fuel & Calories
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Target: <strong className="text-teal-300 font-mono">{effectiveTargetCalories} kcal</strong> • Consumed: <strong className="text-slate-100 font-mono">{currentCalories} kcal</strong>
+              Target: <strong className="text-[#00FF87] font-mono">{effectiveTargetCalories} kcal</strong> • Consumed: <strong className="text-slate-100 font-mono">{currentCalories} kcal</strong>
             </p>
           </div>
 
@@ -292,7 +292,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
           <button
             onClick={() => setShowClearConfirm(true)}
             aria-label="Clear all logged meals for today and start fresh"
-            className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-none border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-teal-400"
+            className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-[4px] border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-teal-400"
           >
             <RotateCcw className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
             <span>Start Fresh</span>
@@ -305,10 +305,10 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
             role="alertdialog"
             aria-labelledby="clear-meals-title"
             aria-describedby="clear-meals-desc"
-            className="p-4 rounded-none bg-slate-800 border border-teal-500/40 space-y-2 animate-fadeIn font-sans"
+            className="p-4 rounded-[4px] bg-slate-800 border border-white/15 space-y-2 animate-fadeIn font-sans"
           >
-            <div className="flex items-center gap-2 text-xs text-teal-300 font-bold">
-              <AlertCircle className="w-4 h-4 text-teal-400" aria-hidden="true" />
+            <div className="flex items-center gap-2 text-xs text-[#00FF87] font-bold">
+              <AlertCircle className="w-4 h-4 text-[#00FF87]" aria-hidden="true" />
               <span id="clear-meals-title">Clear today's logged meals and reset macros?</span>
             </div>
             <p id="clear-meals-desc" className="text-xs text-slate-300">
@@ -318,14 +318,14 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
               <button
                 type="button"
                 onClick={() => setShowClearConfirm(false)}
-                className="min-h-[44px] px-3.5 py-2 rounded-none border border-slate-700 text-slate-300 text-xs hover:text-white"
+                className="min-h-[44px] px-3.5 py-2 rounded-[4px] border border-slate-700 text-slate-300 text-xs hover:text-white"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleStartFreshNutrition}
-                className="min-h-[44px] px-4 py-2 rounded-none bg-teal-500 text-slate-950 font-bold text-xs hover:bg-teal-400"
+                className="min-h-[44px] px-4 py-2 rounded-[4px] btn-tactile-primary text-black font-bold text-xs hover:bg-teal-400"
               >
                 Confirm Reset
               </button>
@@ -343,7 +343,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 <strong className="text-emerald-400">Daily Calorie Target Met ✓</strong>
               )}
             </span>
-            <span className="text-teal-300 font-mono font-bold">{caloriesPercent}%</span>
+            <span className="text-[#00FF87] font-mono font-bold">{caloriesPercent}%</span>
           </div>
           <div 
             role="progressbar"
@@ -351,10 +351,10 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
             aria-valuemin={0}
             aria-valuemax={100}
             aria-label="Calories consumed percentage"
-            className="w-full bg-slate-800 h-2.5 rounded-none overflow-hidden border border-slate-700/60"
+            className="w-full bg-slate-800 h-2.5 rounded-[4px] overflow-hidden border border-slate-700/60"
           >
             <div 
-              className="h-full rounded-none bg-gradient-to-r from-teal-500 to-emerald-400 transition-all duration-300"
+              className="h-full rounded-[4px] bg-gradient-to-r from-teal-500 to-emerald-400 transition-all duration-300"
               style={{ width: `${caloriesPercent}%` }}
             />
           </div>
@@ -364,11 +364,11 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
       {/* 2. Hydration Checklist Card */}
       <section 
         aria-labelledby="hydration-card-title"
-        className="rounded-none bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
+        className="rounded-[4px] bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-none bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white shrink-0">
+            <div className="w-8 h-8 rounded-[4px] bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white shrink-0">
               <Droplets className="w-4 h-4 text-white" aria-hidden="true" />
             </div>
             <div>
@@ -384,7 +384,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
           <button
             onClick={handleResetWater}
             aria-label="Reset today's logged water intake"
-            className="min-h-[44px] text-xs text-neutral-400 hover:text-white flex items-center gap-1 font-mono p-2 focus:outline-none focus:ring-2 focus:ring-white rounded-none"
+            className="min-h-[44px] text-xs text-neutral-400 hover:text-white flex items-center gap-1 font-mono p-2 focus:outline-none focus:ring-2 focus:ring-white rounded-[4px]"
           >
             <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
             <span>Reset</span>
@@ -398,10 +398,10 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-label="Water target percentage logged"
-          className="w-full bg-neutral-900 h-2 rounded-none overflow-hidden border border-neutral-850"
+          className="w-full bg-neutral-900 h-2 rounded-[4px] overflow-hidden border border-neutral-850"
         >
           <div 
-            className="bg-white h-full rounded-none transition-all duration-300"
+            className="bg-white h-full rounded-[4px] transition-all duration-300"
             style={{ width: `${waterPercent}%` }}
           />
         </div>
@@ -418,7 +418,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
               key={idx}
               onClick={() => handleAddWater(btn.ml)}
               aria-label={`Log ${btn.label} (${btn.desc})`}
-              className="min-h-[48px] py-2 px-1 rounded-none bg-neutral-900 hover:bg-neutral-850 border border-neutral-750 text-white font-bold text-xs active:scale-95 transition-all text-center focus:outline-none focus:ring-2 focus:ring-white"
+              className="min-h-[48px] py-2 px-1 rounded-[4px] bg-neutral-900 hover:bg-neutral-850 border border-neutral-750 text-white font-bold text-xs active:scale-95 transition-all text-center focus:outline-none focus:ring-2 focus:ring-white"
             >
               <div>{btn.label}</div>
               <span className="text-[9px] text-neutral-400 font-normal block">{btn.desc}</span>
@@ -430,10 +430,10 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
       {/* 3. OpenFoodFacts Search & Quick Food Logger */}
       <section 
         aria-labelledby="database-search-title"
-        className="rounded-none bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
+        className="rounded-[4px] bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
       >
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-none bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white shrink-0">
+          <div className="w-8 h-8 rounded-[4px] bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white shrink-0">
             <Utensils className="w-4 h-4 text-white" aria-hidden="true" />
           </div>
           <div>
@@ -451,7 +451,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
           <label htmlFor="food-database-search" className="sr-only">
             Search food or drink in database
           </label>
-          <div className="flex items-center gap-2 bg-neutral-900 border border-neutral-750 rounded-none px-3 py-2.5">
+          <div className="flex items-center gap-2 bg-neutral-900 border border-neutral-750 rounded-[4px] px-3 py-2.5">
             <Search className="w-4 h-4 text-neutral-400 shrink-0" aria-hidden="true" />
             <input
               id="food-database-search"
@@ -469,7 +469,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
             <div 
               role="listbox" 
               aria-label="Food search results"
-              className="absolute top-full left-0 right-0 z-30 mt-1 bg-black border border-neutral-700 rounded-none shadow-2xl overflow-hidden max-h-56 overflow-y-auto divide-y divide-neutral-850"
+              className="absolute top-full left-0 right-0 z-30 mt-1 bg-black border border-neutral-700 rounded-[4px] shadow-2xl overflow-hidden max-h-56 overflow-y-auto divide-y divide-neutral-850"
             >
               {searchResults.map((food) => (
                 <button
@@ -499,7 +499,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
 
         {/* Portion Selector Card if Food Selected */}
         {selectedFood && (
-          <div className="p-4 rounded-none bg-neutral-900 border border-neutral-750 space-y-3 animate-fadeIn">
+          <div className="p-4 rounded-[4px] bg-neutral-900 border border-neutral-750 space-y-3 animate-fadeIn">
             <div className="flex items-center justify-between">
               <div>
                 <span className="text-xs font-bold text-white block">{selectedFood.name}</span>
@@ -525,7 +525,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 value={servingGramsStr}
                 onChange={(e) => setServingGramsStr(e.target.value)}
                 placeholder="Grams (e.g. 150)"
-                className="flex-1 min-h-[44px] bg-neutral-950 border border-neutral-700 rounded-none px-3 py-1.5 text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white text-center"
+                className="flex-1 min-h-[44px] bg-neutral-950 border border-neutral-700 rounded-[4px] px-3 py-1.5 text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white text-center"
               />
               <span className="text-xs text-neutral-400 font-mono" aria-hidden="true">grams</span>
             </div>
@@ -535,7 +535,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
               const g = parseFloat(servingGramsStr) || selectedFood.defaultServingG || 100;
               const preview = FoodApiService.calculateServingMacros(selectedFood, g);
               return (
-                <div className="grid grid-cols-4 gap-1 p-2.5 bg-neutral-950 rounded-none border border-neutral-800 text-center text-xs font-mono">
+                <div className="grid grid-cols-4 gap-1 p-2.5 bg-neutral-950 rounded-[4px] border border-neutral-800 text-center text-xs font-mono">
                   <div>
                     <span className="text-neutral-400 text-[9px] block">CALS</span>
                     <strong className="text-white">{preview.calories}</strong>
@@ -559,7 +559,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
             <button
               onClick={handleAddCalculatedFood}
               aria-label={`Log ${selectedFood.name} to today's food diary`}
-              className="min-h-[48px] w-full py-3 rounded-none bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-white"
+              className="min-h-[48px] w-full py-3 rounded-[4px] bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-white"
             >
               <Plus className="w-4 h-4" aria-hidden="true" />
               <span>Log Food to Today's Diary</span>
@@ -574,7 +574,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
             onClick={() => setShowFixedMeals(!showFixedMeals)}
             aria-expanded={showFixedMeals}
             aria-controls="fixed-shift-meals-panel"
-            className="min-h-[44px] w-full flex items-center justify-between text-left text-xs font-bold text-neutral-200 hover:text-white rounded-none focus:outline-none focus:ring-2 focus:ring-white"
+            className="min-h-[44px] w-full flex items-center justify-between text-left text-xs font-bold text-neutral-200 hover:text-white rounded-[4px] focus:outline-none focus:ring-2 focus:ring-white"
           >
             <span>Quick 12h Shift Meals (1-Tap Presets)</span>
             {showFixedMeals ? <ChevronUp className="w-4 h-4" aria-hidden="true" /> : <ChevronDown className="w-4 h-4" aria-hidden="true" />}
@@ -588,7 +588,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                   type="button"
                   onClick={() => handleAddFixedShiftMeal(meal)}
                   aria-label={`Quick add ${meal.title}: ${meal.proteinGrams}g Protein, ${meal.calories} kcal`}
-                  className="min-h-[48px] w-full p-2.5 rounded-none bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-left transition-all active:scale-[0.99] flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-white"
+                  className="min-h-[48px] w-full p-2.5 rounded-[4px] bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-left transition-all active:scale-[0.99] flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-white"
                 >
                   <div>
                     <div className="text-xs font-bold text-white">{meal.title}</div>
@@ -607,17 +607,17 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
       {/* 4. PROGRESSIVE DISCLOSURE: Detailed Macro Breakdown */}
       <section 
         aria-label="Macronutrient Distribution"
-        className="rounded-none bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
+        className="rounded-[4px] bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
       >
         <button
           type="button"
           onClick={() => setShowMacroBreakdown(!showMacroBreakdown)}
           aria-expanded={showMacroBreakdown}
           aria-controls="detailed-macro-panel"
-          className="min-h-[44px] w-full flex items-center justify-between text-left rounded-none focus:outline-none focus:ring-2 focus:ring-white"
+          className="min-h-[44px] w-full flex items-center justify-between text-left rounded-[4px] focus:outline-none focus:ring-2 focus:ring-white"
         >
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-none bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white shrink-0">
+            <div className="w-8 h-8 rounded-[4px] bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white shrink-0">
               <PieChart className="w-4 h-4 text-white" aria-hidden="true" />
             </div>
             <div>
@@ -639,7 +639,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
         {showMacroBreakdown && (
           <div id="detailed-macro-panel" className="space-y-3.5 pt-3 border-t border-neutral-850 animate-fadeIn font-mono">
             {/* Protein Card */}
-            <div className="p-3.5 rounded-none bg-neutral-900 border border-neutral-800 space-y-2">
+            <div className="p-3.5 rounded-[4px] bg-neutral-900 border border-neutral-800 space-y-2">
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold text-white uppercase block">Protein</span>
@@ -656,10 +656,10 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label="Protein consumed percentage"
-                className="w-full bg-neutral-950 h-2 rounded-none overflow-hidden"
+                className="w-full bg-neutral-950 h-2 rounded-[4px] overflow-hidden"
               >
                 <div 
-                  className="bg-white h-full rounded-none transition-all"
+                  className="bg-white h-full rounded-[4px] transition-all"
                   style={{ width: `${Math.min(100, (currentProtein / effectiveTargetProtein) * 100)}%` }}
                 />
               </div>
@@ -667,14 +667,14 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 <button
                   onClick={() => handleAdjustMacro('proteinGrams', 5)}
                   aria-label="Quick adjust plus 5 grams of protein"
-                  className="min-h-[36px] px-2.5 py-1 rounded-none bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
+                  className="min-h-[36px] px-2.5 py-1 rounded-[4px] bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
                 >
                   +5g
                 </button>
                 <button
                   onClick={() => handleAdjustMacro('proteinGrams', 25)}
                   aria-label="Quick adjust plus 25 grams protein shake"
-                  className="min-h-[36px] px-3 py-1 rounded-none bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
+                  className="min-h-[36px] px-3 py-1 rounded-[4px] bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
                 >
                   +25g Shake
                 </button>
@@ -682,7 +682,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
             </div>
 
             {/* Carbohydrates Card */}
-            <div className="p-3.5 rounded-none bg-neutral-900 border border-neutral-800 space-y-2">
+            <div className="p-3.5 rounded-[4px] bg-neutral-900 border border-neutral-800 space-y-2">
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold text-white uppercase block">Carbohydrates</span>
@@ -699,10 +699,10 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label="Carbohydrates consumed percentage"
-                className="w-full bg-neutral-950 h-2 rounded-none overflow-hidden"
+                className="w-full bg-neutral-950 h-2 rounded-[4px] overflow-hidden"
               >
                 <div 
-                  className="bg-white h-full rounded-none transition-all"
+                  className="bg-white h-full rounded-[4px] transition-all"
                   style={{ width: `${Math.min(100, (currentCarbs / effectiveTargetCarbs) * 100)}%` }}
                 />
               </div>
@@ -710,14 +710,14 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 <button
                   onClick={() => handleAdjustMacro('carbsGrams', 10)}
                   aria-label="Quick adjust plus 10 grams of carbs"
-                  className="min-h-[36px] px-2.5 py-1 rounded-none bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
+                  className="min-h-[36px] px-2.5 py-1 rounded-[4px] bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
                 >
                   +10g
                 </button>
                 <button
                   onClick={() => handleAdjustMacro('carbsGrams', 30)}
                   aria-label="Quick adjust plus 30 grams oats"
-                  className="min-h-[36px] px-3 py-1 rounded-none bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
+                  className="min-h-[36px] px-3 py-1 rounded-[4px] bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
                 >
                   +30g Oats
                 </button>
@@ -725,7 +725,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
             </div>
 
             {/* Fats Card */}
-            <div className="p-3.5 rounded-none bg-neutral-900 border border-neutral-800 space-y-2">
+            <div className="p-3.5 rounded-[4px] bg-neutral-900 border border-neutral-800 space-y-2">
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold text-white uppercase block">Fats</span>
@@ -742,10 +742,10 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label="Fats consumed percentage"
-                className="w-full bg-neutral-950 h-2 rounded-none overflow-hidden"
+                className="w-full bg-neutral-950 h-2 rounded-[4px] overflow-hidden"
               >
                 <div 
-                  className="bg-white h-full rounded-none transition-all"
+                  className="bg-white h-full rounded-[4px] transition-all"
                   style={{ width: `${Math.min(100, (currentFats / effectiveTargetFats) * 100)}%` }}
                 />
               </div>
@@ -753,14 +753,14 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                 <button
                   onClick={() => handleAdjustMacro('fatsGrams', 5)}
                   aria-label="Quick adjust plus 5 grams of fats"
-                  className="min-h-[36px] px-2.5 py-1 rounded-none bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
+                  className="min-h-[36px] px-2.5 py-1 rounded-[4px] bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
                 >
                   +5g
                 </button>
                 <button
                   onClick={() => handleAdjustMacro('fatsGrams', 15)}
                   aria-label="Quick adjust plus 15 grams nuts"
-                  className="min-h-[36px] px-3 py-1 rounded-none bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
+                  className="min-h-[36px] px-3 py-1 rounded-[4px] bg-neutral-800 hover:bg-neutral-750 text-white text-[10px] font-bold"
                 >
                   +15g Nuts
                 </button>
@@ -773,7 +773,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
       {/* 5. Today's Logged Items List & Empty State */}
       <section 
         aria-labelledby="food-diary-title"
-        className="rounded-none bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
+        className="rounded-[4px] bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
       >
         <h3 id="food-diary-title" className="text-xs font-bold text-white uppercase tracking-wider">
           Today's Food Diary
@@ -781,7 +781,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
 
         {loggedFoods.length === 0 ? (
           /* Friendly Novice-Proof Empty State */
-          <div className="p-6 text-center text-neutral-400 font-sans border border-dashed border-neutral-800 rounded-none space-y-2">
+          <div className="p-6 text-center text-neutral-400 font-sans border border-dashed border-neutral-800 rounded-[4px] space-y-2">
             <Utensils className="w-8 h-8 mx-auto text-neutral-600" aria-hidden="true" />
             <p className="text-xs font-bold text-neutral-200">No Meals Logged Today</p>
             <p className="text-[11px] text-neutral-400 max-w-xs mx-auto">
@@ -810,7 +810,7 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
                   <button
                     onClick={() => handleRemoveLoggedFood(f.id)}
                     aria-label={`Remove ${f.name} from food diary`}
-                    className="min-h-[44px] min-w-[44px] p-2 rounded-none text-neutral-400 hover:text-white flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+                    className="min-h-[44px] min-w-[44px] p-2 rounded-[4px] text-neutral-400 hover:text-white flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-white"
                   >
                     <Trash2 className="w-4 h-4" aria-hidden="true" />
                   </button>

@@ -118,10 +118,10 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
   return (
     <div className="space-y-3.5 pb-24 text-left animate-fadeIn">
       {/* Calendar Header Card */}
-      <div className="rounded-none bg-neutral-950 border border-neutral-800 p-4 shadow-sm font-mono">
+      <div className="rounded-[4px] bg-neutral-950 border border-neutral-800 p-4 shadow-sm font-mono">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-none bg-neutral-900 border border-neutral-750 text-white">
+            <div className="p-1.5 rounded-[4px] bg-neutral-900 border border-neutral-750 text-white">
               <CalendarIcon className="w-4 h-4" />
             </div>
             <div>
@@ -139,12 +139,12 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
           <div className="flex items-center gap-1">
             <button
               onClick={() => setShowTemplateEditor(!showTemplateEditor)}
-              className="px-2 py-1 rounded-none border border-neutral-750 bg-neutral-900 text-white text-[10px] hover:border-neutral-500"
+              className="px-2 py-1 rounded-[4px] border border-neutral-750 bg-neutral-900 text-white text-[10px] hover:border-neutral-500"
             >
               {showTemplateEditor ? 'Close' : 'Template'}
             </button>
 
-            <div className="flex items-center bg-neutral-900 p-0.5 rounded-none border border-neutral-800">
+            <div className="flex items-center bg-neutral-900 p-0.5 rounded-[4px] border border-neutral-800">
               <button
                 onClick={handlePrevMonth}
                 className="p-1 text-neutral-400 hover:text-white"
@@ -168,7 +168,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
 
         {/* 2-Week Template Drawer */}
         {showTemplateEditor && (
-          <div className="mt-3.5 p-3 rounded-none bg-neutral-900 border border-neutral-750 space-y-2.5 animate-slideUp">
+          <div className="mt-3.5 p-3 rounded-[4px] bg-neutral-900 border border-neutral-750 space-y-2.5 animate-slideUp">
             <div className="flex items-center justify-between">
               <span className="text-[10px] uppercase font-bold text-white">14-Day Loop Template</span>
               <ContextualHelp
@@ -180,19 +180,19 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
             <div className="grid grid-cols-3 gap-1">
               <button
                 onClick={() => handleSelectPreset(ROTA_PRESETS.fourOnThreeOff)}
-                className="py-1 rounded-none bg-black text-[9px] border border-neutral-800 text-neutral-300 hover:text-white"
+                className="py-1 rounded-[4px] bg-black text-[9px] border border-neutral-800 text-neutral-300 hover:text-white"
               >
                 4-on / 3-off
               </button>
               <button
                 onClick={() => handleSelectPreset(ROTA_PRESETS.alternatingFourThree)}
-                className="py-1 rounded-none bg-black text-[9px] border border-neutral-800 text-neutral-300 hover:text-white"
+                className="py-1 rounded-[4px] bg-black text-[9px] border border-neutral-800 text-neutral-300 hover:text-white"
               >
                 4-3 / 3-4
               </button>
               <button
                 onClick={() => handleSelectPreset(ROTA_PRESETS.panama223)}
-                className="py-1 rounded-none bg-black text-[9px] border border-neutral-800 text-neutral-300 hover:text-white"
+                className="py-1 rounded-[4px] bg-black text-[9px] border border-neutral-800 text-neutral-300 hover:text-white"
               >
                 2-2-3 Panama
               </button>
@@ -205,7 +205,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
                   <button
                     key={idx}
                     onClick={() => handleToggleTemplateDay(idx)}
-                    className={`p-1 rounded-none text-[9px] font-bold border transition-all ${
+                    className={`p-1 rounded-[4px] text-[9px] font-bold border transition-all ${
                       s === 'off' ? 'bg-black text-neutral-500 border-neutral-800' : 'bg-white text-black border-white'
                     }`}
                   >
@@ -219,7 +219,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
                   <button
                     key={idx + 7}
                     onClick={() => handleToggleTemplateDay(idx + 7)}
-                    className={`p-1 rounded-none text-[9px] font-bold border transition-all ${
+                    className={`p-1 rounded-[4px] text-[9px] font-bold border transition-all ${
                       s === 'off' ? 'bg-black text-neutral-500 border-neutral-800' : 'bg-white text-black border-white'
                     }`}
                   >
@@ -253,7 +253,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
               <button
                 key={idx}
                 onClick={() => handleSelectDay(d)}
-                className={`min-h-[54px] p-1 rounded-none flex flex-col justify-between items-center transition-all border ${
+                className={`min-h-[54px] p-1 rounded-[4px] flex flex-col justify-between items-center transition-all border ${
                   isSelected
                     ? 'border-white bg-white text-black font-bold z-10'
                     : isToday
@@ -276,19 +276,19 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
 
                 <div className="w-full mt-1">
                   {d.isOvertime ? (
-                    <div className={`text-[8px] font-mono font-bold px-0.5 py-0.2 rounded-none truncate text-center ${
+                    <div className={`text-[8px] font-mono font-bold px-0.5 py-0.2 rounded-[4px] truncate text-center ${
                       isSelected ? 'bg-black text-white' : 'bg-neutral-800 text-white'
                     }`}>
                       OT 12h
                     </div>
                   ) : d.isShiftDay ? (
-                    <div className={`text-[8px] font-mono px-0.5 py-0.2 rounded-none truncate text-center ${
+                    <div className={`text-[8px] font-mono px-0.5 py-0.2 rounded-[4px] truncate text-center ${
                       isSelected ? 'bg-neutral-200 text-black' : 'text-neutral-500'
                     }`}>
                       Shift
                     </div>
                   ) : (
-                    <div className={`text-[8px] font-mono font-bold px-0.5 py-0.2 rounded-none truncate text-center ${
+                    <div className={`text-[8px] font-mono font-bold px-0.5 py-0.2 rounded-[4px] truncate text-center ${
                       isSelected ? 'bg-black text-white' : 'bg-neutral-900 border border-neutral-800 text-neutral-200'
                     }`}>
                       {d.recommendedWorkoutCategory}
@@ -302,7 +302,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
       </div>
 
       {/* Selected Day Inspector Card */}
-      <div className="rounded-none bg-neutral-950 border border-neutral-800 p-4 shadow-sm text-left">
+      <div className="rounded-[4px] bg-neutral-950 border border-neutral-800 p-4 shadow-sm text-left">
         <div className="flex items-start justify-between font-mono">
           <div>
             <div className="flex items-center gap-2">
@@ -310,7 +310,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
                 {new Date(selectedDateStr).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}
               </span>
               {selectedDateStr === todayStr && (
-                <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded-none bg-white text-black">
+                <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded-[4px] bg-white text-black">
                   TODAY
                 </span>
               )}
@@ -323,7 +323,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
           <div className="flex items-center gap-1">
             <button
               onClick={handleOpenEditModal}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-none border border-neutral-750 bg-neutral-900 hover:border-neutral-600 text-white text-xs font-mono font-medium transition-all active:scale-95"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-[4px] border border-neutral-750 bg-neutral-900 hover:border-neutral-600 text-white text-xs font-mono font-medium transition-all active:scale-95"
             >
               <Edit3 className="w-3.5 h-3.5 text-neutral-400" />
               <span>Override / OT</span>
@@ -336,12 +336,12 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
         </div>
 
         {/* Dynamic Algorithm Workout Routing Box */}
-        <div className="mt-3.5 p-3 rounded-none bg-neutral-900 border border-neutral-800">
+        <div className="mt-3.5 p-3 rounded-[4px] bg-neutral-900 border border-neutral-800">
           <div className="flex items-center justify-between mb-1.5 font-mono">
             <span className="text-[10px] font-bold uppercase text-neutral-400">
               Prescribed Workout Routing
             </span>
-            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-none border border-neutral-700 bg-black text-neutral-300">
+            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-[4px] border border-neutral-700 bg-black text-neutral-300">
               {selectedDayInfo.isShiftDay ? 'CNS RECOVERY' : 'HEAVY LIFTING'}
             </span>
           </div>
@@ -378,7 +378,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
       {/* Edit Shift Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-fadeIn">
-          <div className="w-full max-w-sm rounded-none bg-black border border-neutral-700 shadow-2xl p-5 text-left font-mono">
+          <div className="w-full max-w-sm rounded-[4px] bg-black border border-neutral-700 shadow-2xl p-5 text-left font-mono">
             <div className="flex items-center justify-between pb-3 border-b border-neutral-800">
               <div>
                 <h3 className="text-sm font-bold text-white uppercase">Override Specific Day</h3>
@@ -412,7 +412,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
                         setModalShiftType(option.id as ShiftType);
                         setModalIsOvertime(option.isOt);
                       }}
-                      className={`w-full p-2.5 rounded-none border text-left text-xs transition-all ${
+                      className={`w-full p-2.5 rounded-[4px] border text-left text-xs transition-all ${
                         modalShiftType === option.id
                           ? 'bg-white text-black font-bold border-white'
                           : 'bg-neutral-900 border-neutral-800 text-neutral-300 hover:border-neutral-700'
@@ -433,7 +433,7 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
                   value={modalNotes}
                   onChange={(e) => setModalNotes(e.target.value)}
                   placeholder="e.g. Extra overtime shift"
-                  className="w-full bg-neutral-900 border border-neutral-750 rounded-none px-3 py-2 text-xs text-white focus:outline-none focus:border-white"
+                  className="w-full bg-neutral-900 border border-neutral-750 rounded-[4px] px-3 py-2 text-xs text-white focus:outline-none focus:border-white"
                 />
               </div>
             </div>
@@ -441,13 +441,13 @@ export const ScheduleTab: React.FC<ScheduleTabProps> = ({
             <div className="mt-5 flex gap-2">
               <button
                 onClick={() => setIsEditModalOpen(false)}
-                className="flex-1 py-2 rounded-none border border-neutral-800 text-neutral-400 text-xs hover:text-white"
+                className="flex-1 py-2 rounded-[4px] border border-neutral-800 text-neutral-400 text-xs hover:text-white"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveModal}
-                className="flex-1 py-2 rounded-none bg-white text-black text-xs font-bold tracking-tight hover:bg-neutral-200"
+                className="flex-1 py-2 rounded-[4px] bg-white text-black text-xs font-bold tracking-tight hover:bg-neutral-200"
               >
                 Save Override
               </button>

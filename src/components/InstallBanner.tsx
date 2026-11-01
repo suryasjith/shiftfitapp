@@ -24,7 +24,7 @@ export const InstallBanner: React.FC = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="mx-1 mb-4 rounded-none bg-neutral-950 border border-neutral-750 p-3.5 text-left relative animate-slideUp">
+    <div className="mx-1 mb-4 rounded-[4px] bg-neutral-950 border border-neutral-750 p-3.5 text-left relative animate-slideUp">
       <button 
         onClick={handleDismiss}
         className="absolute top-2.5 right-2.5 text-neutral-500 hover:text-white p-1"
@@ -34,7 +34,7 @@ export const InstallBanner: React.FC = () => {
       </button>
 
       <div className="flex items-start gap-3 pr-6">
-        <div className="w-8 h-8 rounded-none bg-neutral-900 border border-neutral-700 text-white flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded-[4px] bg-neutral-900 border border-neutral-700 text-white flex items-center justify-center shrink-0">
           <Smartphone className="w-4 h-4" />
         </div>
         <div>

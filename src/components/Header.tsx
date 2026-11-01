@@ -78,18 +78,18 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur-xl border-b border-white/10 px-4 pt-[max(env(safe-area-inset-top,44px),44px)] pb-2.5 select-none space-y-2.5">
+      <header className="sticky top-0 z-30 bg-[#0B132B]/75 backdrop-blur-xl border-b border-white/10 px-4 pt-[max(env(safe-area-inset-top,44px),44px)] pb-2.5 select-none space-y-2.5">
         {/* Top Bar: Brand, Weight Corridor & Utility Actions */}
         <div className="flex items-center justify-between">
           {/* Brand */}
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-none bg-amber-500/15 border border-amber-500/40 flex items-center justify-center font-black font-mono text-xs text-amber-400">
+            <div className="w-8 h-8 rounded-[4px] bg-[#00FF87]/15 border border-[#00FF87]/40 flex items-center justify-center font-black font-heading text-xs text-[#00FF87]">
               SF
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-black text-sm tracking-tight text-slate-100 font-mono">SHIFTFIT</span>
-                <span className="text-[9px] px-1.5 py-0.2 rounded-none border border-white/15 bg-white/[0.04] text-slate-300 font-mono font-medium">
+                <span className="font-black text-sm tracking-tight text-white font-heading">SHIFTFIT</span>
+                <span className="text-[9px] px-1.5 py-0.2 rounded-[4px] border border-white/15 bg-white/[0.04] text-slate-200 font-mono font-bold">
                   {profile.targetWeightMinKg}–{profile.targetWeightMaxKg}kg
                 </span>
               </div>
@@ -105,17 +105,17 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onExportBackup}
               aria-label="Export Offline Database Backup (JSON)"
-              className="min-h-[44px] flex items-center gap-1 px-2.5 py-1.5 rounded-none border border-white/15 bg-slate-900/60 backdrop-blur-md text-slate-300 hover:text-white hover:border-white/30 text-[10px] font-mono transition-all active:translate-y-[1px] focus:outline-none focus:ring-1 focus:ring-white"
+              className="min-h-[44px] flex items-center gap-1 px-2.5 py-1.5 rounded-[4px] border border-white/15 bg-white/[0.04] backdrop-blur-md text-slate-200 hover:text-white hover:border-[#00FF87]/40 text-[10px] font-mono transition-all active:translate-y-[2px] focus:outline-none focus:ring-1 focus:ring-[#00FF87]"
               title="100% Offline IndexedDB Engine Active. Tap to Export Local Backup."
             >
-              <Database className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
+              <Database className="w-3.5 h-3.5 text-[#00FF87]" aria-hidden="true" />
               <span>Offline DB</span>
             </button>
 
             {/* Contextual Tab Guide ('i' Icon) */}
             <button
               onClick={() => setIsTabGuideOpen(true)}
-              className="min-h-[44px] min-w-[44px] w-9 h-9 rounded-none border border-white/15 bg-slate-900/60 backdrop-blur-md hover:bg-slate-800 text-slate-200 flex items-center justify-center transition-all active:translate-y-[1px] shadow-sm focus:outline-none focus:ring-1 focus:ring-white"
+              className="min-h-[44px] min-w-[44px] w-9 h-9 rounded-[4px] border border-white/15 bg-white/[0.04] backdrop-blur-md hover:bg-white/[0.08] text-slate-200 flex items-center justify-center transition-all active:translate-y-[2px] shadow-sm focus:outline-none focus:ring-1 focus:ring-[#00FF87]"
               title="Tab Guide & Instructions"
               aria-label="Open Tab Instructions"
             >
@@ -128,13 +128,13 @@ export const Header: React.FC<HeaderProps> = ({
         <div 
           role="region"
           aria-label="Date Navigation"
-          className="flex items-center justify-between bg-slate-900/50 backdrop-blur-md border border-white/10 p-1 rounded-none shadow-inner"
+          className="flex items-center justify-between bg-white/[0.03] backdrop-blur-xl border border-white/10 p-1 rounded-[4px] shadow-sm"
         >
           {/* Previous Day Button */}
           <button
             onClick={handlePrevDay}
             aria-label="Go to previous day"
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-none bg-slate-800/80 hover:bg-slate-750 text-slate-300 hover:text-white border border-white/10 active:translate-y-[1px] transition-all focus:outline-none focus:ring-1 focus:ring-white"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-[4px] bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/10 active:translate-y-[2px] transition-all focus:outline-none focus:ring-1 focus:ring-[#00FF87]"
           >
             <ChevronLeft className="w-4 h-4" aria-hidden="true" />
           </button>
@@ -143,12 +143,12 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative flex-1 px-2 text-center">
             <label htmlFor="universal-date-picker" className="cursor-pointer block">
               <div className="flex items-center justify-center gap-1.5">
-                <CalendarIcon className="w-3.5 h-3.5 text-neutral-400 shrink-0" aria-hidden="true" />
-                <span className="text-xs font-bold text-white font-mono tracking-tight">
+                <CalendarIcon className="w-3.5 h-3.5 text-[#00FF87] shrink-0" aria-hidden="true" />
+                <span className="text-xs font-black text-white font-heading tracking-wide">
                   {dateLabel.main}
                 </span>
                 {dateLabel.sub && (
-                  <span className="text-[10px] text-neutral-400 font-mono">
+                  <span className="text-[10px] text-slate-400 font-mono">
                     ({dateLabel.sub})
                   </span>
                 )}
@@ -175,7 +175,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 onClick={handleReturnToday}
                 aria-label="Jump back to today"
-                className="min-h-[44px] px-2.5 rounded-none bg-amber-500 text-slate-950 font-mono font-bold text-[10px] uppercase flex items-center gap-1 active:translate-y-[1px] transition-all focus:outline-none focus:ring-1 focus:ring-amber-400"
+                className="min-h-[44px] px-2.5 rounded-[4px] bg-[#00FF87] text-black font-heading font-extrabold text-[10px] uppercase flex items-center gap-1 active:translate-y-[2px] transition-all focus:outline-none focus:ring-1 focus:ring-[#00FF87]"
               >
                 <RotateCcw className="w-3 h-3 stroke-[2.5]" aria-hidden="true" />
                 <span>Today</span>
@@ -185,7 +185,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={handleNextDay}
               aria-label="Go to next day"
-              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-none bg-slate-800/80 hover:bg-slate-750 text-slate-300 hover:text-white border border-white/10 active:translate-y-[1px] transition-all focus:outline-none focus:ring-1 focus:ring-white"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-[4px] bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/10 active:translate-y-[2px] transition-all focus:outline-none focus:ring-1 focus:ring-[#00FF87]"
             >
               <ChevronRight className="w-4 h-4" aria-hidden="true" />
             </button>
@@ -197,7 +197,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div 
             role="status" 
             aria-live="polite"
-            className="flex items-center justify-between px-3 py-1.5 rounded-none bg-slate-900/80 backdrop-blur-md border border-white/10 text-[10px] font-mono text-slate-300 animate-fadeIn"
+            className="flex items-center justify-between px-3 py-1.5 rounded-[4px] bg-white/[0.03] backdrop-blur-md border border-white/10 text-[10px] font-mono text-slate-300 animate-fadeIn"
           >
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-none bg-amber-400" aria-hidden="true" />

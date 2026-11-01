@@ -8,6 +8,27 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Dark Slate Navy Base (#0B132B)
+        navy: {
+          950: '#060B1A',
+          900: '#0B132B',
+          850: '#111D42',
+          800: '#1C2541',
+          700: '#3A506B',
+        },
+        // Electric Mint & Soft Violet Palette
+        mint: {
+          400: '#33FFA0',
+          DEFAULT: '#00FF87',
+          500: '#00FF87',
+          600: '#00CC6C',
+        },
+        violet: {
+          400: '#A354F5',
+          DEFAULT: '#8A2BE2',
+          500: '#8A2BE2',
+          600: '#6E1CB8',
+        },
         // Soft Dark Slate Base (Eliminates OLED Halation & Eye Strain)
         slate: {
           950: '#0B1120',
@@ -67,8 +88,9 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', 'sans-serif'],
-        mono: ['SF Mono', 'Menlo', 'Monaco', 'Courier New', 'monospace']
+        heading: ['Space Grotesk', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        sans: ['Space Grotesk', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'SF Pro Display', 'sans-serif'],
+        mono: ['JetBrains Mono', 'SF Mono', 'Menlo', 'Monaco', 'monospace']
       },
       borderWidth: {
         'hairline': '0.5px'

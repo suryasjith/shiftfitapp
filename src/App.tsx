@@ -280,19 +280,19 @@ export const App: React.FC = () => {
         role="alert" 
         aria-busy="true"
         aria-label="Loading ShiftFit application"
-        className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-slate-400 font-mono"
+        className="min-h-screen bg-[#0B132B] flex flex-col items-center justify-center text-slate-300 font-mono"
       >
-        <div className="w-10 h-10 rounded-xl border border-slate-700 bg-slate-800 flex items-center justify-center font-bold text-amber-400 mb-2">
+        <div className="w-12 h-12 rounded-[4px] border border-white/20 bg-white/5 backdrop-blur-xl flex items-center justify-center font-extrabold text-[#00FF87] mb-3 text-lg font-heading">
           SF
         </div>
-        <p className="font-bold text-slate-100 text-xs">SHIFTFIT</p>
-        <p className="text-[10px] text-slate-400 mt-0.5">Initializing Offline IndexedDB Engine...</p>
+        <p className="font-heading font-black text-white text-sm tracking-wider uppercase">SHIFTFIT</p>
+        <p className="text-[10px] text-slate-400 mt-1 font-mono">Initializing Offline IndexedDB Engine...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col max-w-lg mx-auto relative select-none">
+    <div className="min-h-screen bg-transparent text-white flex flex-col max-w-lg mx-auto relative select-none z-10">
       {/* Top Header - Spacious with Dynamic Island Clearance, Date Switcher & 'i' Contextual Tab Guide */}
       <Header
         todayStr={todayStr}

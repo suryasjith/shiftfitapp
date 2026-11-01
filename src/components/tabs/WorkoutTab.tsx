@@ -257,20 +257,20 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
       {/* 1. Workout Session Header Card (Tactile Brutalist Frosted Amber) */}
       <section 
         aria-labelledby="active-session-title"
-        className="rounded-none glass-workout border border-amber-500/35 p-5 shadow-none space-y-4"
+        className="rounded-[4px] glass-card border border-white/10 p-5 shadow-none space-y-4"
       >
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 flex-wrap mb-1">
-              <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-none border border-amber-500/40 bg-amber-500/15 text-amber-300 uppercase tracking-wider">
+              <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-[4px] border border-white/15 bg-white/[0.04] text-[#00FF87] uppercase tracking-wider">
                 {workout.intensity}
               </span>
-              <span className="text-xs text-amber-400/90 font-mono font-bold">
+              <span className="text-xs text-[#00FF87]/90 font-mono font-bold">
                 {workout.category} Focus
               </span>
             </div>
 
-            <h2 id="active-session-title" className="text-xl font-black text-slate-100 tracking-tight mt-1 font-sans">
+            <h2 id="active-session-title" className="text-2xl font-black text-white tracking-tight mt-1 font-heading">
               {workout.title}
             </h2>
             <p className="text-xs text-slate-400 mt-0.5 font-mono">
@@ -282,7 +282,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
           <button
             onClick={() => setShowResetConfirm(true)}
             aria-label="Reset all sets and timers to start a fresh workout session"
-            className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-none border border-white/15 bg-slate-900/60 backdrop-blur-md text-slate-300 hover:text-white text-xs font-mono font-bold transition-all active:translate-y-[1px] shrink-0 focus:outline-none focus:ring-1 focus:ring-amber-400"
+            className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-[4px] border border-white/15 bg-slate-900/60 backdrop-blur-md text-slate-300 hover:text-white text-xs font-mono font-bold transition-all active:translate-y-[2px] shrink-0 focus:outline-none focus:ring-1 focus:ring-amber-400"
           >
             <RotateCcw className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
             <span>Start Fresh</span>
@@ -295,10 +295,10 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
             role="alertdialog"
             aria-labelledby="reset-dialog-title"
             aria-describedby="reset-dialog-desc"
-            className="p-4 rounded-none bg-slate-950 border border-amber-500/40 space-y-2 animate-fadeIn font-mono"
+            className="p-4 rounded-[4px] bg-slate-950 border border-white/15 space-y-2 animate-fadeIn font-mono"
           >
-            <div className="flex items-center gap-2 text-xs text-amber-300 font-bold">
-              <AlertCircle className="w-4 h-4 text-amber-400" aria-hidden="true" />
+            <div className="flex items-center gap-2 text-xs text-[#00FF87] font-bold">
+              <AlertCircle className="w-4 h-4 text-[#00FF87]" aria-hidden="true" />
               <span id="reset-dialog-title">Reset today's session to start clean?</span>
             </div>
             <p id="reset-dialog-desc" className="text-xs text-slate-300 font-sans">
@@ -308,14 +308,14 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
               <button
                 type="button"
                 onClick={() => setShowResetConfirm(false)}
-                className="min-h-[44px] px-3.5 py-2 rounded-none border border-white/20 text-slate-300 text-xs hover:text-white"
+                className="min-h-[44px] px-3.5 py-2 rounded-[4px] border border-white/20 text-slate-300 text-xs hover:text-white"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleStartFreshWorkout}
-                className="min-h-[44px] px-4 py-2 rounded-none bg-amber-500 text-slate-950 font-black text-xs hover:bg-amber-400 uppercase tracking-wider"
+                className="min-h-[44px] px-4 py-2 rounded-[4px] btn-tactile-primary text-black text-xs uppercase tracking-wider"
               >
                 Confirm Reset
               </button>
@@ -325,21 +325,21 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
 
         {/* High-level progress counts */}
         <div className="pt-3 border-t border-amber-500/25 grid grid-cols-3 gap-2 text-center font-mono">
-          <div className="bg-slate-950/60 backdrop-blur-md p-2.5 rounded-none border border-white/10">
+          <div className="bg-slate-950/60 backdrop-blur-md p-2.5 rounded-[4px] border border-white/10">
             <span className="text-[10px] text-slate-400 uppercase font-bold block">Sets Done</span>
-            <span className="text-sm font-black text-amber-300 mt-0.5 block">
+            <span className="text-sm font-black text-[#00FF87] mt-0.5 block">
               {completedSetsCount} / {totalSetsCount}
             </span>
           </div>
 
-          <div className="bg-slate-950/60 backdrop-blur-md p-2.5 rounded-none border border-white/10">
+          <div className="bg-slate-950/60 backdrop-blur-md p-2.5 rounded-[4px] border border-white/10">
             <span className="text-[10px] text-slate-400 uppercase font-bold block">Total Work</span>
             <span className="text-sm font-black text-slate-100 mt-0.5 block">
               {Math.round(currentTonnage).toLocaleString()} <span className="text-[10px] text-slate-400">kg</span>
             </span>
           </div>
 
-          <div className="bg-slate-950/60 backdrop-blur-md p-2.5 rounded-none border border-white/10">
+          <div className="bg-slate-950/60 backdrop-blur-md p-2.5 rounded-[4px] border border-white/10">
             <span className="text-[10px] text-slate-400 uppercase font-bold block">Target</span>
             <span className="text-sm font-bold text-slate-200 mt-0.5 block">
               75–78 <span className="text-[10px] text-slate-400">kg</span>
@@ -535,12 +535,12 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
               key={exIdx}
               role="listitem"
               aria-labelledby={`exercise-name-${exIdx}`}
-              className={`rounded-none border transition-all duration-150 overflow-hidden ${
+              className={`rounded-[4px] border transition-all duration-150 overflow-hidden ${
                 isDone 
                   ? 'glass-brutal border-emerald-500/40' 
                   : isExpanded
-                  ? 'glass-workout border-amber-500/50 shadow-none'
-                  : 'glass-workout border-amber-500/25 hover:border-amber-500/40'
+                  ? 'glass-card border-amber-500/50 shadow-none'
+                  : 'glass-card border-amber-500/25 hover:border-white/15'
               }`}
             >
               {/* Exercise Accordion Bar (Semantic Container, No Nested Links) */}
@@ -550,13 +550,13 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                   id={`exercise-header-${exIdx}`}
                   aria-expanded={isExpanded}
                   aria-controls={`exercise-panel-${exIdx}`}
-                  className="flex-1 flex items-start gap-3 text-left focus:outline-none focus:ring-1 focus:ring-amber-400 rounded-none pr-2"
+                  className="flex-1 flex items-start gap-3 text-left focus:outline-none focus:ring-1 focus:ring-amber-400 rounded-[4px] pr-2"
                   onClick={() => setExpandedExerciseIndex(isExpanded ? null : exIdx)}
                 >
-                  <span className={`w-6 h-6 rounded-none flex items-center justify-center text-xs font-black font-mono mt-0.5 shrink-0 ${
+                  <span className={`w-6 h-6 rounded-[4px] flex items-center justify-center text-xs font-black font-mono mt-0.5 shrink-0 ${
                     isDone 
                       ? 'bg-emerald-500 text-slate-950 font-black' 
-                      : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                      : 'bg-[#00FF87]/20 text-[#00FF87] border border-white/15'
                   }`}>
                     {isDone ? <Check className="w-3.5 h-3.5 stroke-[3]" aria-hidden="true" /> : exIdx + 1}
                   </span>
@@ -567,7 +567,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                         {displayName}
                       </h3>
                       {ex.equipmentTaken && (
-                        <span className="text-[9px] font-mono font-black px-1.5 py-0.2 rounded-none bg-amber-500 text-slate-950">
+                        <span className="text-[9px] font-mono font-black px-1.5 py-0.2 rounded-[4px] bg-[#00FF87] text-black">
                           SWAPPED
                         </span>
                       )}
@@ -591,10 +591,10 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                     aria-expanded={!!openInstructions[exIdx]}
                     aria-controls={`exercise-instructions-${exIdx}`}
                     aria-label={`Toggle form instructions and visual GIF for ${displayName}`}
-                    className={`min-h-[44px] inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-none text-xs font-mono font-bold transition-all active:translate-y-[1px] ${
+                    className={`min-h-[44px] inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-[4px] text-xs font-mono font-bold transition-all active:translate-y-[2px] ${
                       openInstructions[exIdx]
-                        ? 'bg-amber-500 text-slate-950 border border-amber-400 font-black'
-                        : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                        ? 'bg-[#00FF87] text-black border border-amber-400 font-black'
+                        : 'bg-[#00FF87]/10 hover:bg-[#00FF87]/20 text-[#00FF87] border border-white/15'
                     }`}
                   >
                     <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
@@ -611,7 +611,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                       soundManager.playTap();
                     }}
                     aria-label={`Watch form tutorial video for ${displayName} on YouTube`}
-                    className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center gap-1 px-2.5 py-1 rounded-none bg-slate-950/70 hover:bg-slate-900 border border-white/15 text-xs font-mono text-slate-300 hover:text-white transition-all active:translate-y-[1px]"
+                    className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center gap-1 px-2.5 py-1 rounded-[4px] bg-slate-950/70 hover:bg-slate-900 border border-white/15 text-xs font-mono text-slate-300 hover:text-white transition-all active:translate-y-[2px]"
                   >
                     <Play className="w-3 h-3 fill-red-500 stroke-red-500 shrink-0" aria-hidden="true" />
                     <span className="hidden sm:inline">YT</span>
@@ -650,10 +650,10 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                           setOpenInstructions(prev => ({ ...prev, [exIdx]: !prev[exIdx] }));
                         }}
                         aria-expanded={!!openInstructions[exIdx]}
-                        className={`min-h-[44px] px-2.5 py-1.5 rounded-none border text-xs font-mono flex items-center gap-1.5 active:translate-y-[1px] transition-all ${
+                        className={`min-h-[44px] px-2.5 py-1.5 rounded-[4px] border text-xs font-mono flex items-center gap-1.5 active:translate-y-[2px] transition-all ${
                           openInstructions[exIdx]
-                            ? 'bg-amber-500 text-slate-950 border-amber-400 font-black'
-                            : 'border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300'
+                            ? 'bg-[#00FF87] text-black border-amber-400 font-black'
+                            : 'border-white/15 bg-[#00FF87]/10 hover:bg-[#00FF87]/20 text-[#00FF87]'
                         }`}
                       >
                         <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
@@ -665,7 +665,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                         type="button"
                         onClick={() => setActiveSwapExerciseIndex(exIdx)}
                         aria-label={`Swap ${displayName} with alternate equipment or movement`}
-                        className="min-h-[44px] px-3 py-1.5 rounded-none border border-white/20 bg-slate-950/70 hover:border-amber-400 text-slate-100 text-xs font-mono font-bold flex items-center gap-1.5 active:translate-y-[1px] transition-all focus:outline-none focus:ring-1 focus:ring-amber-400"
+                        className="min-h-[44px] px-3 py-1.5 rounded-[4px] border border-white/20 bg-slate-950/70 hover:border-amber-400 text-slate-100 text-xs font-mono font-bold flex items-center gap-1.5 active:translate-y-[2px] transition-all focus:outline-none focus:ring-1 focus:ring-amber-400"
                       >
                         <ArrowRightLeft className="w-3.5 h-3.5 text-slate-300" aria-hidden="true" />
                         <span>Swap</span>
@@ -677,22 +677,22 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                   {openInstructions[exIdx] && (
                     <div 
                       id={`exercise-instructions-${exIdx}`}
-                      className="p-4 rounded-none bg-slate-950/90 border border-amber-500/40 space-y-3 animate-expandDown text-left"
+                      className="p-4 rounded-[4px] bg-slate-950/90 border border-white/15 space-y-3 animate-expandDown text-left"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <Sparkles className="w-4 h-4 text-amber-400" aria-hidden="true" />
-                          <span className="text-xs font-black text-amber-300 uppercase tracking-wider font-mono">
+                          <Sparkles className="w-4 h-4 text-[#00FF87]" aria-hidden="true" />
+                          <span className="text-xs font-black text-[#00FF87] uppercase tracking-wider font-mono">
                             Form & Technique Guide
                           </span>
                         </div>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-none bg-amber-500/20 text-amber-300 font-black">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-[#00FF87]/20 text-[#00FF87] font-black">
                           {def?.mechanics || 'Compound'}
                         </span>
                       </div>
 
                       {/* Looping Visual Movement GIF */}
-                      <div className="relative rounded-none overflow-hidden border border-amber-500/40 bg-slate-950 shadow-inner flex flex-col items-center justify-center min-h-[160px]">
+                      <div className="relative rounded-[4px] overflow-hidden border border-white/15 bg-slate-950 shadow-inner flex flex-col items-center justify-center min-h-[160px]">
                         <img
                           src={def?.visualGifUrl || `https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${encodeURIComponent(def?.name || displayName).replace(/%20/g, '_')}/0.jpg`}
                           alt={`${displayName} movement animation`}
@@ -703,8 +703,8 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                             target.style.display = 'none';
                           }}
                         />
-                        <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-none bg-slate-950/90 backdrop-blur-sm border border-amber-500/40 text-[9px] font-mono text-amber-300 flex items-center gap-1.5 font-bold">
-                          <span className="w-1.5 h-1.5 rounded-none bg-amber-400 animate-pulse" />
+                        <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-[4px] bg-slate-950/90 backdrop-blur-sm border border-white/15 text-[9px] font-mono text-[#00FF87] flex items-center gap-1.5 font-bold">
+                          <span className="w-1.5 h-1.5 rounded-[4px] bg-amber-400 animate-pulse" />
                           <span>Looping Visual</span>
                         </div>
                       </div>
@@ -720,8 +720,8 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                             'Execution: Control the eccentric descent for 2–3 seconds without bouncing.',
                             'Contraction: Drive smoothly into lockout with active muscle engagement.'
                           ]).map((point, ptIdx) => (
-                            <li key={ptIdx} className="flex items-start gap-2.5 bg-slate-900/90 p-2.5 rounded-none border border-amber-500/25">
-                              <span className="w-5 h-5 rounded-none bg-amber-500/20 text-amber-300 font-mono text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
+                            <li key={ptIdx} className="flex items-start gap-2.5 bg-slate-900/90 p-2.5 rounded-[4px] border border-amber-500/25">
+                              <span className="w-5 h-5 rounded-[4px] bg-[#00FF87]/20 text-[#00FF87] font-mono text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
                                 {ptIdx + 1}
                               </span>
                               <span className="leading-relaxed text-slate-200">{point}</span>
@@ -733,8 +733,8 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                   )}
 
                   {def?.tips && !openInstructions[exIdx] && (
-                    <div className="text-xs text-slate-300 bg-slate-950/60 p-2.5 rounded-none border border-amber-500/20 leading-relaxed font-sans">
-                      <strong className="text-amber-300 uppercase font-mono text-[10px] block mb-0.5">Form Cue:</strong>
+                    <div className="text-xs text-slate-300 bg-slate-950/60 p-2.5 rounded-[4px] border border-amber-500/20 leading-relaxed font-sans">
+                      <strong className="text-[#00FF87] uppercase font-mono text-[10px] block mb-0.5">Form Cue:</strong>
                       {def.tips}
                     </div>
                   )}
@@ -752,7 +752,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                       return (
                         <div 
                           key={setIdx}
-                          className={`grid grid-cols-12 gap-2 items-center p-2 rounded-none border transition-all ${
+                          className={`grid grid-cols-12 gap-2 items-center p-2 rounded-[4px] border transition-all ${
                             set.completed 
                               ? 'bg-slate-950/80 border-emerald-500/40 text-slate-100' 
                               : 'bg-slate-950/60 border-white/10'
@@ -775,7 +775,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                               value={set.weightKg === 0 || set.weightKg === undefined ? '' : set.weightKg}
                               onChange={(e) => handleUpdateSetValue(exIdx, setIdx, 'weightKg', e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
                               placeholder="Weight (kg)"
-                              className="w-full min-h-[44px] bg-slate-900 border border-white/15 rounded-none px-2 py-1.5 text-center font-mono text-xs font-bold text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
+                              className="w-full min-h-[44px] bg-slate-900 border border-white/15 rounded-[4px] px-2 py-1.5 text-center font-mono text-xs font-bold text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
                             />
                           </div>
 
@@ -790,7 +790,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                               value={set.reps === 0 || set.reps === undefined ? '' : set.reps}
                               onChange={(e) => handleUpdateSetValue(exIdx, setIdx, 'reps', e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0)}
                               placeholder="Reps"
-                              className="w-full min-h-[44px] bg-slate-900 border border-white/15 rounded-none px-2 py-1.5 text-center font-mono text-xs font-bold text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
+                              className="w-full min-h-[44px] bg-slate-900 border border-white/15 rounded-[4px] px-2 py-1.5 text-center font-mono text-xs font-bold text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
                             />
                           </div>
 
@@ -799,10 +799,10 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                               type="button"
                               onClick={() => handleToggleSetComplete(exIdx, setIdx)}
                               aria-label={`Mark Set ${set.setNumber} of ${displayName} as ${set.completed ? 'incomplete' : 'complete'}`}
-                              className={`w-full min-h-[44px] py-1.5 px-2 rounded-none text-xs font-black uppercase tracking-wider transition-all active:translate-y-[1px] flex items-center justify-center gap-1 focus:outline-none focus:ring-1 focus:ring-white ${
+                              className={`w-full min-h-[44px] py-1.5 px-2 rounded-[4px] text-xs font-black uppercase tracking-wider transition-all active:translate-y-[2px] flex items-center justify-center gap-1 focus:outline-none focus:ring-1 focus:ring-white ${
                                 set.completed
                                   ? 'bg-emerald-500 text-slate-950'
-                                  : 'bg-amber-500/10 border border-amber-500/40 text-amber-300 hover:bg-amber-500/20 hover:text-white'
+                                  : 'bg-[#00FF87]/10 border border-white/15 text-[#00FF87] hover:bg-[#00FF87]/20 hover:text-white'
                               }`}
                             >
                               {set.completed ? (
@@ -826,7 +826,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                       type="button"
                       onClick={() => handleAddSet(exIdx)}
                       aria-label={`Add extra set to ${displayName}`}
-                      className="min-h-[44px] px-3 py-1.5 rounded-none border border-white/20 bg-slate-900 text-slate-200 font-bold hover:bg-slate-800 flex items-center gap-1.5 active:translate-y-[1px] transition-all focus:outline-none focus:ring-1 focus:ring-white"
+                      className="min-h-[44px] px-3 py-1.5 rounded-[4px] border border-white/20 bg-slate-900 text-slate-200 font-bold hover:bg-slate-800 flex items-center gap-1.5 active:translate-y-[2px] transition-all focus:outline-none focus:ring-1 focus:ring-white"
                     >
                       <Plus className="w-3.5 h-3.5" aria-hidden="true" />
                       <span>Add Extra Set</span>
@@ -837,7 +837,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                         type="button"
                         onClick={() => handleRemoveSet(exIdx, ex.sets.length - 1)}
                         aria-label={`Remove last set from ${displayName}`}
-                        className="min-h-[44px] text-slate-400 hover:text-rose-400 text-xs flex items-center gap-1 p-2 active:translate-y-[1px] border border-transparent hover:border-rose-500/40 rounded-none focus:outline-none"
+                        className="min-h-[44px] text-slate-400 hover:text-rose-400 text-xs flex items-center gap-1 p-2 active:translate-y-[2px] border border-transparent hover:border-rose-500/40 rounded-[4px] focus:outline-none"
                       >
                         <Trash2 className="w-3 h-3" aria-hidden="true" />
                         <span>Remove Last</span>
@@ -855,7 +855,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
         <div 
           role="status" 
           aria-live="polite"
-          className="p-5 rounded-none glass-brutal border border-emerald-500/40 text-center animate-slideUp font-sans space-y-1"
+          className="p-5 rounded-[4px] glass-brutal border border-emerald-500/40 text-center animate-slideUp font-sans space-y-1"
         >
           <div className="flex items-center justify-center gap-1.5 text-white font-bold text-sm">
             <Sparkles className="w-4 h-4 text-white" aria-hidden="true" />

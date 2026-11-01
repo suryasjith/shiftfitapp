@@ -317,7 +317,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
       <div 
         role="tablist"
         aria-label="Progress views"
-        className="bg-slate-900 border border-purple-500/25 p-1.5 rounded-none grid grid-cols-4 gap-1 shadow-sm"
+        className="bg-slate-900 border border-white/10 p-1.5 rounded-[4px] grid grid-cols-4 gap-1 shadow-sm"
       >
         <button
           role="tab"
@@ -325,9 +325,9 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           aria-selected={activeSection === 'trends'}
           aria-controls="subtabpanel-trends"
           onClick={() => setActiveSection('trends')}
-          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-none transition-all focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-[4px] transition-all focus:outline-none focus:ring-2 focus:ring-purple-400 ${
             activeSection === 'trends'
-              ? 'bg-purple-600 text-white shadow-md'
+              ? 'btn-tactile-primary text-black text-white shadow-md'
               : 'text-slate-400 hover:text-white'
           }`}
         >
@@ -339,9 +339,9 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           aria-selected={activeSection === 'history'}
           aria-controls="subtabpanel-history"
           onClick={() => setActiveSection('history')}
-          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-none transition-all focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-[4px] transition-all focus:outline-none focus:ring-2 focus:ring-purple-400 ${
             activeSection === 'history'
-              ? 'bg-purple-600 text-white shadow-md'
+              ? 'btn-tactile-primary text-black text-white shadow-md'
               : 'text-slate-400 hover:text-white'
           }`}
         >
@@ -353,9 +353,9 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           aria-selected={activeSection === 'cardio'}
           aria-controls="subtabpanel-cardio"
           onClick={() => setActiveSection('cardio')}
-          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-none transition-all focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-[4px] transition-all focus:outline-none focus:ring-2 focus:ring-purple-400 ${
             activeSection === 'cardio'
-              ? 'bg-purple-600 text-white shadow-md'
+              ? 'btn-tactile-primary text-black text-white shadow-md'
               : 'text-slate-400 hover:text-white'
           }`}
         >
@@ -367,9 +367,9 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           aria-selected={activeSection === 'settings'}
           aria-controls="subtabpanel-settings"
           onClick={() => setActiveSection('settings')}
-          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-none transition-all focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+          className={`min-h-[44px] py-2 px-1 text-xs font-bold rounded-[4px] transition-all focus:outline-none focus:ring-2 focus:ring-purple-400 ${
             activeSection === 'settings'
-              ? 'bg-purple-600 text-white shadow-md'
+              ? 'btn-tactile-primary text-black text-white shadow-md'
               : 'text-slate-400 hover:text-white'
           }`}
         >
@@ -390,7 +390,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* 7-Day Moving Average & Weight Chart */}
           <section 
             aria-labelledby="weight-progression-heading"
-            className="rounded-none bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
+            className="rounded-[4px] bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
           >
             <div className="flex items-start justify-between">
               <div>
@@ -405,7 +405,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 </p>
               </div>
 
-              <div className="p-3 rounded-none bg-neutral-900 border border-neutral-750 text-right">
+              <div className="p-3 rounded-[4px] bg-neutral-900 border border-neutral-750 text-right">
                 <span className="text-[10px] uppercase font-bold text-neutral-400 block">7-Day Avg</span>
                 <span className="text-base font-black font-mono text-white">
                   {report.averageWeightKg} <span className="text-xs text-neutral-400">kg</span>
@@ -418,7 +418,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
               <div 
                 role="figure"
                 aria-label="Recent 7-day weight trend bars"
-                className="p-3 bg-neutral-900/60 rounded-none border border-neutral-850"
+                className="p-3 bg-neutral-900/60 rounded-[4px] border border-neutral-850"
               >
                 <div className="h-28 w-full flex items-end justify-between gap-1 pt-4 pb-2 px-2">
                   {recent7Weights.map((w, idx) => {
@@ -429,7 +429,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                       <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
                         <span className="text-[9px] font-mono text-neutral-400">{w.weightKg}</span>
                         <div 
-                          className="w-full max-w-[24px] bg-white rounded-none-t transition-all duration-300"
+                          className="w-full max-w-[24px] bg-white rounded-[4px]-t transition-all duration-300"
                           style={{ height: `${pct}%` }}
                         />
                         <span className="text-[9px] font-mono text-neutral-400">D{idx + 1}</span>
@@ -439,7 +439,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="p-4 rounded-none bg-neutral-900 border border-neutral-800 text-center text-xs text-neutral-400">
+              <div className="p-4 rounded-[4px] bg-neutral-900 border border-neutral-800 text-center text-xs text-neutral-400">
                 Log your weight daily to generate your 7-day moving average trend curve.
               </div>
             )}
@@ -458,12 +458,12 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 value={newWeightInput}
                 onChange={(e) => setNewWeightInput(e.target.value)}
                 placeholder="Enter weight in kg"
-                className="flex-1 min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-none px-3 py-2.5 text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white"
+                className="flex-1 min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-[4px] px-3 py-2.5 text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white"
               />
               <button
                 type="submit"
                 aria-label={weightSavedNotice ? 'Weight saved' : 'Save weight entry'}
-                className="min-h-[44px] px-4 py-2.5 rounded-none bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-white"
+                className="min-h-[44px] px-4 py-2.5 rounded-[4px] bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-white"
               >
                 {weightSavedNotice ? 'Saved ✓' : 'Save Weight'}
               </button>
@@ -473,7 +473,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* Goal Timeline Projection & Discipline Warning */}
           <section 
             aria-labelledby="timeline-projection-title"
-            className="rounded-none bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
+            className="rounded-[4px] bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -488,7 +488,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
             </div>
 
             <div className="grid grid-cols-2 gap-3 text-left">
-              <div className="p-3 rounded-none bg-neutral-900 border border-neutral-800">
+              <div className="p-3 rounded-[4px] bg-neutral-900 border border-neutral-800">
                 <span className="text-[10px] text-neutral-400 uppercase font-bold block">Average Timeline</span>
                 <span className="text-sm font-black text-white font-mono mt-0.5 block">
                   {timeline.mode === 'maintenance' ? '0 Weeks' : `~${timeline.averageWeeks} Wks`}
@@ -498,10 +498,10 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 </span>
               </div>
 
-              <div className="p-3 rounded-none bg-neutral-900 border border-neutral-750">
+              <div className="p-3 rounded-[4px] bg-neutral-900 border border-neutral-750">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-white uppercase font-bold">Optimal Rate</span>
-                  <span className="text-[8px] bg-white text-black font-bold px-1 rounded-none">FAST</span>
+                  <span className="text-[8px] bg-white text-black font-bold px-1 rounded-[4px]">FAST</span>
                 </div>
                 <span className="text-sm font-black text-white font-mono mt-0.5 block">
                   {timeline.mode === 'maintenance' ? '0 Weeks' : `~${timeline.optimalWeeks} Wks`}
@@ -515,7 +515,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
             {/* Discipline Warning */}
             <div 
               role="alert"
-              className="p-3 rounded-none bg-black border border-neutral-750 space-y-1"
+              className="p-3 rounded-[4px] bg-black border border-neutral-750 space-y-1"
             >
               <div className="flex items-center gap-1.5 text-white font-bold text-[10px] uppercase">
                 <AlertTriangle className="w-3.5 h-3.5 text-white" aria-hidden="true" />
@@ -530,7 +530,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* Actionable Weekly Insights */}
           <section 
             aria-labelledby="weekly-review-title"
-            className="rounded-none bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
+            className="rounded-[4px] bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
           >
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-white" aria-hidden="true" />
@@ -541,7 +541,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
             <div className="space-y-2">
               {report.actionableInsights.map((insight, idx) => (
-                <div key={idx} className="p-3 rounded-none bg-neutral-900 border border-neutral-850 text-xs text-neutral-300 leading-relaxed">
+                <div key={idx} className="p-3 rounded-[4px] bg-neutral-900 border border-neutral-850 text-xs text-neutral-300 leading-relaxed">
                   {insight}
                 </div>
               ))}
@@ -560,7 +560,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           aria-labelledby="subtab-history"
           className="space-y-4 animate-fadeIn"
         >
-          <div className="rounded-none bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-2">
+          <div className="rounded-[4px] bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-2">
             <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-white" aria-hidden="true" />
               <h3 className="text-base font-bold text-white tracking-tight">
@@ -593,7 +593,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
               return (
                 <article
                   key={item.dateStr}
-                  className={`rounded-none border p-4 transition-all duration-200 space-y-3.5 ${
+                  className={`rounded-[4px] border p-4 transition-all duration-200 space-y-3.5 ${
                     isSelected 
                       ? 'bg-neutral-950 border-white shadow-lg' 
                       : 'bg-neutral-950 border-neutral-800 hover:border-neutral-700'
@@ -604,12 +604,12 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
                         {isToday && (
-                          <span className="px-2 py-0.5 rounded-none text-[9px] font-bold bg-white text-black font-mono">
+                          <span className="px-2 py-0.5 rounded-[4px] text-[9px] font-bold bg-white text-black font-mono">
                             TODAY
                           </span>
                         )}
                         {isYesterday && (
-                          <span className="px-2 py-0.5 rounded-none text-[9px] font-bold border border-neutral-700 bg-neutral-900 text-neutral-300 font-mono">
+                          <span className="px-2 py-0.5 rounded-[4px] text-[9px] font-bold border border-neutral-700 bg-neutral-900 text-neutral-300 font-mono">
                             YESTERDAY
                           </span>
                         )}
@@ -625,12 +625,12 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
 
                     <div className="flex items-center gap-1.5">
                       {item.hasInputs ? (
-                        <span className="px-2 py-0.5 rounded-none text-[9px] font-mono font-bold bg-neutral-900 border border-neutral-750 text-neutral-200 flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-[4px] text-[9px] font-mono font-bold bg-neutral-900 border border-neutral-750 text-neutral-200 flex items-center gap-1">
                           <Check className="w-3 h-3 text-white" aria-hidden="true" />
                           <span>Logged</span>
                         </span>
                       ) : (
-                        <span className="px-2 py-0.5 rounded-none text-[9px] font-mono text-neutral-400 border border-neutral-850 bg-neutral-900/60">
+                        <span className="px-2 py-0.5 rounded-[4px] text-[9px] font-mono text-neutral-400 border border-neutral-850 bg-neutral-900/60">
                           0 Inputs (Rest)
                         </span>
                       )}
@@ -640,7 +640,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                   {/* Daily Records Grid: Workout, Food, Water, Steps, Weight */}
                   <div className="grid grid-cols-2 gap-2 text-xs font-mono">
                     {/* 1. Workout Record */}
-                    <div className="p-2.5 rounded-none bg-neutral-900/80 border border-neutral-850 space-y-1">
+                    <div className="p-2.5 rounded-[4px] bg-neutral-900/80 border border-neutral-850 space-y-1">
                       <div className="flex items-center gap-1.5 text-neutral-400 text-[10px] font-bold uppercase">
                         <Dumbbell className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
                         <span>Workout</span>
@@ -662,7 +662,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                     </div>
 
                     {/* 2. Food & Fuel Record */}
-                    <div className="p-2.5 rounded-none bg-neutral-900/80 border border-neutral-850 space-y-1">
+                    <div className="p-2.5 rounded-[4px] bg-neutral-900/80 border border-neutral-850 space-y-1">
                       <div className="flex items-center gap-1.5 text-neutral-400 text-[10px] font-bold uppercase">
                         <Utensils className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
                         <span>Fuel & Macros</span>
@@ -684,7 +684,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                     </div>
 
                     {/* 3. Steps & Cardio Record */}
-                    <div className="p-2.5 rounded-none bg-neutral-900/80 border border-neutral-850 space-y-1">
+                    <div className="p-2.5 rounded-[4px] bg-neutral-900/80 border border-neutral-850 space-y-1">
                       <div className="flex items-center gap-1.5 text-neutral-400 text-[10px] font-bold uppercase">
                         <Footprints className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
                         <span>Steps & Cardio</span>
@@ -706,7 +706,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                     </div>
 
                     {/* 4. Hydration & Weight Record */}
-                    <div className="p-2.5 rounded-none bg-neutral-900/80 border border-neutral-850 space-y-1">
+                    <div className="p-2.5 rounded-[4px] bg-neutral-900/80 border border-neutral-850 space-y-1">
                       <div className="flex items-center gap-1.5 text-neutral-400 text-[10px] font-bold uppercase">
                         <Droplets className="w-3.5 h-3.5 text-neutral-300" aria-hidden="true" />
                         <span>Fluid & Weight</span>
@@ -730,7 +730,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                       onNavigateTab('today');
                     }}
                     aria-label={`Open full dashboard and workout details for ${formattedDate}`}
-                    className={`min-h-[44px] w-full py-2.5 px-3 rounded-none font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white ${
+                    className={`min-h-[44px] w-full py-2.5 px-3 rounded-[4px] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white ${
                       isSelected
                         ? 'bg-neutral-800 text-white border border-neutral-700'
                         : 'bg-white text-black hover:bg-neutral-200'
@@ -759,11 +759,11 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* Manual Daily Steps (iOS HealthKit Bypass) */}
           <section 
             aria-labelledby="daily-steps-title"
-            className="rounded-none bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
+            className="rounded-[4px] bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-none bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white">
+                <div className="w-8 h-8 rounded-[4px] bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white">
                   <Footprints className="w-4 h-4 text-white" aria-hidden="true" />
                 </div>
                 <div>
@@ -775,7 +775,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
               </div>
 
               {currentStepCount > 0 && (
-                <span className="text-xs font-bold text-white font-mono bg-neutral-900 px-2.5 py-1 rounded-none border border-neutral-750">
+                <span className="text-xs font-bold text-white font-mono bg-neutral-900 px-2.5 py-1 rounded-[4px] border border-neutral-750">
                   {currentStepCount.toLocaleString()} steps
                 </span>
               )}
@@ -794,12 +794,12 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 value={stepInputStr}
                 onChange={(e) => setStepInputStr(e.target.value)}
                 placeholder="Enter step count (e.g. 8500)"
-                className="flex-1 min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-none px-3 py-2.5 text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white"
+                className="flex-1 min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-[4px] px-3 py-2.5 text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white"
               />
               <button
                 type="submit"
                 aria-label={stepSavedNotice ? 'Steps saved' : 'Save steps'}
-                className="min-h-[44px] px-4 py-2.5 rounded-none bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-white"
+                className="min-h-[44px] px-4 py-2.5 rounded-[4px] bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-white"
               >
                 {stepSavedNotice ? 'Saved ✓' : 'Save Steps'}
               </button>
@@ -812,7 +812,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 type="button"
                 onClick={() => handleAddStepIncrement(1000)}
                 aria-label="Add 1000 steps"
-                className="min-h-[44px] px-3 py-1.5 rounded-none bg-neutral-900 hover:bg-neutral-850 text-white text-xs font-bold border border-neutral-800 focus:outline-none focus:ring-2 focus:ring-white"
+                className="min-h-[44px] px-3 py-1.5 rounded-[4px] bg-neutral-900 hover:bg-neutral-850 text-white text-xs font-bold border border-neutral-800 focus:outline-none focus:ring-2 focus:ring-white"
               >
                 +1,000
               </button>
@@ -820,7 +820,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 type="button"
                 onClick={() => handleAddStepIncrement(2500)}
                 aria-label="Add 2500 steps"
-                className="min-h-[44px] px-3 py-1.5 rounded-none bg-neutral-900 hover:bg-neutral-850 text-white text-xs font-bold border border-neutral-800 focus:outline-none focus:ring-2 focus:ring-white"
+                className="min-h-[44px] px-3 py-1.5 rounded-[4px] bg-neutral-900 hover:bg-neutral-850 text-white text-xs font-bold border border-neutral-800 focus:outline-none focus:ring-2 focus:ring-white"
               >
                 +2,500
               </button>
@@ -828,7 +828,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 type="button"
                 onClick={() => handleAddStepIncrement(5000)}
                 aria-label="Add 5000 steps"
-                className="min-h-[44px] px-3 py-1.5 rounded-none bg-neutral-900 hover:bg-neutral-850 text-white text-xs font-bold border border-neutral-800 focus:outline-none focus:ring-2 focus:ring-white"
+                className="min-h-[44px] px-3 py-1.5 rounded-[4px] bg-neutral-900 hover:bg-neutral-850 text-white text-xs font-bold border border-neutral-800 focus:outline-none focus:ring-2 focus:ring-white"
               >
                 +5,000
               </button>
@@ -843,7 +843,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* Log Cardio Movement Form (MET Engine) */}
           <section 
             aria-labelledby="cardio-movement-heading"
-            className="rounded-none bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
+            className="rounded-[4px] bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -870,7 +870,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                     setSelectedType(t);
                     setDurationStr('');
                   }}
-                  className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-none px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-white"
+                  className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-[4px] px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-white"
                 >
                   {Object.values(ACTIVITY_MET_TABLE).map((item) => (
                     <option key={item.type} value={item.type}>
@@ -894,7 +894,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                     value={durationStr}
                     onChange={(e) => setDurationStr(e.target.value)}
                     placeholder="Minutes (e.g. 30)"
-                    className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-none px-3 py-2 text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white text-center"
+                    className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-[4px] px-3 py-2 text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-white text-center"
                     required
                   />
                 </div>
@@ -913,13 +913,13 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                     onChange={(e) => setDistanceStr(e.target.value)}
                     placeholder="km (optional)"
                     disabled={!currentMeta.supportsDistance}
-                    className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-none px-3 py-2 text-xs font-bold text-white placeholder-neutral-500 disabled:opacity-30 focus:outline-none focus:border-white text-center"
+                    className="w-full min-h-[44px] bg-neutral-900 border border-neutral-750 rounded-[4px] px-3 py-2 text-xs font-bold text-white placeholder-neutral-500 disabled:opacity-30 focus:outline-none focus:border-white text-center"
                   />
                 </div>
               </div>
 
               {/* Calculated Calories Live Preview */}
-              <div className="p-3 rounded-none bg-neutral-900 border border-neutral-800 flex items-center justify-between font-mono">
+              <div className="p-3 rounded-[4px] bg-neutral-900 border border-neutral-800 flex items-center justify-between font-mono">
                 <span className="text-xs text-neutral-400">
                   {currentMeta.met} MET × {currentEffectiveWeight}kg × ({parsedDuration}/60h)
                 </span>
@@ -932,7 +932,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 type="submit"
                 disabled={parsedDuration <= 0}
                 aria-label={`Log ${currentMeta.label} session`}
-                className="min-h-[48px] w-full py-3.5 rounded-none bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-[0.98] disabled:opacity-40 flex items-center justify-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-white"
+                className="min-h-[48px] w-full py-3.5 rounded-[4px] bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-[0.98] disabled:opacity-40 flex items-center justify-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-white"
               >
                 <Plus className="w-4 h-4" aria-hidden="true" />
                 <span>Log Cardio Session</span>
@@ -943,7 +943,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* Today's Logged Cardio Sessions */}
           <section 
             aria-labelledby="cardio-diary-title"
-            className="rounded-none bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
+            className="rounded-[4px] bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3"
           >
             <div className="flex items-center justify-between">
               <h4 id="cardio-diary-title" className="text-xs font-bold text-white uppercase tracking-wider">
@@ -954,7 +954,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                   type="button"
                   onClick={() => setShowClearConfirm(true)}
                   aria-label="Clear all cardio sessions logged for this day"
-                  className="min-h-[44px] text-xs text-neutral-400 hover:text-white flex items-center gap-1 font-mono p-2 focus:outline-none focus:ring-2 focus:ring-white rounded-none"
+                  className="min-h-[44px] text-xs text-neutral-400 hover:text-white flex items-center gap-1 font-mono p-2 focus:outline-none focus:ring-2 focus:ring-white rounded-[4px]"
                 >
                   <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
                   <span>Start Fresh</span>
@@ -966,13 +966,13 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
               <div 
                 role="alertdialog"
                 aria-labelledby="clear-cardio-title"
-                className="p-4 rounded-none bg-neutral-900 border border-neutral-700 space-y-2 animate-fadeIn font-sans"
+                className="p-4 rounded-[4px] bg-neutral-900 border border-neutral-700 space-y-2 animate-fadeIn font-sans"
               >
                 <p id="clear-cardio-title" className="text-xs text-white font-bold">Clear all cardio logged for this day?</p>
                 <div className="flex justify-end gap-2 pt-1">
                   <button
                     onClick={() => setShowClearConfirm(false)}
-                    className="min-h-[44px] px-3.5 py-1.5 rounded-none border border-neutral-750 text-xs text-neutral-300"
+                    className="min-h-[44px] px-3.5 py-1.5 rounded-[4px] border border-neutral-750 text-xs text-neutral-300"
                   >
                     Cancel
                   </button>
@@ -981,7 +981,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                       onClearActivities();
                       setShowClearConfirm(false);
                     }}
-                    className="min-h-[44px] px-4 py-1.5 rounded-none bg-white text-black font-bold text-xs"
+                    className="min-h-[44px] px-4 py-1.5 rounded-[4px] bg-white text-black font-bold text-xs"
                   >
                     Confirm Clear
                   </button>
@@ -990,7 +990,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
             )}
 
             {activities.length === 0 ? (
-              <div className="p-6 text-center text-neutral-400 font-sans border border-dashed border-neutral-800 rounded-none space-y-2">
+              <div className="p-6 text-center text-neutral-400 font-sans border border-dashed border-neutral-800 rounded-[4px] space-y-2">
                 <Flame className="w-8 h-8 mx-auto text-neutral-600" aria-hidden="true" />
                 <p className="text-xs font-bold text-neutral-200">No Cardio Logged for this Date</p>
                 <p className="text-[11px] text-neutral-400 max-w-xs mx-auto">
@@ -1006,7 +1006,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                 {activities.map((act) => (
                   <div key={act.id} role="listitem" className="py-2.5 flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-none bg-neutral-900 border border-neutral-800 flex items-center justify-center shrink-0">
+                      <div className="w-7 h-7 rounded-[4px] bg-neutral-900 border border-neutral-800 flex items-center justify-center shrink-0">
                         {getActivityIcon(act.category)}
                       </div>
                       <div>
@@ -1024,7 +1024,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
                       <button
                         onClick={() => onDeleteActivity(act.id)}
                         aria-label={`Delete ${act.title} session`}
-                        className="min-h-[44px] min-w-[44px] flex items-center justify-center text-neutral-400 hover:text-white p-2 rounded-none focus:outline-none focus:ring-2 focus:ring-white"
+                        className="min-h-[44px] min-w-[44px] flex items-center justify-center text-neutral-400 hover:text-white p-2 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-white"
                       >
                         <Trash2 className="w-4 h-4" aria-hidden="true" />
                       </button>
@@ -1050,7 +1050,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* Offline Database Export */}
           <section 
             aria-labelledby="offline-database-heading"
-            className="rounded-none bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
+            className="rounded-[4px] bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-4"
           >
             <div className="flex items-center gap-2">
               <Database className="w-4 h-4 text-white" aria-hidden="true" />
@@ -1066,7 +1066,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
             <button
               onClick={onExportBackup}
               aria-label="Download complete offline backup file in JSON format"
-              className="min-h-[48px] w-full py-3.5 rounded-none bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-white"
+              className="min-h-[48px] w-full py-3.5 rounded-[4px] bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-white"
             >
               <Database className="w-4 h-4" aria-hidden="true" />
               <span>Download Offline Backup (JSON)</span>
@@ -1076,18 +1076,18 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
           {/* Profile Metrics Summary */}
           <section 
             aria-labelledby="profile-metrics-heading"
-            className="rounded-none bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3 font-mono"
+            className="rounded-[4px] bg-neutral-950 border border-neutral-800 p-5 shadow-sm space-y-3 font-mono"
           >
             <h4 id="profile-metrics-heading" className="text-xs font-bold text-white uppercase tracking-wider font-sans">
               User Profile Metrics
             </h4>
 
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-3 rounded-none bg-neutral-900 border border-neutral-800">
+              <div className="p-3 rounded-[4px] bg-neutral-900 border border-neutral-800">
                 <span className="text-[10px] text-neutral-400 uppercase block">Gender & Height</span>
                 <span className="text-white font-bold block mt-0.5">{profile.gender} • {profile.heightCm} cm</span>
               </div>
-              <div className="p-3 rounded-none bg-neutral-900 border border-neutral-800">
+              <div className="p-3 rounded-[4px] bg-neutral-900 border border-neutral-800">
                 <span className="text-[10px] text-neutral-400 uppercase block">Target Corridor</span>
                 <span className="text-white font-bold block mt-0.5">{profile.targetWeightMinKg}–{profile.targetWeightMaxKg} kg</span>
               </div>
@@ -1096,7 +1096,7 @@ export const ProgressTab: React.FC<ProgressTabProps> = ({
             <button
               onClick={onOpenGuide}
               aria-label="Open profile setup guide and metric preferences"
-              className="min-h-[44px] w-full py-3 rounded-none border border-neutral-750 bg-neutral-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-neutral-850 transition-all flex items-center justify-center gap-2 font-sans focus:outline-none focus:ring-2 focus:ring-white"
+              className="min-h-[44px] w-full py-3 rounded-[4px] border border-neutral-750 bg-neutral-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-neutral-850 transition-all flex items-center justify-center gap-2 font-sans focus:outline-none focus:ring-2 focus:ring-white"
             >
               <Info className="w-4 h-4" aria-hidden="true" />
               <span>Open Profile Setup Guide</span>

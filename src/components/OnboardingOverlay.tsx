@@ -68,11 +68,11 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/95 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-sm rounded-none bg-black border border-neutral-700 p-4 text-left relative shadow-2xl max-h-[92vh] flex flex-col font-mono">
+      <div className="w-full max-w-sm rounded-[4px] bg-black border border-neutral-700 p-4 text-left relative shadow-2xl max-h-[92vh] flex flex-col font-mono">
         {/* Top Header */}
         <div className="flex items-center justify-between pb-2.5 border-b border-neutral-800 shrink-0">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-black bg-white px-1.5 py-0.2 rounded-none">
+            <span className="text-[10px] font-bold text-black bg-white px-1.5 py-0.2 rounded-[4px]">
               USER PROFILING
             </span>
             <span className="text-[11px] text-neutral-400">
@@ -93,7 +93,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
           {[0, 1, 2, 3].map((s) => (
             <div
               key={s}
-              className={`h-1 rounded-none transition-all ${
+              className={`h-1 rounded-[4px] transition-all ${
                 s === step ? 'bg-white' : s < step ? 'bg-neutral-500' : 'bg-neutral-850'
               }`}
             />
@@ -123,7 +123,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                   <button
                     type="button"
                     onClick={() => setGender('male')}
-                    className={`py-1.5 rounded-none text-xs font-bold border transition-all ${
+                    className={`py-1.5 rounded-[4px] text-xs font-bold border transition-all ${
                       gender === 'male' 
                         ? 'bg-white text-black border-white' 
                         : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
@@ -134,7 +134,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                   <button
                     type="button"
                     onClick={() => setGender('female')}
-                    className={`py-1.5 rounded-none text-xs font-bold border transition-all ${
+                    className={`py-1.5 rounded-[4px] text-xs font-bold border transition-all ${
                       gender === 'female' 
                         ? 'bg-white text-black border-white' 
                         : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
@@ -157,7 +157,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                     value={heightStr}
                     onChange={(e) => setHeightStr(e.target.value)}
                     placeholder="e.g. 178"
-                    className="w-full bg-neutral-900 border border-neutral-750 rounded-none px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white transition-colors"
+                    className="w-full bg-neutral-900 border border-neutral-750 rounded-[4px] px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white transition-colors"
                   />
                 </div>
                 <div>
@@ -170,7 +170,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                     value={currentWeightStr}
                     onChange={(e) => setCurrentWeightStr(e.target.value)}
                     placeholder="e.g. 76.4"
-                    className="w-full bg-neutral-900 border border-neutral-750 rounded-none px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white transition-colors"
+                    className="w-full bg-neutral-900 border border-neutral-750 rounded-[4px] px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white transition-colors"
                   />
                 </div>
               </div>
@@ -186,19 +186,19 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                   value={desiredWeightStr}
                   onChange={(e) => setDesiredWeightStr(e.target.value)}
                   placeholder="e.g. 76.5"
-                  className="w-full bg-neutral-900 border border-neutral-750 rounded-none px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white transition-colors"
+                  className="w-full bg-neutral-900 border border-neutral-750 rounded-[4px] px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-white transition-colors"
                 />
               </div>
 
               {/* BMI Engine Output Card */}
-              <div className="p-2.5 rounded-none bg-neutral-900 border border-neutral-800 space-y-1.5">
+              <div className="p-2.5 rounded-[4px] bg-neutral-900 border border-neutral-800 space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-neutral-400">Current BMI:</span>
                   <span className="text-white font-bold">{bmiReport.currentBmi} kg/m²</span>
                 </div>
                 <div className="flex items-center justify-between text-[11px]">
                   <span className="text-neutral-400">Status:</span>
-                  <span className="px-1.5 py-0.2 rounded-none border border-neutral-700 bg-black text-white font-bold text-[10px]">
+                  <span className="px-1.5 py-0.2 rounded-[4px] border border-neutral-700 bg-black text-white font-bold text-[10px]">
                     {bmiReport.classification}
                   </span>
                 </div>
@@ -231,7 +231,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
               {/* Timeline Cards */}
               <div className="grid grid-cols-2 gap-2">
                 {/* Average Timeline */}
-                <div className="p-2.5 rounded-none bg-neutral-900 border border-neutral-800 text-left">
+                <div className="p-2.5 rounded-[4px] bg-neutral-900 border border-neutral-800 text-left">
                   <div className="text-[9px] text-neutral-400 uppercase font-bold">
                     Average Timeline
                   </div>
@@ -247,10 +247,10 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                 </div>
 
                 {/* Optimal Timeline */}
-                <div className="p-2.5 rounded-none bg-neutral-900 border border-neutral-700 text-left">
+                <div className="p-2.5 rounded-[4px] bg-neutral-900 border border-neutral-700 text-left">
                   <div className="text-[9px] text-white uppercase font-bold flex items-center justify-between">
                     <span>Optimal Timeline</span>
-                    <span className="text-[8px] bg-white text-black px-1 rounded-none">FAST</span>
+                    <span className="text-[8px] bg-white text-black px-1 rounded-[4px]">FAST</span>
                   </div>
                   <div className="text-sm font-black text-white mt-1">
                     {timeline.mode === 'maintenance' ? '0 Weeks' : `~${timeline.optimalWeeks} Weeks`}
@@ -265,7 +265,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
               </div>
 
               {/* CRITICAL DISCIPLINE WARNING BOX */}
-              <div className="p-3 rounded-none bg-neutral-950 border border-neutral-700 space-y-1 text-left">
+              <div className="p-3 rounded-[4px] bg-neutral-950 border border-neutral-700 space-y-1 text-left">
                 <div className="flex items-center gap-1.5 text-white font-bold text-xs uppercase tracking-tight">
                   <AlertTriangle className="w-3.5 h-3.5 text-white shrink-0" />
                   <span>DISCIPLINE PROTOCOL</span>
@@ -301,7 +301,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                       key={g.id}
                       type="button"
                       onClick={() => setSelectedGoal(g.id)}
-                      className={`w-full p-2 rounded-none border text-left transition-all ${
+                      className={`w-full p-2 rounded-[4px] border text-left transition-all ${
                         isSelected
                           ? 'bg-white text-black border-white'
                           : 'bg-neutral-900 border-neutral-800 text-neutral-300 hover:border-neutral-700'
@@ -340,21 +340,21 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                   <button
                     type="button"
                     onClick={() => setTwoWeekTemplate([...ROTA_PRESETS.fourOnThreeOff])}
-                    className="py-1 px-1 rounded-none text-[10px] border border-neutral-750 bg-neutral-900 hover:text-white"
+                    className="py-1 px-1 rounded-[4px] text-[10px] border border-neutral-750 bg-neutral-900 hover:text-white"
                   >
                     4-on / 3-off
                   </button>
                   <button
                     type="button"
                     onClick={() => setTwoWeekTemplate([...ROTA_PRESETS.alternatingFourThree])}
-                    className="py-1 px-1 rounded-none text-[10px] border border-neutral-750 bg-neutral-900 hover:text-white"
+                    className="py-1 px-1 rounded-[4px] text-[10px] border border-neutral-750 bg-neutral-900 hover:text-white"
                   >
                     4-3 / 3-4
                   </button>
                   <button
                     type="button"
                     onClick={() => setTwoWeekTemplate([...ROTA_PRESETS.panama223])}
-                    className="py-1 px-1 rounded-none text-[10px] border border-neutral-750 bg-neutral-900 hover:text-white"
+                    className="py-1 px-1 rounded-[4px] text-[10px] border border-neutral-750 bg-neutral-900 hover:text-white"
                   >
                     2-2-3 Panama
                   </button>
@@ -362,7 +362,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
               </div>
 
               {/* 14-Day Strip */}
-              <div className="p-2.5 rounded-none bg-neutral-900 border border-neutral-800 space-y-2">
+              <div className="p-2.5 rounded-[4px] bg-neutral-900 border border-neutral-800 space-y-2">
                 <div>
                   <div className="text-[9px] text-neutral-500 uppercase mb-1">Week 1 (Days 1–7):</div>
                   <div className="grid grid-cols-7 gap-1 text-center">
@@ -371,7 +371,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                         key={i}
                         type="button"
                         onClick={() => handleToggleDay(i)}
-                        className={`p-1 rounded-none text-[9px] font-bold border transition-all ${
+                        className={`p-1 rounded-[4px] text-[9px] font-bold border transition-all ${
                           shift === 'off'
                             ? 'bg-black text-neutral-500 border-neutral-800'
                             : shift === 'night_12h'
@@ -394,7 +394,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                         key={i + 7}
                         type="button"
                         onClick={() => handleToggleDay(i + 7)}
-                        className={`p-1 rounded-none text-[9px] font-bold border transition-all ${
+                        className={`p-1 rounded-[4px] text-[9px] font-bold border transition-all ${
                           shift === 'off'
                             ? 'bg-black text-neutral-500 border-neutral-800'
                             : shift === 'night_12h'
@@ -424,7 +424,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                 </p>
               </div>
 
-              <div className="p-3 rounded-none bg-neutral-900 border border-neutral-800 space-y-2 text-xs">
+              <div className="p-3 rounded-[4px] bg-neutral-900 border border-neutral-800 space-y-2 text-xs">
                 <div className="flex justify-between">
                   <span className="text-neutral-400">Gender / Height:</span>
                   <span className="text-white font-bold uppercase">{gender} / {parsedHeight} cm</span>
@@ -448,7 +448,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
               </div>
 
               {/* Warning reminder */}
-              <div className="p-2.5 rounded-none bg-neutral-950 border border-neutral-800 text-[10px] text-neutral-400 leading-relaxed font-sans">
+              <div className="p-2.5 rounded-[4px] bg-neutral-950 border border-neutral-800 text-[10px] text-neutral-400 leading-relaxed font-sans">
                 <span className="text-white font-bold font-mono">DISCIPLINE NOTE:</span> Optimal rates require 100% adherence to daily protein and volume prescriptions.
               </div>
             </div>
@@ -460,7 +460,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
           {step > 0 ? (
             <button
               onClick={() => setStep(step - 1)}
-              className="py-1.5 px-3 rounded-none border border-neutral-800 text-neutral-400 hover:text-white text-xs font-semibold flex items-center gap-1 active:scale-95"
+              className="py-1.5 px-3 rounded-[4px] border border-neutral-800 text-neutral-400 hover:text-white text-xs font-semibold flex items-center gap-1 active:scale-95"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
               <span>Back</span>
@@ -477,7 +477,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
           {step < 3 ? (
             <button
               onClick={() => setStep(step + 1)}
-              className="py-1.5 px-4 rounded-none bg-white text-black hover:bg-neutral-200 text-xs font-bold tracking-tight flex items-center gap-1 active:scale-95"
+              className="py-1.5 px-4 rounded-[4px] bg-white text-black hover:bg-neutral-200 text-xs font-bold tracking-tight flex items-center gap-1 active:scale-95"
             >
               <span>Next</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -485,7 +485,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
           ) : (
             <button
               onClick={handleFinish}
-              className="py-1.5 px-4 rounded-none bg-white text-black hover:bg-neutral-200 text-xs font-bold tracking-tight flex items-center gap-1 active:scale-95"
+              className="py-1.5 px-4 rounded-[4px] bg-white text-black hover:bg-neutral-200 text-xs font-bold tracking-tight flex items-center gap-1 active:scale-95"
             >
               <span>Save & Launch</span>
               <Check className="w-3.5 h-3.5" />
