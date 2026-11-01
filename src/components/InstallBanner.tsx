@@ -24,25 +24,25 @@ export const InstallBanner: React.FC = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="mx-1 mb-4 rounded-2xl bg-stone-50 border border-stone-200 p-3.5 text-left relative animate-slideUp">
+    <div className="mx-1 mb-4 rounded-2xl bg-stone-50 dark:bg-stone-900/90 border border-stone-200 dark:border-white/15 p-3.5 text-left relative animate-slideUp">
       <button 
         onClick={handleDismiss}
-        className="absolute top-2.5 right-2.5 text-stone-400 hover:text-stone-900 p-1"
+        className="absolute top-2.5 right-2.5 text-stone-400 hover:text-stone-900 dark:hover:text-white p-1"
         aria-label="Dismiss banner"
       >
         <X className="w-4 h-4" />
       </button>
 
       <div className="flex items-start gap-3 pr-6">
-        <div className="w-8 h-8 rounded-2xl bg-stone-50 border border-stone-200 text-stone-900 flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded-2xl bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 text-stone-900 dark:text-white flex items-center justify-center shrink-0">
           <Smartphone className="w-4 h-4" />
         </div>
         <div>
-          <h4 className="text-xs font-bold text-stone-900 font-mono uppercase tracking-wide">
+          <h4 className="text-xs font-bold text-stone-900 dark:text-white font-mono uppercase tracking-wide">
             iOS Safari Fullscreen PWA
           </h4>
-          <p className="text-[11px] text-stone-600 mt-1 leading-relaxed">
-            For distraction-free gym training without URL bars: Tap <Share className="w-3.5 h-3.5 inline mx-0.5 text-stone-900" /> in Safari, then select <span className="font-semibold text-stone-900">"Add to Home Screen"</span> <PlusSquare className="w-3.5 h-3.5 inline mx-0.5 text-stone-900" />.
+          <p className="text-[11px] text-stone-600 dark:text-stone-300 mt-1 leading-relaxed">
+            For distraction-free gym training without URL bars: Tap <Share className="w-3.5 h-3.5 inline mx-0.5 text-stone-900 dark:text-white" /> in Safari, then select <span className="font-semibold text-stone-900 dark:text-white">"Add to Home Screen"</span> <PlusSquare className="w-3.5 h-3.5 inline mx-0.5 text-stone-900 dark:text-white" />.
           </p>
         </div>
       </div>

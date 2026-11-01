@@ -13,7 +13,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '8-10',
     defaultRestSecs: 90,
     tips: 'Set bench to 30 degrees. Retract scapulae, drive elbows slightly inward (45°), press up and touch dumbbell bells together at top without clashing.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Press/0.jpg',
     formPoints: [
       'Angle bench to 30° to target upper clavicular chest fibers.',
       'Tuck elbows 45° to protect rotator cuffs; avoid flaring.',
@@ -37,7 +37,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '8-12',
     defaultRestSecs: 90,
     tips: 'Maintain slight arch in lower back, drive through feet, full stretch at bottom without dropping elbows too low.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bench_Press/0.jpg',
     formPoints: [
       'Plant feet flat and pack shoulder blades firmly into the bench.',
       'Lower dumbbells until upper arms break parallel with your chest.',
@@ -61,7 +61,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '12-15',
     defaultRestSecs: 60,
     tips: 'Set pulley at wrist height. Lean away slightly, raise arm in scapular plane (15° forward) to parallel. Zero swinging or trap shrugging.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Lateral_Raise/0.jpg',
     formPoints: [
       'Set cable height at wrist level and lean slightly away from the stack.',
       'Lead with your elbow in the scapular plane (15° forward of body).',
@@ -84,7 +84,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '10-12',
     defaultRestSecs: 60,
     tips: 'Slight bend in elbows locked throughout movement. Bring hands together in hugging motion, hard peak contraction for 1 second.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg',
     formPoints: [
       'Maintain a soft bend in elbows; imagine hugging a giant barrel.',
       'Keep chest elevated and shoulders pinned back throughout.',
@@ -106,7 +106,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '10-12',
     defaultRestSecs: 60,
     tips: 'Pin elbows to ribcage. Push down and spread rope ends apart at bottom to maximize lateral head recruitment.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown_-_Rope_Attachment/0.jpg',
     formPoints: [
       'Glue elbows tight to your ribcage; do not let them drift forward.',
       'Spread rope ends outward at full extension for peak lateral head tension.',
@@ -128,7 +128,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '10-14',
     defaultRestSecs: 60,
     tips: 'Pulley set at hip height. Face away, extend arms straight forward/upward, deep stretch behind neck.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Rope_Overhead_Triceps_Extension/0.jpg',
     formPoints: [
       'Position pulley around hip height and lean torso forward 30°.',
       'Allow hands to travel behind head to achieve maximum tricep long-head stretch.',
@@ -152,7 +152,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '8-10',
     defaultRestSecs: 90,
     tips: 'Thumbless grip slightly wider than shoulders. Drive elbows down to hips, lean back 10-15 degrees max, pull bar to upper sternum.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1598971639058-fab3c3109a00?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Lat_Pulldown/0.jpg',
     formPoints: [
       'Grip slightly wider than shoulders and maintain a 15° slight lean.',
       'Initiate by pulling shoulder blades down before bending elbows.',
@@ -175,7 +175,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '8-10',
     defaultRestSecs: 90,
     tips: 'Chest pinned to pad completely eliminates lower back strain. Flare elbows 45-60 degrees, squeeze rhomboids and middle traps at top.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/T-Bar_Row_with_Handle/0.jpg',
     formPoints: [
       'Pin sternum to pad to take 100% of lower back spinal load away.',
       'Row with elbows flared 45-60° to recruit mid-traps and rhomboids.',
@@ -198,7 +198,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '10-12',
     defaultRestSecs: 60,
     tips: 'Opposite knee forward. Row to hip crest with elbow tracking tight to torso. Protricate scapula at full stretch.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_One-arm_Cable_Pulley_Rows/0.jpg',
     formPoints: [
       'Set cable at stomach height and kneel with opposite leg forward.',
       'Pull handle straight back toward hip crest, keeping elbow brushing ribs.',
@@ -220,7 +220,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '12-15',
     defaultRestSecs: 60,
     tips: 'Set pulley to eye height. Pull rope toward forehead while rotating knuckles backward so hands finish above elbows.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/0.jpg',
     formPoints: [
       'Set pulley at eye level using double rope attachment.',
       'Pull toward bridge of nose while externally rotating hands back.',
@@ -242,7 +242,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '10-12',
     defaultRestSecs: 60,
     tips: 'Bench at 45-60°. Arms hang straight down behind torso. Curl up while supinating (palms facing ceiling). Full stretch on long head.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1581009137042-c552e485697a?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Curl/0.jpg',
     formPoints: [
       'Set bench to 45-60°; let arms hang fully perpendicular to ground.',
       'Supinate wrists (turn pinkies up) as you curl toward shoulders.',
@@ -264,7 +264,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '10-12',
     defaultRestSecs: 60,
     tips: 'Thumbs pointed up throughout. Targets brachialis (pushes bicep peak up) and brachioradialis (forearm thickness).',
-    visualGifUrl: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hammer_Curls/0.jpg',
     formPoints: [
       'Maintain neutral palms-facing-in grip throughout entire range.',
       'Keep elbows pinned to sides; curl up until forearm touches bicep.',
@@ -288,7 +288,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '6-8',
     defaultRestSecs: 120,
     tips: 'Feet low on platform for maximal knee flexion. Back pinned to pad, descend below parallel. Control 3-second eccentric.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hack_Squat/0.jpg',
     formPoints: [
       'Position feet shoulder-width, lower on platform for quad emphasis.',
       'Keep lumbar spine flat against back pad throughout descent.',
@@ -312,7 +312,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '8-10',
     defaultRestSecs: 90,
     tips: 'Soft bend in knees locked in place. Push hips back as if trying to touch wall behind you. Stop when hips stop moving back (shin level).',
-    visualGifUrl: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg',
     formPoints: [
       'Maintain soft knee bend and push hips backward towards the wall.',
       'Keep weights skimming down your thighs and shins close to body.',
@@ -335,7 +335,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '12-15',
     defaultRestSecs: 60,
     tips: 'Align knee joint with machine pivot. Hold handles tight to lock pelvis into seat. 1-second pause at full extension.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Extensions/0.jpg',
     formPoints: [
       'Line up knee joints with the red pivot point axis of the machine.',
       'Hold handles firmly to pull your hips deep into the back pad.',
@@ -357,7 +357,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '10-12',
     defaultRestSecs: 60,
     tips: 'Seated positions place hamstrings in hip flexion (greater stretch & hypertrophy than lying curl). Lock thigh pad firmly.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/0.jpg',
     formPoints: [
       'Clamp thigh pad tightly to prevent hip elevation during the curl.',
       'Pull heels firmly towards glutes in a controlled arching motion.',
@@ -379,7 +379,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '10-12',
     defaultRestSecs: 60,
     tips: 'Knees straight to recruit gastrocnemius. Deep 2-second stretch at bottom, explode up onto big toe ball, hold peak for 1s.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Calf_Raises/0.jpg',
     formPoints: [
       'Keep knees locked straight to bias the gastrocnemius muscle.',
       'Sink heels deep into a 2-second dead-stop stretch at the bottom.',
@@ -401,7 +401,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '12-15',
     defaultRestSecs: 60,
     tips: 'Do not just swing legs. Posteriorly tilt pelvis—roll hips up toward ribcage so lower abs contract, not just hip flexors.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
     formPoints: [
       'Support forearms comfortably on pads and engage upper back.',
       'Curl pelvis upward toward your chest instead of just swinging legs.',
@@ -425,7 +425,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '60s',
     defaultRestSecs: 30,
     tips: 'Roll upper back, pause on stiff segments and extend backward over roller without arching lower back. Ideal after long shift sitting/standing.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Upper_Back_Stretch/0.jpg',
     formPoints: [
       'Place roller beneath upper shoulder blade region, hands cradling head.',
       'Gently extend backwards over roller without arching lumbar spine.',
@@ -447,7 +447,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '45s/side',
     defaultRestSecs: 30,
     tips: 'Tuck tailbone (posterior pelvic tilt), squeeze glute of rear leg, shift hips slightly forward until deep stretch is felt in anterior hip/thigh.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Intermediate_Hip_Flexor_and_Quad_Stretch/0.jpg',
     formPoints: [
       'Take a half-kneeling stance and tuck tailbone under (posterior tilt).',
       'Actively squeeze rear glute to release tension in front hip flexor.',
@@ -469,7 +469,7 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
     defaultReps: '15-20',
     defaultRestSecs: 45,
     tips: 'Continuous movement circuit to drive blood flow without accumulating nervous system fatigue after a draining 12h shift.',
-    visualGifUrl: 'https://images.unsplash.com/photo-1598971639058-fab3c3109a00?auto=format&fit=crop&w=700&q=80',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
     formPoints: [
       'Perform pushups with elbows tucked 45° and core braced solid.',
       'Transition immediately to band pull-aparts to reset posture.',
@@ -479,5 +479,71 @@ export const EXERCISE_DATABASE: Record<string, ExerciseDefinition> = {
       { name: 'Dumbbell Metabolic Pump', equipment: 'Light Dumbbells', cue: 'High-rep lateral raise and bicep curl flow.' },
       { name: 'Bodyweight Mobility Circuit', equipment: 'Bodyweight', cue: 'Restorative circulation flow.' }
     ]
-  }
+  },
+  'seated_leg_press': {
+    id: 'seated_leg_press',
+    name: 'Seated Leg Press Machine',
+    targetMuscle: 'Quads (Knee Extension)',
+    primaryEquipment: '45° / Horizontal Leg Press',
+    mechanics: 'Compound',
+    cnsLoad: 'Moderate',
+    defaultSets: 4,
+    defaultReps: '10-12',
+    defaultRestSecs: 90,
+    tips: 'Plant feet shoulder-width mid-platform. Lower sled with control until knees form 90 degrees without rounding lower back off back pad. Press through mid-foot and heels without violently hyperextending knees at apex.',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg',
+    formPoints: [
+      'Maintain firm contact between lower back and back pad throughout entire ROM.',
+      'Control eccentric descent (3 seconds) to 90 degrees; avoid bouncing at bottom.',
+      'Drive evenly through heels; stop just short of full joint lockout.'
+    ],
+    alternatives: [
+      { name: 'Machine Hack Squat', equipment: 'Hack Squat Machine', cue: 'Controlled sled descent with stable foot placement.' },
+      { name: 'Goblet Squat', equipment: 'Dumbbell / Kettlebell', cue: 'Hold weight at chest and squat between hips.' }
+    ]
+  },
+  'machine_chest_press': {
+    id: 'machine_chest_press',
+    name: 'Seated Machine Chest Press',
+    targetMuscle: 'Chest (Mid/Lower Sternal)',
+    primaryEquipment: 'Selectorized Chest Machine',
+    mechanics: 'Compound',
+    cnsLoad: 'Moderate',
+    defaultSets: 3,
+    defaultReps: '10-12',
+    defaultRestSecs: 90,
+    tips: 'Adjust seat height so handles align with mid-chest. Retract shoulder blades firmly into pad. Press smoothly into full contraction and control return without letting weight stack crash.',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Incline_Chest_Press/0.jpg',
+    formPoints: [
+      'Align handles at mid-chest level with elbows tucked 45 degrees.',
+      'Keep shoulder blades packed against the seat pad throughout the press.',
+      'Smooth 2-3 second return to stretch pecs without slamming stack plates.'
+    ],
+    alternatives: [
+      { name: 'Flat Dumbbell Press', equipment: 'Dumbbells & Bench', cue: 'Natural converging press path.' },
+      { name: 'Standing Cable Mid-Chest Press', equipment: 'Cable Station', cue: 'Constant tension throughout range.' }
+    ]
+  },
+  'db_romanian_deadlift_light': {
+    id: 'db_romanian_deadlift_light',
+    name: 'Dumbbell Romanian Deadlift (Form Focus)',
+    targetMuscle: 'Hamstrings & Glutes (Hips & Posterior)',
+    primaryEquipment: 'Light Dumbbells',
+    mechanics: 'Compound',
+    cnsLoad: 'Moderate',
+    defaultSets: 3,
+    defaultReps: '10-12',
+    defaultRestSecs: 90,
+    tips: 'Stand with soft knees. Push hips back as if touching a wall behind you while keeping dumbbells grazing down your shins. Feel deep hamstring stretch and squeeze glutes to return upright.',
+    visualGifUrl: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift_from_Deficit/0.jpg',
+    formPoints: [
+      'Maintain slight bend in knees; movement is a pure hip hinge backward.',
+      'Keep dumbbells tight to legs; do not let spine round or slouch forward.',
+      'Drive hips forward to stand; squeeze glutes at the top without hyperextending.'
+    ],
+    alternatives: [
+      { name: 'Seated Hamstring Leg Curl', equipment: 'Leg Curl Machine', cue: 'Pure knee flexion with zero lower back strain.' },
+      { name: 'Glute Bridge', equipment: 'Mat & Light Dumbbell', cue: 'Direct glute contraction with stable floor support.' }
+    ]
+  },
 };

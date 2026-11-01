@@ -17,9 +17,12 @@ function createExerciseLog(
 
   if (isBeginner && BEGINNER_EXERCISE_ADAPTATIONS[exerciseId]) {
     const adaptation = BEGINNER_EXERCISE_ADAPTATIONS[exerciseId];
-    // Use alternative from database or keep resolved ID with clear note
-    resolvedId = exerciseId;
-    customAlternativeNote = `Beginner Adaptation: ${adaptation.name} recommended. ${adaptation.reason}`;
+    if (EXERCISE_DATABASE[adaptation.replaceWithId]) {
+      resolvedId = adaptation.replaceWithId;
+      customAlternativeNote = `Beginner Scaled: ${adaptation.name}. ${adaptation.reason}`;
+    } else {
+      customAlternativeNote = `Beginner Guidance: Focus on controlled tempo and stability.`;
+    }
   }
 
   const def = EXERCISE_DATABASE[resolvedId];

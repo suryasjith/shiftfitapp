@@ -43,6 +43,23 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
   const goalParams = PhysicsEngine.getGoalParameters(selectedGoal);
 
   const handleFinish = () => {
+    const proteinPerKg = gender === 'female' ? 2.0 : 2.2;
+    const targetProtein = Math.round(parsedCurrentWeight * proteinPerKg);
+    const baseCal = gender === 'female'
+      ? Math.round((10 * parsedCurrentWeight) + (6.25 * parsedHeight) - (5 * 28) - 161)
+      : Math.round((10 * parsedCurrentWeight) + (6.25 * parsedHeight) - (5 * 28) + 5);
+
+    const maintenanceCals = Math.round(baseCal * 1.4);
+    const goalOffset = selectedGoal === 'lean_muscle' ? -250 : selectedGoal === 'muscle_mass' ? 250 : 0;
+    const offDayCals = Math.max(1300, maintenanceCals + goalOffset);
+    const shiftDayCals = Math.max(1200, maintenanceCals + goalOffset - 150);
+
+    const offDayFats = Math.round((offDayCals * 0.25) / 9);
+    const offDayCarbs = Math.max(50, Math.round((offDayCals - (targetProtein * 4) - (offDayFats * 9)) / 4));
+
+    const shiftDayFats = Math.round((shiftDayCals * 0.25) / 9);
+    const shiftDayCarbs = Math.max(50, Math.round((shiftDayCals - (targetProtein * 4) - (shiftDayFats * 9)) / 4));
+
     const updated: UserProfile = {
       ...profile,
       gender,
@@ -54,7 +71,20 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
       targetWeightMaxKg: Math.max(parsedDesiredWeight + 1.5, parsedDesiredWeight),
       fitnessGoal: selectedGoal,
       twoWeekTemplate,
+      offDayMacros: {
+        calories: offDayCals,
+        proteinGrams: targetProtein,
+        fatsGrams: offDayFats,
+        carbsGrams: offDayCarbs,
+      },
+      shiftDayMacros: {
+        calories: shiftDayCals,
+        proteinGrams: targetProtein,
+        fatsGrams: shiftDayFats,
+        carbsGrams: shiftDayCarbs,
+      },
     };
+    localStorage.setItem('shiftfit_onboarded_v2', 'true');
     onSaveProfile(updated);
     onClose();
   };
@@ -69,21 +99,21 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-stone-900/40 backdrop-blur-md animate-fadeIn">
-      <div className="w-full max-w-sm rounded-2xl bg-white/95 border border-stone-200 shadow-2xl p-4 text-left relative shadow-2xl max-h-[92vh] flex flex-col font-mono">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/60 backdrop-blur-md animate-fadeIn">
+      <div className="w-full max-w-sm rounded-2xl bg-white/95 dark:bg-stone-950/95 border border-stone-200 dark:border-white/15 shadow-2xl p-4 text-left relative max-h-[92vh] flex flex-col font-mono text-stone-900 dark:text-white">
         {/* Top Header */}
-        <div className="flex items-center justify-between pb-2.5 border-b border-stone-200 shrink-0">
+        <div className="flex items-center justify-between pb-2.5 border-b border-stone-200 dark:border-white/10 shrink-0">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-black bg-white px-1.5 py-0.2 rounded-2xl">
+            <span className="text-[10px] font-bold text-stone-900 dark:text-white bg-stone-100 dark:bg-stone-900 px-1.5 py-0.5 rounded-2xl border border-stone-200 dark:border-white/10">
               USER PROFILING
             </span>
-            <span className="text-[11px] text-stone-500">
+            <span className="text-[11px] text-stone-500 dark:text-stone-400">
               STEP {step + 1} OF 4
             </span>
           </div>
           <button
             onClick={onClose}
-            className="text-stone-400 hover:text-stone-900 p-1 transition-colors"
+            className="text-stone-400 hover:text-stone-900 dark:hover:text-white p-1 transition-colors"
             aria-label="Close Guide"
           >
             <X className="w-4 h-4" />
@@ -108,17 +138,17 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
           {step === 0 && (
             <div className="space-y-3">
               <div>
-                <h3 className="text-xs font-bold text-stone-900 uppercase tracking-tight">
+                <h3 className="text-xs font-bold text-stone-900 dark:text-white uppercase tracking-tight">
                   1. Metrics & Biological Profile
                 </h3>
-                <p className="text-[11px] text-stone-500 font-sans mt-0.5">
+                <p className="text-[11px] text-stone-500 dark:text-stone-400 font-sans mt-0.5">
                   Input your biometric measurements. All input fields are standard and fully editable.
                 </p>
               </div>
 
               {/* Gender Selector */}
               <div>
-                <label className="text-[10px] text-stone-600 uppercase font-bold block mb-1">
+                <label className="text-[10px] text-stone-600 dark:text-stone-400 uppercase font-bold block mb-1">
                   Biological Gender:
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -127,8 +157,8 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                     onClick={() => setGender('male')}
                     className={`py-1.5 rounded-xl text-xs font-bold border transition-all ${
                       gender === 'male' 
-                        ? 'bg-stone-900 text-white border-stone-900' 
-                        : 'bg-white border-stone-200 text-stone-600 hover:text-stone-900'
+                        ? 'bg-terracotta text-white border-orange-500 shadow-xs' 
+                        : 'bg-white dark:bg-stone-900 border-stone-200 dark:border-white/15 text-stone-600 dark:text-stone-300 hover:text-stone-900'
                     }`}
                   >
                     MALE
@@ -138,8 +168,8 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                     onClick={() => setGender('female')}
                     className={`py-1.5 rounded-xl text-xs font-bold border transition-all ${
                       gender === 'female' 
-                        ? 'bg-stone-900 text-white border-stone-900' 
-                        : 'bg-white border-stone-200 text-stone-600 hover:text-stone-900'
+                        ? 'bg-terracotta text-white border-orange-500 shadow-xs' 
+                        : 'bg-white dark:bg-stone-900 border-stone-200 dark:border-white/15 text-stone-600 dark:text-stone-300 hover:text-stone-900'
                     }`}
                   >
                     FEMALE
@@ -149,7 +179,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
 
               {/* Gym Experience / Proficiency Level Selector */}
               <div>
-                <label className="text-[10px] text-stone-600 uppercase font-bold block mb-1">
+                <label className="text-[10px] text-stone-600 dark:text-stone-400 uppercase font-bold block mb-1">
                   Gym Experience Level:
                 </label>
                 <div className="grid grid-cols-3 gap-1.5">
@@ -158,12 +188,12 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                     onClick={() => setProficiency('absolute_beginner')}
                     className={`p-2 rounded-xl text-left border transition-all ${
                       proficiency === 'absolute_beginner'
-                        ? 'bg-orange-50 border-orange-300 text-terracotta ring-1 ring-orange-200'
-                        : 'bg-white border-stone-200 text-stone-600 hover:text-stone-900'
+                        ? 'bg-orange-50 dark:bg-orange-950/60 border-orange-300 dark:border-orange-500 text-terracotta dark:text-orange-300 ring-1 ring-orange-200 dark:ring-orange-500/30'
+                        : 'bg-white dark:bg-stone-900 border-stone-200 dark:border-white/15 text-stone-600 dark:text-stone-300 hover:text-stone-900'
                     }`}
                   >
                     <div className="text-[11px] font-bold">Beginner</div>
-                    <div className="text-[9px] text-stone-500 font-sans leading-tight mt-0.5">Day 1 / Machines</div>
+                    <div className="text-[9px] text-stone-500 dark:text-stone-400 font-sans leading-tight mt-0.5">Day 1 / Machines</div>
                   </button>
 
                   <button
@@ -171,12 +201,12 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                     onClick={() => setProficiency('intermediate')}
                     className={`p-2 rounded-xl text-left border transition-all ${
                       proficiency === 'intermediate'
-                        ? 'bg-orange-50 border-orange-300 text-terracotta ring-1 ring-orange-200'
-                        : 'bg-white border-stone-200 text-stone-600 hover:text-stone-900'
+                        ? 'bg-orange-50 dark:bg-orange-950/60 border-orange-300 dark:border-orange-500 text-terracotta dark:text-orange-300 ring-1 ring-orange-200 dark:ring-orange-500/30'
+                        : 'bg-white dark:bg-stone-900 border-stone-200 dark:border-white/15 text-stone-600 dark:text-stone-300 hover:text-stone-900'
                     }`}
                   >
                     <div className="text-[11px] font-bold">Intermediate</div>
-                    <div className="text-[9px] text-stone-500 font-sans leading-tight mt-0.5">6m - 2y Lifter</div>
+                    <div className="text-[9px] text-stone-500 dark:text-stone-400 font-sans leading-tight mt-0.5">6m - 2y Lifter</div>
                   </button>
 
                   <button
@@ -184,12 +214,12 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                     onClick={() => setProficiency('advanced')}
                     className={`p-2 rounded-xl text-left border transition-all ${
                       proficiency === 'advanced'
-                        ? 'bg-orange-50 border-orange-300 text-terracotta ring-1 ring-orange-200'
-                        : 'bg-white border-stone-200 text-stone-600 hover:text-stone-900'
+                        ? 'bg-orange-50 dark:bg-orange-950/60 border-orange-300 dark:border-orange-500 text-terracotta dark:text-orange-300 ring-1 ring-orange-200 dark:ring-orange-500/30'
+                        : 'bg-white dark:bg-stone-900 border-stone-200 dark:border-white/15 text-stone-600 dark:text-stone-300 hover:text-stone-900'
                     }`}
                   >
                     <div className="text-[11px] font-bold">Advanced</div>
-                    <div className="text-[9px] text-stone-500 font-sans leading-tight mt-0.5">2y+ High Axial</div>
+                    <div className="text-[9px] text-stone-500 dark:text-stone-400 font-sans leading-tight mt-0.5">2y+ High Axial</div>
                   </button>
                 </div>
               </div>
@@ -197,7 +227,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
               {/* Height & Current Weight */}
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-[10px] text-stone-500 uppercase font-bold block mb-1">
+                  <label className="text-[10px] text-stone-500 dark:text-stone-400 uppercase font-bold block mb-1">
                     Height (cm):
                   </label>
                   <input
@@ -206,11 +236,11 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                     value={heightStr}
                     onChange={(e) => setHeightStr(e.target.value)}
                     placeholder="e.g. 178"
-                    className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-2.5 py-1.5 text-xs text-stone-900 font-mono focus:outline-none focus:border-white transition-colors"
+                    className="w-full bg-stone-50 dark:bg-black/90 border border-stone-200 dark:border-white/20 rounded-2xl px-2.5 py-1.5 text-xs text-stone-900 dark:text-white font-mono focus:outline-none focus:border-white transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-stone-500 uppercase font-bold block mb-1">
+                  <label className="text-[10px] text-stone-500 dark:text-stone-400 uppercase font-bold block mb-1">
                     Current Weight (kg):
                   </label>
                   <input
@@ -219,14 +249,14 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                     value={currentWeightStr}
                     onChange={(e) => setCurrentWeightStr(e.target.value)}
                     placeholder="e.g. 76.4"
-                    className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-2.5 py-1.5 text-xs text-stone-900 font-mono focus:outline-none focus:border-white transition-colors"
+                    className="w-full bg-stone-50 dark:bg-black/90 border border-stone-200 dark:border-white/20 rounded-2xl px-2.5 py-1.5 text-xs text-stone-900 dark:text-white font-mono focus:outline-none focus:border-white transition-colors"
                   />
                 </div>
               </div>
 
               {/* Desired / Target Weight */}
               <div>
-                <label className="text-[10px] text-stone-500 uppercase font-bold block mb-1">
+                <label className="text-[10px] text-stone-500 dark:text-stone-400 uppercase font-bold block mb-1">
                   Desired Target Weight (kg):
                 </label>
                 <input
@@ -235,30 +265,30 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                   value={desiredWeightStr}
                   onChange={(e) => setDesiredWeightStr(e.target.value)}
                   placeholder="e.g. 76.5"
-                  className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-2.5 py-1.5 text-xs text-stone-900 font-mono focus:outline-none focus:border-white transition-colors"
+                  className="w-full bg-stone-50 dark:bg-black/90 border border-stone-200 dark:border-white/20 rounded-2xl px-2.5 py-1.5 text-xs text-stone-900 dark:text-white font-mono focus:outline-none focus:border-white transition-colors"
                 />
               </div>
 
               {/* BMI Engine Output Card */}
-              <div className="p-2.5 rounded-2xl bg-stone-50 border border-stone-200 space-y-1.5">
+              <div className="p-2.5 rounded-2xl bg-stone-50 dark:bg-stone-900/80 border border-stone-200 dark:border-white/15 space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-stone-500">Current BMI:</span>
-                  <span className="text-stone-900 font-bold">{bmiReport.currentBmi} kg/m²</span>
+                  <span className="text-stone-500 dark:text-stone-400">Current BMI:</span>
+                  <span className="text-stone-900 dark:text-white font-bold">{bmiReport.currentBmi} kg/m²</span>
                 </div>
                 <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-stone-500">Status:</span>
-                  <span className="px-1.5 py-0.2 rounded-2xl border border-stone-200 bg-stone-900 text-white font-bold text-[10px]">
+                  <span className="text-stone-500 dark:text-stone-400">Status:</span>
+                  <span className="px-1.5 py-0.2 rounded-2xl border border-stone-200 dark:border-white/20 bg-stone-900 dark:bg-white text-white dark:text-black font-bold text-[10px]">
                     {bmiReport.classification}
                   </span>
                 </div>
-                <div className="pt-1.5 border-t border-stone-200 text-[10px] space-y-1">
+                <div className="pt-1.5 border-t border-stone-200 dark:border-white/10 text-[10px] space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-stone-500">Optimal Athletic BMI ({gender}):</span>
-                    <span className="text-stone-900 font-bold">{bmiReport.optimalBmiMin} – {bmiReport.optimalBmiMax}</span>
+                    <span className="text-stone-500 dark:text-stone-400">Optimal Athletic BMI ({gender}):</span>
+                    <span className="text-stone-900 dark:text-white font-bold">{bmiReport.optimalBmiMin} – {bmiReport.optimalBmiMax}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">Optimal Weight Range:</span>
-                    <span className="text-stone-900 font-bold">{bmiReport.optimalWeightMinKg} – {bmiReport.optimalWeightMaxKg} kg</span>
+                    <span className="text-stone-500 dark:text-stone-400">Optimal Weight Range:</span>
+                    <span className="text-stone-900 dark:text-white font-bold">{bmiReport.optimalWeightMinKg} – {bmiReport.optimalWeightMaxKg} kg</span>
                   </div>
                 </div>
               </div>
@@ -505,11 +535,11 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
         </div>
 
         {/* Footer Navigation */}
-        <div className="mt-3.5 pt-2.5 border-t border-stone-200 flex items-center justify-between gap-2 shrink-0">
+        <div className="mt-3.5 pt-2.5 border-t border-stone-200 dark:border-white/10 flex items-center justify-between gap-2 shrink-0">
           {step > 0 ? (
             <button
               onClick={() => setStep(step - 1)}
-              className="py-1.5 px-3 rounded-2xl border border-stone-200 text-stone-500 hover:text-stone-900 text-xs font-semibold flex items-center gap-1 active:scale-95"
+              className="py-1.5 px-3 rounded-2xl border border-stone-200 dark:border-white/15 text-stone-500 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white text-xs font-semibold flex items-center gap-1 active:scale-95"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
               <span>Back</span>
@@ -517,7 +547,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
           ) : (
             <button
               onClick={onClose}
-              className="text-stone-400 hover:text-stone-600 text-xs px-2"
+              className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 text-xs px-2"
             >
               Skip
             </button>
@@ -526,7 +556,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
           {step < 3 ? (
             <button
               onClick={() => setStep(step + 1)}
-              className="py-1.5 px-4 rounded-2xl bg-stone-900 text-white hover:bg-neutral-200 text-xs font-bold tracking-tight flex items-center gap-1 active:scale-95"
+              className="py-1.5 px-4 rounded-2xl btn-tactile-primary text-xs font-bold tracking-tight flex items-center gap-1 active:scale-95"
             >
               <span>Next</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -534,7 +564,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
           ) : (
             <button
               onClick={handleFinish}
-              className="py-1.5 px-4 rounded-2xl bg-stone-900 text-white hover:bg-neutral-200 text-xs font-bold tracking-tight flex items-center gap-1 active:scale-95"
+              className="py-1.5 px-4 rounded-2xl btn-tactile-primary text-xs font-bold tracking-tight flex items-center gap-1 active:scale-95"
             >
               <span>Save & Launch</span>
               <Check className="w-3.5 h-3.5" />

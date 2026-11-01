@@ -176,6 +176,32 @@ const EXERCISE_CONFIGS: Record<string, ExerciseConfig> = {
     unitLabel: 'stack pin'
   },
 
+  // BEGINNER ADAPTATION CONFIGS
+  'seated_leg_press': {
+    loadPattern: 'machine_compound',
+    baseRatio: { male_beginner: 0.50, female_beginner: 0.35 },
+    minWeightKg: 20,
+    maxInitialKg: 100,
+    incrementKg: 5,
+    unitLabel: 'sled weight'
+  },
+  'machine_chest_press': {
+    loadPattern: 'machine_compound',
+    baseRatio: { male_beginner: 0.25, female_beginner: 0.16 },
+    minWeightKg: 10,
+    maxInitialKg: 45,
+    incrementKg: 2.5,
+    unitLabel: 'stack pin'
+  },
+  'db_romanian_deadlift_light': {
+    loadPattern: 'dumbbell_hinge',
+    baseRatio: { male_beginner: 0.12, female_beginner: 0.08 },
+    minWeightKg: 4,
+    maxInitialKg: 24,
+    incrementKg: 2,
+    unitLabel: 'per dumbbell'
+  },
+
   // MOBILITY & BODYWEIGHT
   'hanging_leg_raise': {
     loadPattern: 'bodyweight_only',

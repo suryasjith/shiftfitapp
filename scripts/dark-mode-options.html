@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ShiftFit - Dark Mode UI/UX Palettes Showcase</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      background: #05070A;
+      color: #F8FAFC;
+      padding: 40px 24px;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+      color: #FFFFFF;
+    }
+    .header p {
+      font-size: 14px;
+      color: #94A3B8;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .option-card {
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .option-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .preview-phone {
+      padding: 24px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* OPTION A: Deep Obsidian & Warm Athletic Terracotta (Linear / Apple Pro) */
+    .opt-a {
+      background: #0B0F17;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .opt-a .header-bar {
+      background: rgba(17, 24, 39, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .opt-a .glass-box {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .opt-a .btn-main {
+      background: linear-gradient(180deg, #EA580C 0%, #C2410C 100%);
+      color: #FFFFFF;
+      font-weight: 800;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #F97316;
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3);
+    }
+
+    /* OPTION B: Midnight Zinc & High-Contrast Emerald (Vercel / Raycast) */
+    .opt-b {
+      background: #09090B;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .opt-b .header-bar {
+      background: #18181B;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .opt-b .glass-box {
+      background: #121215;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .opt-b .btn-main {
+      background: #10B981;
+      color: #000000;
+      font-weight: 900;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #34D399;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+    }
+
+    /* OPTION C: Pure OLED Black + iOS Frosted Elevation */
+    .opt-c {
+      background: #000000;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .opt-c .header-bar {
+      background: rgba(28, 28, 30, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .opt-c .glass-box {
+      background: rgba(24, 24, 27, 0.85);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .opt-c .btn-main {
+      background: #FFFFFF;
+      color: #000000;
+      font-weight: 900;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #FFFFFF;
+      box-shadow: 0 4px 16px rgba(255, 255, 255, 0.12);
+    }
+
+    .meta-tag {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94A3B8;
+    }
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .metric-val {
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .bar-bg {
+      background: rgba(255, 255, 255, 0.08);
+      height: 6px;
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 9999px;
+    }
+    .palette-swatches {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .swatch {
+      flex: 1;
+      height: 24px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>ShiftFit Dark Mode UI/UX Direction</h1>
+      <p>Compare the 3 architectural palettes below. Notice how the Header, Cards, Buttons, and Typography achieve harmonious contrast without eye-straining "zebra" clashes.</p>
+    </div>
+
+    <div class="comparison-grid">
+      <!-- OPTION A -->
+      <div class="option-card opt-a">
+        <div class="preview-phone">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="option-badge" style="background:#EA580C; color:#FFF;">Option A (Recommended)</span>
+            <span style="font-size:11px; color:#94A3B8; font-weight:700;">Deep Obsidian</span>
+          </div>
+
+          <!-- Cohesive Header -->
+          <div class="header-bar">
+            <div>
+              <div style="font-size:12px; font-weight:900; letter-spacing:-0.02em; color:#FFF;">SHIFTFIT <span style="font-size:9px; background:rgba(234,88,12,0.25); color:#F97316; padding:2px 6px; border-radius:10px;">75-78kg</span></div>
+              <div style="font-size:9px; color:#94A3B8;">Daily Wellness &amp; Recomp</div>
+            </div>
+            <div style="font-size:10px; background:#1F2937; padding:4px 8px; border-radius:8px; color:#F8FAFC;">🌙 Dark</div>
+          </div>
+
+          <!-- Workout Card -->
+          <div class="glass-box">
+            <div class="meta-tag" style="color:#F97316;">OFF-DAY TRAINING &bull; SUN</div>
+            <div style="font-size:16px; font-weight:900; color:#FFFFFF; margin-top:2px;">Heavy Pull: Lat Width &amp; Arms</div>
+            <div style="font-size:11px; color:#94A3B8; margin-bottom:12px;">Focus: Pull &bull; Target: ~55m &bull; Fatigue: 3/10</div>
+
+            <div class="btn-main">Start Today's Workout &rarr;</div>
+          </div>
+
+          <!-- Nutrition Readiness Card -->
+          <div class="glass-box">
+            <div class="meta-tag" style="color:#38BDF8;">NUTRITION READINESS</div>
+            <div class="metric-row">
+              <span style="font-size:11px; color:#E2E8F0; font-weight:700;">PROTEIN GRAMS</span>
+              <span class="metric-val" style="color:#34D399;">168g / 185g (91%)</span>
+            </div>
+            <div class="bar-bg">
+              <div class="bar-fill" style="width: 91%; background: #10B981;"></div>
+            </div>
+
+            <div class="metric-row" style="margin-top:12px;">
+              <span style="font-size:11px; color:#E2E8F0; font-weight:700;">HYDRATION VOLUME</span>
+              <span class="metric-val" style="color:#38BDF8;">2.6L / 3.0L (87%)</span>
+            </div>
+            <div class="bar-bg">
+              <div class="bar-fill" style="width: 87%; background: #0EA5E9;"></div>
+            </div>
+          </div>
+
+          <div style="font-size:11px; color:#94A3B8; margin-top:auto;">
+            <strong>Palette DNA:</strong> Canvas <code>#0B0F17</code>, Surface <code>#111827</code> (75% glass), Accent Terracotta <code>#EA580C</code>. Calming on the eyes, eliminates halation, zero glare.
+          </div>
+          <div class="palette-swatches">
+            <div class="swatch" style="background:#0B0F17;" title="Canvas"></div>
+            <div class="swatch" style="background:#111827;" title="Surface"></div>
+            <div class="swatch" style="background:#EA580C;" title="Primary Action"></div>
+            <div class="swatch" style="background:#10B981;" title="Success/Protein"></div>
+            <div class="swatch" style="background:#38BDF8;" title="Hydration"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPTION B -->
+      <div class="option-card opt-b">
+        <div class="preview-phone">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="option-badge" style="background:#10B981; color:#000;">Option B</span>
+            <span style="font-size:11px; color:#A1A1AA; font-weight:700;">Midnight Zinc</span>
+          </div>
+
+          <!-- Cohesive Header -->
+          <div class="header-bar">
+            <div>
+              <div style="font-size:12px; font-weight:900; letter-spacing:-0.02em; color:#FFF;">SHIFTFIT <span style="font-size:9px; background:rgba(16,185,129,0.25); color:#34D399; padding:2px 6px; border-radius:10px;">75-78kg</span></div>
+              <div style="font-size:9px; color:#A1A1AA;">Daily Wellness &amp; Recomp</div>
+            </div>
+            <div style="font-size:10px; background:#27272A; padding:4px 8px; border-radius:8px; color:#FAFAFA;">🌙 Dark</div>
+          </div>
+
+          <!-- Workout Card -->
+          <div class="glass-box">
+            <div class="meta-tag" style="color:#34D399;">OFF-DAY TRAINING &bull; SUN</div>
+            <div style="font-size:16px; font-weight:900; color:#FFFFFF; margin-top:2px;">Heavy Pull: Lat Width &amp; Arms</div>
+            <div style="font-size:11px; color:#A1A1AA; margin-bottom:12px;">Focus: Pull &bull; Target: ~55m &bull; Fatigue: 3/10</div>
+
+            <div class="btn-main">Start Today's Workout &rarr;</div>
+          </div>
+
+          <!-- Nutrition Readiness Card -->
+          <div class="glass-box">
+            <div class="meta-tag" style="color:#A1A1AA;">NUTRITION READINESS</div>
+            <div class="metric-row">
+              <span style="font-size:11px; color:#FAFAFA; font-weight:700;">PROTEIN GRAMS</span>
+              <span class="metric-val" style="color:#34D399;">168g / 185g (91%)</span>
+            </div>
+            <div class="bar-bg">
+              <div class="bar-fill" style="width: 91%; background: #10B981;"></div>
+            </div>
+
+            <div class="metric-row" style="margin-top:12px;">
+              <span style="font-size:11px; color:#FAFAFA; font-weight:700;">HYDRATION VOLUME</span>
+              <span class="metric-val" style="color:#60A5FA;">2.6L / 3.0L (87%)</span>
+            </div>
+            <div class="bar-bg">
+              <div class="bar-fill" style="width: 87%; background: #3B82F6;"></div>
+            </div>
+          </div>
+
+          <div style="font-size:11px; color:#A1A1AA; margin-top:auto;">
+            <strong>Palette DNA:</strong> Canvas <code>#09090B</code>, Surface <code>#18181B</code>, Accent Electric Emerald <code>#10B981</code>. High-tech, ultra-sharp Vercel aesthetic.
+          </div>
+          <div class="palette-swatches">
+            <div class="swatch" style="background:#09090B;" title="Canvas"></div>
+            <div class="swatch" style="background:#18181B;" title="Surface"></div>
+            <div class="swatch" style="background:#10B981;" title="Primary Action"></div>
+            <div class="swatch" style="background:#FAFAFA;" title="Text"></div>
+            <div class="swatch" style="background:#3B82F6;" title="Hydration"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPTION C -->
+      <div class="option-card opt-c">
+        <div class="preview-phone">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="option-badge" style="background:#FFFFFF; color:#000;">Option C</span>
+            <span style="font-size:11px; color:#71717A; font-weight:700;">True OLED Frosted</span>
+          </div>
+
+          <!-- Cohesive Header -->
+          <div class="header-bar">
+            <div>
+              <div style="font-size:12px; font-weight:900; letter-spacing:-0.02em; color:#FFF;">SHIFTFIT <span style="font-size:9px; background:rgba(255,255,255,0.15); color:#FFF; padding:2px 6px; border-radius:10px;">75-78kg</span></div>
+              <div style="font-size:9px; color:#71717A;">Daily Wellness &amp; Recomp</div>
+            </div>
+            <div style="font-size:10px; background:#27272A; padding:4px 8px; border-radius:8px; color:#FFF;">🌙 Dark</div>
+          </div>
+
+          <!-- Workout Card -->
+          <div class="glass-box">
+            <div class="meta-tag" style="color:#FFF;">OFF-DAY TRAINING &bull; SUN</div>
+            <div style="font-size:16px; font-weight:900; color:#FFFFFF; margin-top:2px;">Heavy Pull: Lat Width &amp; Arms</div>
+            <div style="font-size:11px; color:#71717A; margin-bottom:12px;">Focus: Pull &bull; Target: ~55m &bull; Fatigue: 3/10</div>
+
+            <div class="btn-main">Start Today's Workout &rarr;</div>
+          </div>
+
+          <!-- Nutrition Readiness Card -->
+          <div class="glass-box">
+            <div class="meta-tag" style="color:#FFF;">NUTRITION READINESS</div>
+            <div class="metric-row">
+              <span style="font-size:11px; color:#FFF; font-weight:700;">PROTEIN GRAMS</span>
+              <span class="metric-val" style="color:#FFF;">168g / 185g (91%)</span>
+            </div>
+            <div class="bar-bg">
+              <div class="bar-fill" style="width: 91%; background: #FFF;"></div>
+            </div>
+
+            <div class="metric-row" style="margin-top:12px;">
+              <span style="font-size:11px; color:#FFF; font-weight:700;">HYDRATION VOLUME</span>
+              <span class="metric-val" style="color:#FFF;">2.6L / 3.0L (87%)</span>
+            </div>
+            <div class="bar-bg">
+              <div class="bar-fill" style="width: 87%; background: #FFF;"></div>
+            </div>
+          </div>
+
+          <div style="font-size:11px; color:#71717A; margin-top:auto;">
+            <strong>Palette DNA:</strong> Canvas <code>#000000</code>, Surface <code>rgba(28,28,30,0.85)</code> with iOS blur. Unified header &amp; nav (no zebra clash), pure monochrome.
+          </div>
+          <div class="palette-swatches">
+            <div class="swatch" style="background:#000000;" title="Canvas"></div>
+            <div class="swatch" style="background:#1C1C1E;" title="Surface"></div>
+            <div class="swatch" style="background:#FFFFFF;" title="Primary Action"></div>
+            <div class="swatch" style="background:#71717A;" title="Muted"></div>
+            <div class="swatch" style="background:#27272A;" title="Borders"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
