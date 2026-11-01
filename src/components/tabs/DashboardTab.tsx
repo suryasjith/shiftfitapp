@@ -249,11 +249,11 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           {/* Calories Bar */}
           <div>
             <div className="flex justify-between text-xs font-mono mb-1">
-              <span className="text-stone-600 flex items-center gap-1.5 font-bold">
-                <Flame className="w-3.5 h-3.5 text-teal-400" aria-hidden="true" />
+              <span className="text-stone-900 dark:text-white flex items-center gap-1.5 font-bold">
+                <Flame className="w-3.5 h-3.5 text-terracotta dark:text-white" aria-hidden="true" />
                 Energy Intake
               </span>
-              <span className="text-teal-300 font-bold">{caloriesPercent}%</span>
+              <span className="text-stone-900 dark:text-white font-black">{caloriesPercent}%</span>
             </div>
             <div 
               role="progressbar" 
@@ -261,10 +261,10 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
               aria-valuemin={0} 
               aria-valuemax={100}
               aria-label="Daily calories consumed percentage"
-              className="w-full bg-slate-950/80 h-2.5 rounded-none overflow-hidden border border-white/10"
+              className="w-full bg-stone-200/80 dark:bg-stone-800 h-2.5 rounded-full overflow-hidden border border-stone-300/60 dark:border-white/20"
             >
               <div 
-                className="bg-gradient-to-r from-teal-500 to-emerald-400 h-full transition-all duration-300 rounded-none"
+                className="bg-terracotta dark:bg-white h-full transition-all duration-300 rounded-full"
                 style={{ width: `${caloriesPercent}%` }}
               />
             </div>
@@ -272,11 +272,13 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
 
           {/* Dual Compact Rings/Bars: Protein & Water */}
           <div className="grid grid-cols-2 gap-3 pt-1">
-            {/* Protein Percentage (Mint / Emerald) */}
-            <div className="p-3 rounded-none bg-slate-950/60 backdrop-blur-md border border-teal-500/25">
+            {/* Protein Percentage */}
+            <div className="p-3 rounded-2xl bg-white/80 dark:bg-black/60 border border-stone-200/90 dark:border-white/20 shadow-xs">
               <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-                <span className="text-[10px] font-bold uppercase text-stone-500">Protein</span>
-                <span className="text-emerald-400 font-bold">{proteinPercent}%</span>
+                <span className="text-xs font-black uppercase text-stone-900 dark:text-white tracking-wide">
+                  Protein
+                </span>
+                <span className="text-emerald-700 dark:text-white font-black">{proteinPercent}%</span>
               </div>
               <div 
                 role="progressbar"
@@ -284,23 +286,23 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label="Daily protein target percentage"
-                className="w-full bg-slate-900 h-1.5 rounded-none overflow-hidden border border-white/10"
+                className="w-full bg-stone-100 dark:bg-stone-800 h-2 rounded-full overflow-hidden border border-stone-200 dark:border-white/20"
               >
                 <div 
-                  className="bg-emerald-400 h-full transition-all duration-300 rounded-none"
+                  className="bg-emerald-600 dark:bg-white h-full transition-all duration-300 rounded-full"
                   style={{ width: `${proteinPercent}%` }}
                 />
               </div>
             </div>
 
-            {/* Hydration Percentage (Cool Sky Blue) */}
-            <div className="p-3 rounded-none bg-slate-950/60 backdrop-blur-md border border-sky-500/25">
+            {/* Hydration Percentage */}
+            <div className="p-3 rounded-2xl bg-white/80 dark:bg-black/60 border border-stone-200/90 dark:border-white/20 shadow-xs">
               <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-                <span className="text-[10px] font-bold uppercase text-stone-500 flex items-center gap-1">
-                  <Droplet className="w-3 h-3 text-sky-400" aria-hidden="true" />
+                <span className="text-xs font-black uppercase text-stone-900 dark:text-white tracking-wide flex items-center gap-1">
+                  <Droplet className="w-3.5 h-3.5 text-sky-600 dark:text-white fill-current" aria-hidden="true" />
                   Water
                 </span>
-                <span className="text-sky-300 font-bold">{waterPercent}%</span>
+                <span className="text-sky-700 dark:text-white font-black">{waterPercent}%</span>
               </div>
               <div 
                 role="progressbar"
@@ -308,10 +310,10 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label="Daily water intake percentage"
-                className="w-full bg-slate-900 h-1.5 rounded-none overflow-hidden border border-white/10"
+                className="w-full bg-stone-100 dark:bg-stone-800 h-2 rounded-full overflow-hidden border border-stone-200 dark:border-white/20"
               >
                 <div 
-                  className="bg-sky-400 h-full transition-all duration-300 rounded-none"
+                  className="bg-sky-500 dark:bg-white h-full transition-all duration-300 rounded-full"
                   style={{ width: `${waterPercent}%` }}
                 />
               </div>
@@ -321,24 +323,24 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
 
         {/* Granular Data Reveal (Only shown when tapped) */}
         {isFuelDetailsExpanded && (
-          <div className="mt-3 pt-3 border-t border-teal-500/25 space-y-3 animate-fadeIn">
+          <div className="mt-3 pt-3 border-t border-stone-200 dark:border-white/10 space-y-3 animate-fadeIn">
             <div className="grid grid-cols-2 gap-3 text-xs font-mono">
-              <div className="p-3 bg-slate-950/70 rounded-none border border-teal-500/25">
-                <div className="text-[10px] uppercase font-bold text-teal-400">Protein Grams</div>
-                <div className="text-sm font-bold text-stone-900 mt-0.5">
+              <div className="p-3 bg-white/90 dark:bg-black/60 rounded-2xl border border-stone-200 dark:border-white/20 shadow-xs">
+                <div className="text-[11px] uppercase font-black text-stone-900 dark:text-white">Protein Grams</div>
+                <div className="text-sm font-black text-stone-900 dark:text-white mt-0.5">
                   {currentProtein}g / {targetProtein}g
                 </div>
-                <div className="text-[10px] text-stone-500 mt-1">
+                <div className="text-[10px] text-stone-600 dark:text-stone-300 mt-1 font-sans">
                   {remainingProtein > 0 ? `${Math.round(remainingProtein)}g left` : 'Goal reached ✓'}
                 </div>
               </div>
 
-              <div className="p-3 bg-slate-950/70 rounded-none border border-sky-500/25">
-                <div className="text-[10px] uppercase font-bold text-sky-400">Hydration Volume</div>
-                <div className="text-sm font-bold text-stone-900 mt-0.5">
+              <div className="p-3 bg-white/90 dark:bg-black/60 rounded-2xl border border-stone-200 dark:border-white/20 shadow-xs">
+                <div className="text-[11px] uppercase font-black text-stone-900 dark:text-white">Hydration Volume</div>
+                <div className="text-sm font-black text-stone-900 dark:text-white mt-0.5">
                   {(currentWater / 1000).toFixed(1)}L / {(targetWater / 1000).toFixed(1)}L
                 </div>
-                <div className="text-[10px] text-stone-500 mt-1">
+                <div className="text-[10px] text-stone-600 dark:text-stone-300 mt-1 font-sans">
                   {remainingCals} kcal remaining
                 </div>
               </div>

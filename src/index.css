@@ -12,8 +12,8 @@
   }
 
   html.dark {
-    background-color: #0F172A;
-    color: #F8FAFC;
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
   }
 
   body {
@@ -23,8 +23,8 @@
   }
 
   html.dark body {
-    background-color: #0F172A;
-    color: #F8FAFC;
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
   }
 
   h1, h2, h3, h4, .font-heading {
@@ -73,22 +73,24 @@
     border-radius: 16px;
   }
 
+  /* OLED Black & White in Dark Mode */
   html.dark .glass-card,
   html.dark .glass-brutal,
   html.dark .glass-workout,
   html.dark .glass-fuel,
   html.dark .glass-hydration,
   html.dark .glass-progress {
-    background: rgba(30, 41, 59, 0.72) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36) !important;
+    background: #000000 !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+    color: #FFFFFF !important;
   }
 
   html.dark .glass-card input,
   html.dark input {
-    background-color: rgba(15, 23, 42, 0.8) !important;
+    background-color: #000000 !important;
     color: #FFFFFF !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
   }
 
   /* Subtle Warm Border Accents */
@@ -101,11 +103,11 @@
   }
 
   html.dark .glass-card-subtle {
-    background: rgba(30, 41, 59, 0.55) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: #000000 !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
   }
 
-  /* Primary Action Button: Warm Editorial Terracotta with iOS Haptic Press */
+  /* Primary Action Button: Warm Editorial Terracotta in Light Mode, High Contrast OLED White in Dark Mode */
   .btn-tactile-primary {
     background: linear-gradient(180deg, #EA580C 0%, #C2410C 100%) !important;
     color: #FFFFFF !important;
@@ -124,6 +126,16 @@
   .btn-tactile-primary:active {
     transform: scale(0.97) translateY(1px) !important;
     box-shadow: 0 2px 6px rgba(194, 65, 12, 0.2) !important;
+  }
+
+  html.dark .btn-tactile-primary {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    border: 1px solid #FFFFFF !important;
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.15) !important;
+  }
+  html.dark .btn-tactile-primary:hover {
+    background: #E5E5E5 !important;
   }
 
   /* Secondary Button: iOS Frosted Glass Capsule */
@@ -148,9 +160,10 @@
   }
 
   html.dark .btn-tactile-secondary {
-    background: rgba(30, 41, 59, 0.7) !important;
-    color: #F8FAFC !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
+    background: #000000 !important;
+    color: #FFFFFF !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    box-shadow: none !important;
   }
 
   .btn-tactile {
