@@ -341,7 +341,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
 
           <div className="bg-white/60 backdrop-blur-md p-2.5 rounded-2xl border border-stone-200/80">
             <span className="text-[10px] text-stone-500 uppercase font-bold block">Target</span>
-            <span className="text-sm font-bold text-slate-200 mt-0.5 block">
+            <span className="text-sm font-bold text-stone-700 mt-0.5 block">
               75–78 <span className="text-[10px] text-stone-500">kg</span>
             </span>
           </div>
@@ -555,7 +555,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                 >
                   <span className={`w-6 h-6 rounded-2xl flex items-center justify-center text-xs font-black font-mono mt-0.5 shrink-0 ${
                     isDone 
-                      ? 'bg-emerald-500 text-slate-950 font-black' 
+                      ? 'bg-emerald-500 text-white font-black' 
                       : 'bg-terracotta/20 text-terracotta border border-stone-200/80'
                   }`}>
                     {isDone ? <Check className="w-3.5 h-3.5 stroke-[3]" aria-hidden="true" /> : exIdx + 1}
@@ -636,10 +636,22 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
               {/* Expanded Set Logger */}
               {isExpanded && (
                 <div id={`exercise-panel-${exIdx}`} className="px-4 pb-4 pt-2 border-t border-amber-500/20 space-y-3">
-                  <div className="flex items-center justify-between gap-2 pt-1">
-                    <span className="text-xs text-stone-500 font-mono truncate max-w-[150px]">
-                      {def?.primaryEquipment || 'Free weights'}
-                    </span>
+                  <div className="flex items-center justify-between gap-2 pt-1 flex-wrap">
+                    <div className="space-y-0.5">
+                      <span className="text-xs text-stone-500 font-mono block">
+                        {def?.primaryEquipment || 'Free weights'}
+                      </span>
+                      {ex.suggestedWeightKg !== undefined && ex.suggestedWeightKg > 0 && (
+                        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-orange-100/80 border border-orange-200 text-terracotta text-[11px] font-sans font-semibold">
+                          <span>Suggested Start: <strong>{ex.suggestedWeightKg} kg</strong></span>
+                        </div>
+                      )}
+                      {ex.suggestedWeightNote && (
+                        <p className="text-[10px] text-stone-500 font-sans italic">
+                          {ex.suggestedWeightNote}
+                        </p>
+                      )}
+                    </div>
 
                     <div className="flex items-center gap-2">
                       {/* Secondary Instructions Toggle Button */}
@@ -714,7 +726,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                         <span className="text-[11px] font-mono font-black text-stone-600 uppercase tracking-wider block">
                           3 Key Form Rules:
                         </span>
-                        <ul className="space-y-1.5 text-xs text-slate-200">
+                        <ul className="space-y-1.5 text-xs text-stone-700">
                           {(def?.formPoints || [
                             'Setup: Retract shoulder blades and establish a stable base of support.',
                             'Execution: Control the eccentric descent for 2–3 seconds without bouncing.',
@@ -724,7 +736,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                               <span className="w-5 h-5 rounded-2xl bg-terracotta/20 text-terracotta font-mono text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
                                 {ptIdx + 1}
                               </span>
-                              <span className="leading-relaxed text-slate-200">{point}</span>
+                              <span className="leading-relaxed text-stone-700">{point}</span>
                             </li>
                           ))}
                         </ul>
@@ -775,7 +787,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                               value={set.weightKg === 0 || set.weightKg === undefined ? '' : set.weightKg}
                               onChange={(e) => handleUpdateSetValue(exIdx, setIdx, 'weightKg', e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
                               placeholder="Weight (kg)"
-                              className="w-full min-h-[44px] bg-slate-900 border border-stone-200/80 rounded-2xl px-2 py-1.5 text-center font-mono text-xs font-bold text-stone-900 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
+                              className="w-full min-h-[44px] bg-white border border-stone-200 rounded-xl px-2 py-1.5 text-center font-mono text-xs font-bold text-stone-900 placeholder-stone-400 focus:outline-none focus:border-amber-400 transition-colors"
                             />
                           </div>
 
@@ -790,7 +802,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                               value={set.reps === 0 || set.reps === undefined ? '' : set.reps}
                               onChange={(e) => handleUpdateSetValue(exIdx, setIdx, 'reps', e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0)}
                               placeholder="Reps"
-                              className="w-full min-h-[44px] bg-slate-900 border border-stone-200/80 rounded-2xl px-2 py-1.5 text-center font-mono text-xs font-bold text-stone-900 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
+                              className="w-full min-h-[44px] bg-white border border-stone-200 rounded-xl px-2 py-1.5 text-center font-mono text-xs font-bold text-stone-900 placeholder-stone-400 focus:outline-none focus:border-amber-400 transition-colors"
                             />
                           </div>
 
@@ -801,7 +813,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                               aria-label={`Mark Set ${set.setNumber} of ${displayName} as ${set.completed ? 'incomplete' : 'complete'}`}
                               className={`w-full min-h-[44px] py-1.5 px-2 rounded-2xl text-xs font-black uppercase tracking-wider transition-all active:translate-y-[2px] flex items-center justify-center gap-1 focus:outline-none focus:ring-1 focus:ring-white ${
                                 set.completed
-                                  ? 'bg-emerald-500 text-slate-950'
+                                  ? 'bg-emerald-500 text-white'
                                   : 'bg-terracotta/10 border border-stone-200/80 text-terracotta hover:bg-terracotta/20 hover:text-stone-900'
                               }`}
                             >
@@ -826,7 +838,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
                       type="button"
                       onClick={() => handleAddSet(exIdx)}
                       aria-label={`Add extra set to ${displayName}`}
-                      className="min-h-[44px] px-3 py-1.5 rounded-2xl border border-stone-200/80 bg-slate-900 text-slate-200 font-bold hover:bg-slate-800 flex items-center gap-1.5 active:translate-y-[2px] transition-all focus:outline-none focus:ring-1 focus:ring-white"
+                      className="min-h-[44px] px-3 py-1.5 rounded-xl border border-stone-200 bg-white text-stone-700 font-bold hover:bg-stone-50 flex items-center gap-1.5 active:translate-y-[2px] transition-all focus:outline-none focus:ring-1 focus:ring-white"
                     >
                       <Plus className="w-3.5 h-3.5" aria-hidden="true" />
                       <span>Add Extra Set</span>

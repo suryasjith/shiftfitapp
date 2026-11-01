@@ -31,6 +31,7 @@ interface StorageSchema {
 export const DEFAULT_PROFILE: UserProfile = {
   name: 'Alex',
   gender: 'male',
+  proficiencyLevel: 'intermediate',
   targetWeightMinKg: 75.0,
   targetWeightMaxKg: 78.0,
   currentWeightKg: 76.4,

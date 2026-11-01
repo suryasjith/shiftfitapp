@@ -208,20 +208,20 @@ export class RotaEngine {
     const goal: FitnessGoal = profile.fitnessGoal || 'body_recomposition';
 
     if (dayInfo.isOvertime) {
-      return BASE_WORKOUT_TEMPLATES.overtime_express(dateStr, goal);
+      return BASE_WORKOUT_TEMPLATES.overtime_express(dateStr, goal, profile);
     }
 
     if (!dayInfo.isShiftDay) {
       if (dayInfo.recommendedWorkoutCategory === 'Push') {
-        return BASE_WORKOUT_TEMPLATES.offDay1_push(dateStr, fatigueScore, goal);
+        return BASE_WORKOUT_TEMPLATES.offDay1_push(dateStr, fatigueScore, goal, profile);
       } else if (dayInfo.recommendedWorkoutCategory === 'Legs') {
-        return BASE_WORKOUT_TEMPLATES.offDay2_legs(dateStr, fatigueScore, goal);
+        return BASE_WORKOUT_TEMPLATES.offDay2_legs(dateStr, fatigueScore, goal, profile);
       } else {
-        return BASE_WORKOUT_TEMPLATES.offDay3_pull(dateStr, fatigueScore, goal);
+        return BASE_WORKOUT_TEMPLATES.offDay3_pull(dateStr, fatigueScore, goal, profile);
       }
     } else {
       const shiftNum = dayInfo.workoutTitle.includes('Shift 1') ? 0 : dayInfo.workoutTitle.includes('Shift 2') ? 1 : 2;
-      return BASE_WORKOUT_TEMPLATES.shiftDay_maintenance(dateStr, shiftNum);
+      return BASE_WORKOUT_TEMPLATES.shiftDay_maintenance(dateStr, shiftNum, profile);
     }
   }
 

@@ -69,6 +69,8 @@ export interface ExerciseLog {
   equipmentTaken: boolean;
   prescribedSets: number;
   restSecs: number;
+  suggestedWeightKg?: number;
+  suggestedWeightNote?: string;
   sets: SetLog[];
   notes?: string;
 }
@@ -180,12 +182,18 @@ export type FitnessGoal =
   | 'muscle_mass'        // Building Muscle Mass: surplus calories, 8-12 reps, 90-120s rest
   | 'lean_muscle';       // Lean Muscle: high-density hypertrophy, 10-15 reps, 60-75s rest
 
+export type ProficiencyLevel = 
+  | 'absolute_beginner' // Never lifted / under 6 months. Machine/cable & goblet focus. High safety.
+  | 'intermediate'      // 6 months to 2 years. Standard dumbbells, hacks, cable compound movements.
+  | 'advanced';         // 2+ years. High-axial load, barbells, heavy mechanical tension.
+
 export type Gender = 'male' | 'female';
 
 export interface UserProfile {
   name: string;
   // User Profiling & Physics Engine
   gender: Gender;
+  proficiencyLevel: ProficiencyLevel;
   heightCm: number;
   currentWeightKg: number;
   desiredWeightKg: number;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, ChevronRight, ChevronLeft, Check, AlertTriangle, Clock, Target, Calendar } from 'lucide-react';
-import { UserProfile, FitnessGoal, ShiftType, Gender } from '../types';
+import { UserProfile, FitnessGoal, ShiftType, Gender, ProficiencyLevel } from '../types';
 import { PhysicsEngine } from '../services/physicsEngine';
 import { ROTA_PRESETS } from '../services/rotaEngine';
 
@@ -21,6 +21,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
 
   // Form state - String based to prevent backspace/deletion bugs, empty by default
   const [gender, setGender] = useState<Gender>(profile.gender || 'male');
+  const [proficiency, setProficiency] = useState<ProficiencyLevel>(profile.proficiencyLevel || 'intermediate');
   const [heightStr, setHeightStr] = useState<string>('');
   const [currentWeightStr, setCurrentWeightStr] = useState<string>('');
   const [desiredWeightStr, setDesiredWeightStr] = useState<string>('');
@@ -45,6 +46,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
     const updated: UserProfile = {
       ...profile,
       gender,
+      proficiencyLevel: proficiency,
       heightCm: parsedHeight,
       currentWeightKg: parsedCurrentWeight,
       desiredWeightKg: parsedDesiredWeight,
@@ -116,17 +118,17 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
 
               {/* Gender Selector */}
               <div>
-                <label className="text-[10px] text-neutral-400 uppercase font-bold block mb-1">
+                <label className="text-[10px] text-stone-600 uppercase font-bold block mb-1">
                   Biological Gender:
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setGender('male')}
-                    className={`py-1.5 rounded-2xl text-xs font-bold border transition-all ${
+                    className={`py-1.5 rounded-xl text-xs font-bold border transition-all ${
                       gender === 'male' 
-                        ? 'bg-white text-black border-white' 
-                        : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-stone-900'
+                        ? 'bg-stone-900 text-white border-stone-900' 
+                        : 'bg-white border-stone-200 text-stone-600 hover:text-stone-900'
                     }`}
                   >
                     MALE
@@ -134,13 +136,60 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                   <button
                     type="button"
                     onClick={() => setGender('female')}
-                    className={`py-1.5 rounded-2xl text-xs font-bold border transition-all ${
+                    className={`py-1.5 rounded-xl text-xs font-bold border transition-all ${
                       gender === 'female' 
-                        ? 'bg-white text-black border-white' 
-                        : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-stone-900'
+                        ? 'bg-stone-900 text-white border-stone-900' 
+                        : 'bg-white border-stone-200 text-stone-600 hover:text-stone-900'
                     }`}
                   >
                     FEMALE
+                  </button>
+                </div>
+              </div>
+
+              {/* Gym Experience / Proficiency Level Selector */}
+              <div>
+                <label className="text-[10px] text-stone-600 uppercase font-bold block mb-1">
+                  Gym Experience Level:
+                </label>
+                <div className="grid grid-cols-3 gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setProficiency('absolute_beginner')}
+                    className={`p-2 rounded-xl text-left border transition-all ${
+                      proficiency === 'absolute_beginner'
+                        ? 'bg-orange-50 border-orange-300 text-terracotta ring-1 ring-orange-200'
+                        : 'bg-white border-stone-200 text-stone-600 hover:text-stone-900'
+                    }`}
+                  >
+                    <div className="text-[11px] font-bold">Beginner</div>
+                    <div className="text-[9px] text-stone-500 font-sans leading-tight mt-0.5">Day 1 / Machines</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setProficiency('intermediate')}
+                    className={`p-2 rounded-xl text-left border transition-all ${
+                      proficiency === 'intermediate'
+                        ? 'bg-orange-50 border-orange-300 text-terracotta ring-1 ring-orange-200'
+                        : 'bg-white border-stone-200 text-stone-600 hover:text-stone-900'
+                    }`}
+                  >
+                    <div className="text-[11px] font-bold">Intermediate</div>
+                    <div className="text-[9px] text-stone-500 font-sans leading-tight mt-0.5">6m - 2y Lifter</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setProficiency('advanced')}
+                    className={`p-2 rounded-xl text-left border transition-all ${
+                      proficiency === 'advanced'
+                        ? 'bg-orange-50 border-orange-300 text-terracotta ring-1 ring-orange-200'
+                        : 'bg-white border-stone-200 text-stone-600 hover:text-stone-900'
+                    }`}
+                  >
+                    <div className="text-[11px] font-bold">Advanced</div>
+                    <div className="text-[9px] text-stone-500 font-sans leading-tight mt-0.5">2y+ High Axial</div>
                   </button>
                 </div>
               </div>

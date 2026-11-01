@@ -249,7 +249,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           {/* Calories Bar */}
           <div>
             <div className="flex justify-between text-xs font-mono mb-1">
-              <span className="text-slate-300 flex items-center gap-1.5 font-bold">
+              <span className="text-stone-600 flex items-center gap-1.5 font-bold">
                 <Flame className="w-3.5 h-3.5 text-teal-400" aria-hidden="true" />
                 Energy Intake
               </span>
@@ -275,7 +275,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             {/* Protein Percentage (Mint / Emerald) */}
             <div className="p-3 rounded-none bg-slate-950/60 backdrop-blur-md border border-teal-500/25">
               <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-                <span className="text-[10px] font-bold uppercase text-slate-400">Protein</span>
+                <span className="text-[10px] font-bold uppercase text-stone-500">Protein</span>
                 <span className="text-emerald-400 font-bold">{proteinPercent}%</span>
               </div>
               <div 
@@ -296,7 +296,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             {/* Hydration Percentage (Cool Sky Blue) */}
             <div className="p-3 rounded-none bg-slate-950/60 backdrop-blur-md border border-sky-500/25">
               <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-                <span className="text-[10px] font-bold uppercase text-slate-400 flex items-center gap-1">
+                <span className="text-[10px] font-bold uppercase text-stone-500 flex items-center gap-1">
                   <Droplet className="w-3 h-3 text-sky-400" aria-hidden="true" />
                   Water
                 </span>
@@ -325,20 +325,20 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             <div className="grid grid-cols-2 gap-3 text-xs font-mono">
               <div className="p-3 bg-slate-950/70 rounded-none border border-teal-500/25">
                 <div className="text-[10px] uppercase font-bold text-teal-400">Protein Grams</div>
-                <div className="text-sm font-bold text-slate-100 mt-0.5">
+                <div className="text-sm font-bold text-stone-900 mt-0.5">
                   {currentProtein}g / {targetProtein}g
                 </div>
-                <div className="text-[10px] text-slate-400 mt-1">
+                <div className="text-[10px] text-stone-500 mt-1">
                   {remainingProtein > 0 ? `${Math.round(remainingProtein)}g left` : 'Goal reached ✓'}
                 </div>
               </div>
 
               <div className="p-3 bg-slate-950/70 rounded-none border border-sky-500/25">
                 <div className="text-[10px] uppercase font-bold text-sky-400">Hydration Volume</div>
-                <div className="text-sm font-bold text-slate-100 mt-0.5">
+                <div className="text-sm font-bold text-stone-900 mt-0.5">
                   {(currentWater / 1000).toFixed(1)}L / {(targetWater / 1000).toFixed(1)}L
                 </div>
-                <div className="text-[10px] text-slate-400 mt-1">
+                <div className="text-[10px] text-stone-500 mt-1">
                   {remainingCals} kcal remaining
                 </div>
               </div>
