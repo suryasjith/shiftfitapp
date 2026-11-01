@@ -280,19 +280,19 @@ export const App: React.FC = () => {
         role="alert" 
         aria-busy="true"
         aria-label="Loading ShiftFit application"
-        className="min-h-screen bg-[#0B132B] flex flex-col items-center justify-center text-slate-300 font-mono"
+        className="min-h-screen bg-[#FBF9F5] flex flex-col items-center justify-center text-stone-600 font-mono"
       >
-        <div className="w-12 h-12 rounded-[4px] border border-white/20 bg-white/5 backdrop-blur-xl flex items-center justify-center font-extrabold text-[#00FF87] mb-3 text-lg font-heading">
+        <div className="w-12 h-12 rounded-2xl border border-stone-200 bg-white/80 backdrop-blur-xl shadow-sm flex items-center justify-center font-bold text-terracotta mb-3 text-lg font-heading">
           SF
         </div>
-        <p className="font-heading font-black text-white text-sm tracking-wider uppercase">SHIFTFIT</p>
-        <p className="text-[10px] text-slate-400 mt-1 font-mono">Initializing Offline IndexedDB Engine...</p>
+        <p className="font-heading font-extrabold text-stone-900 text-sm tracking-wide uppercase">SHIFTFIT</p>
+        <p className="text-[10px] text-stone-500 mt-1 font-mono">Initializing Offline Engine...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-transparent text-white flex flex-col max-w-lg mx-auto relative select-none z-10">
+    <div className="min-h-screen bg-transparent text-stone-900 flex flex-col max-w-lg mx-auto relative select-none z-10">
       {/* Top Header - Spacious with Dynamic Island Clearance, Date Switcher & 'i' Contextual Tab Guide */}
       <Header
         todayStr={todayStr}

@@ -122,75 +122,75 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
 
   return (
     <div className="space-y-4 pb-28 text-left animate-fadeIn font-sans">
-      {/* 1. HERO "ZEN" WORKOUT CARD & PRIMARY ACTION BUTTON (Tactile Brutalist Frosted Glass) */}
+      {/* 1. HERO "ZEN" WORKOUT CARD & PRIMARY ACTION BUTTON (iOS Frosted Glass over Off-White) */}
       <section 
         aria-labelledby="zen-workout-heading"
-        className="rounded-[4px] glass-card p-5 space-y-4 border border-white/10"
+        className="glass-card p-5 space-y-4"
       >
         {/* Shift Badge & Rota Context */}
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 flex-wrap mb-1.5">
               {dayInfo.isOvertime ? (
-                <span className="px-2.5 py-0.5 rounded-[4px] text-[10px] font-black bg-[#00FF87] text-black font-mono tracking-wider">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 font-sans tracking-wide">
                   12H OVERTIME
                 </span>
               ) : dayInfo.isShiftDay ? (
-                <span className="px-2.5 py-0.5 rounded-[4px] text-[10px] font-black border border-[#00FF87]/40 bg-[#00FF87]/15 text-[#00FF87] flex items-center gap-1 font-mono tracking-wider">
-                  <Sun className="w-3 h-3 text-[#00FF87]" aria-hidden="true" />
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold border border-orange-200 bg-orange-50 text-terracotta flex items-center gap-1 font-sans tracking-wide">
+                  <Sun className="w-3 h-3 text-terracotta" aria-hidden="true" />
                   12H SHIFT DAY
                 </span>
               ) : (
-                <span className="px-2.5 py-0.5 rounded-[4px] text-[10px] font-black bg-[#8A2BE2]/20 text-[#A354F5] border border-[#8A2BE2]/40 flex items-center gap-1 font-mono tracking-wider">
-                  <Moon className="w-3 h-3 text-[#A354F5]" aria-hidden="true" />
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-stone-100 text-stone-700 border border-stone-200 flex items-center gap-1 font-sans tracking-wide">
+                  <Moon className="w-3 h-3 text-stone-500" aria-hidden="true" />
                   OFF-DAY TRAINING
                 </span>
               )}
-              <span className="text-xs text-slate-300 font-mono">
+              <span className="text-xs text-stone-500 font-sans font-medium">
                 {dayInfo.dayOfWeek}
               </span>
             </div>
 
-            <h2 id="zen-workout-heading" className="text-3xl font-black text-white tracking-tight font-heading">
+            <h2 id="zen-workout-heading" className="text-2xl font-extrabold text-stone-900 tracking-tight font-heading">
               {todayWorkout?.title || dayInfo.workoutTitle}
             </h2>
-            <p className="text-xs text-slate-300 mt-1 font-mono">
-              Focus: <strong className="text-[#00FF87]">{todayWorkout?.category || dayInfo.recommendedWorkoutCategory}</strong> • Target: ~{todayWorkout?.targetDurationMin || 45}m
+            <p className="text-xs text-stone-600 mt-1 font-sans">
+              Focus: <strong className="text-stone-900 font-semibold">{todayWorkout?.category || dayInfo.recommendedWorkoutCategory}</strong> • Target: ~{todayWorkout?.targetDurationMin || 45}m
             </p>
           </div>
 
-          <div className="w-11 h-11 rounded-[4px] bg-[#00FF87]/15 border border-[#00FF87]/40 flex items-center justify-center shrink-0 text-[#00FF87]">
+          <div className="w-11 h-11 rounded-2xl bg-orange-50 border border-orange-200/80 flex items-center justify-center shrink-0 text-terracotta shadow-xs">
             <Dumbbell className="w-5 h-5" aria-hidden="true" />
           </div>
         </div>
 
         {/* Dynamic Status Strip */}
-        <div className="p-3 rounded-[4px] bg-white/[0.04] backdrop-blur-md border border-white/10 flex items-center justify-between text-xs font-mono">
+        <div className="p-3.5 rounded-xl bg-stone-50/70 border border-stone-200/70 flex items-center justify-between text-xs font-sans">
           <div className="flex items-center gap-2">
-            <Activity className="w-3.5 h-3.5 text-[#00FF87]" aria-hidden="true" />
-            <span className="text-slate-300">Current Fatigue:</span>
-            <span className="text-[#00FF87] font-bold">{currentFatigue} / 10</span>
+            <Activity className="w-4 h-4 text-terracotta" aria-hidden="true" />
+            <span className="text-stone-500 font-medium">Current Fatigue:</span>
+            <span className="text-stone-900 font-bold">{currentFatigue} / 10</span>
           </div>
 
           <div>
             {isWorkoutDone ? (
-              <span className="text-[#00FF87] font-bold flex items-center gap-1">
-                <Check className="w-3.5 h-3.5" aria-hidden="true" />
+              <span className="text-emerald-700 font-bold flex items-center gap-1">
+                <Check className="w-4 h-4 text-emerald-600" aria-hidden="true" />
                 Done
               </span>
             ) : isWorkoutInProgress ? (
-              <span className="text-[#00FF87] font-bold">
+              <span className="text-terracotta font-bold">
                 In Progress ({completedExercisesCount}/{totalExercisesCount})
               </span>
             ) : (
-              <span className="text-slate-300">
+              <span className="text-stone-500">
                 {totalExercisesCount > 0 ? `${totalExercisesCount} exercises` : 'Rest Day'}
               </span>
             )}
           </div>
         </div>
 
-        {/* MASSIVE PRIMARY ACTION BUTTON (Tactile Brutalist Electric Mint Solid) */}
+        {/* MASSIVE PRIMARY ACTION BUTTON (Warm Terracotta iOS Capsule) */}
         <button
           onClick={handleStartWorkoutClick}
           aria-label={
@@ -200,9 +200,9 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
               ? 'Resume active workout session' 
               : "Start today's workout session"
           }
-          className="min-h-[58px] w-full py-4 px-6 rounded-[4px] btn-tactile-primary text-black font-heading font-black text-lg uppercase tracking-wide flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-[#00FF87]"
+          className="min-h-[56px] w-full py-4 px-6 btn-tactile-primary text-white font-heading font-bold text-base flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-orange-200"
         >
-          <Play className="w-5 h-5 fill-black stroke-black" aria-hidden="true" />
+          <Play className="w-5 h-5 fill-white stroke-white" aria-hidden="true" />
           <span>
             {isWorkoutDone 
               ? 'View Completed Workout' 
@@ -210,21 +210,21 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
               ? 'Resume Active Workout' 
               : 'Start Today\'s Workout'}
           </span>
-          <ChevronRight className="w-5 h-5 stroke-[3] ml-auto" aria-hidden="true" />
+          <ChevronRight className="w-5 h-5 stroke-[2.5] ml-auto" aria-hidden="true" />
         </button>
       </section>
 
-      {/* 2. CONDENSED DAILY FUEL & WATER SUMMARY (Tactile Glassmorphism) */}
+      {/* 2. CONDENSED DAILY FUEL & WATER SUMMARY (iOS Frosted Glass) */}
       <section 
         aria-labelledby="condensed-fuel-heading"
-        className="rounded-[4px] glass-card p-5 space-y-4 border border-white/10"
+        className="glass-card p-5 space-y-4"
       >
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#00FF87] block font-black">
+            <span className="text-[10px] font-sans uppercase tracking-widest text-sage-700 block font-bold">
               Daily Fuel & Hydration
             </span>
-            <h3 id="condensed-fuel-heading" className="text-xl font-black text-white font-heading tracking-tight">
+            <h3 id="condensed-fuel-heading" className="text-xl font-bold text-stone-900 font-heading tracking-tight">
               Nutrition Readiness
             </h3>
           </div>
@@ -237,9 +237,9 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             }}
             aria-expanded={isFuelDetailsExpanded}
             aria-label={isFuelDetailsExpanded ? "Hide granular fuel details" : "Show granular fuel details"}
-            className="min-h-[44px] px-3.5 py-1.5 rounded-[4px] btn-tactile-secondary text-xs font-heading font-bold flex items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-[#00FF87]"
+            className="min-h-[44px] px-3.5 py-1.5 btn-tactile-secondary text-xs font-sans font-semibold flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-orange-200"
           >
-            <span>{isFuelDetailsExpanded ? 'Hide Grams' : 'Tap for Details'}</span>
+            <span>{isFuelDetailsExpanded ? 'Hide Details' : 'Show Details'}</span>
             {isFuelDetailsExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
           </button>
         </div>
@@ -350,7 +350,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                 type="button"
                 onClick={() => onAddWater(250)}
                 aria-label="Quick log 250 milliliters of water"
-                className="min-h-[44px] flex-1 py-1.5 rounded-[4px] btn-tactile-secondary text-xs font-bold text-white text-center focus:outline-none focus:ring-1 focus:ring-[#00FF87]"
+                className="min-h-[44px] flex-1 py-1.5 rounded-xl btn-tactile-secondary text-xs font-semibold text-stone-700 text-center focus:outline-none focus:ring-2 focus:ring-orange-200"
               >
                 +250ml
               </button>
@@ -358,7 +358,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                 type="button"
                 onClick={() => onAddWater(500)}
                 aria-label="Quick log 500 milliliters of water"
-                className="min-h-[44px] flex-1 py-1.5 rounded-[4px] btn-tactile-secondary text-xs font-bold text-white text-center focus:outline-none focus:ring-1 focus:ring-[#00FF87]"
+                className="min-h-[44px] flex-1 py-1.5 rounded-xl btn-tactile-secondary text-xs font-semibold text-stone-700 text-center focus:outline-none focus:ring-2 focus:ring-orange-200"
               >
                 +500ml
               </button>
@@ -370,33 +370,33 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         <button
           onClick={() => onNavigateTab('fuel')}
           aria-label="Open Fuel tab to log meals and view full macronutrient breakdown"
-          className="min-h-[48px] w-full py-3 px-4 rounded-[4px] btn-tactile-secondary font-heading font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 focus:outline-none focus:ring-1 focus:ring-[#00FF87]"
+          className="min-h-[48px] w-full py-3 px-4 rounded-xl btn-tactile-secondary font-heading font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-orange-200"
         >
           <span>Open Full Fuel Diary</span>
-          <ChevronRight className="w-4 h-4 text-[#00FF87]" aria-hidden="true" />
+          <ChevronRight className="w-4 h-4 text-stone-600" aria-hidden="true" />
         </button>
       </section>
 
-      {/* 3. Minimal Morning Weigh-In Card (Tactile Frosted Glass) */}
+      {/* 3. Minimal Morning Weigh-In Card (Warm iOS Frosted Glass) */}
       <section 
         aria-labelledby="weigh-in-heading"
-        className="rounded-[4px] glass-card p-4 border border-white/10"
+        className="glass-card p-5 space-y-3"
       >
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Scale className="w-4 h-4 text-[#A354F5]" aria-hidden="true" />
-            <h4 id="weigh-in-heading" className="text-xs font-black text-white font-heading uppercase tracking-wider">
-              Morning Weight
+            <Scale className="w-4 h-4 text-purple-700" aria-hidden="true" />
+            <h4 id="weigh-in-heading" className="text-sm font-bold text-stone-900 font-heading">
+              Morning Weigh-In
             </h4>
           </div>
           {todayWeight?.weightKg && (
-            <span className="text-xs font-mono font-bold text-[#A354F5] bg-[#8A2BE2]/20 px-2.5 py-0.5 rounded-[4px] border border-[#8A2BE2]/40">
+            <span className="text-xs font-mono font-bold text-purple-800 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">
               {todayWeight.weightKg} kg logged
             </span>
           )}
         </div>
 
-        <form onSubmit={handleWeightSubmit} className="flex items-center gap-2 mt-2 font-mono">
+        <form onSubmit={handleWeightSubmit} className="flex items-center gap-2 font-sans">
           <div className="relative flex-1">
             <label htmlFor="dashboard-morning-weight" className="sr-only">
               Morning Weight in Kilograms
@@ -410,23 +410,23 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
               value={quickWeight}
               onChange={(e) => setQuickWeight(e.target.value)}
               placeholder="Enter weight in kg"
-              className="w-full min-h-[44px] bg-white/[0.04] border border-white/15 rounded-[4px] px-3 py-2 text-white text-xs font-bold placeholder-slate-400 focus:outline-none focus:border-[#00FF87] transition-colors"
+              className="w-full min-h-[44px] bg-white/80 border border-stone-200 rounded-xl px-3.5 py-2 text-stone-900 text-xs font-bold placeholder-stone-400 focus:outline-none focus:border-terracotta focus:ring-2 focus:ring-orange-100 transition-colors"
             />
-            <span className="absolute right-3 top-3 text-xs text-slate-400" aria-hidden="true">kg</span>
+            <span className="absolute right-3.5 top-3 text-xs text-stone-400 font-medium" aria-hidden="true">kg</span>
           </div>
 
           <button
             type="submit"
             aria-label={weightSavedNotice ? 'Weight saved' : 'Save morning weight entry'}
-            className="min-h-[44px] px-5 py-2 rounded-[4px] btn-tactile-primary text-black font-heading font-black text-xs uppercase tracking-wider shrink-0 focus:outline-none focus:ring-1 focus:ring-[#00FF87]"
+            className="min-h-[44px] px-5 py-2 rounded-xl btn-tactile-primary text-white font-heading font-bold text-xs uppercase tracking-wider shrink-0 focus:outline-none focus:ring-2 focus:ring-orange-200"
           >
             {weightSavedNotice ? 'Saved ✓' : 'Save'}
           </button>
         </form>
 
         {todayWeight?.movingAverage7Day && (
-          <p className="text-[10px] text-slate-300 mt-2 font-mono">
-            7-Day Moving Avg: <strong className="text-[#A354F5]">{todayWeight.movingAverage7Day} kg</strong>
+          <p className="text-[11px] text-stone-500 font-sans">
+            7-Day Moving Avg: <strong className="text-stone-800 font-semibold">{todayWeight.movingAverage7Day} kg</strong>
           </p>
         )}
       </section>

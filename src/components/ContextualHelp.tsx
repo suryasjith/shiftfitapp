@@ -40,10 +40,10 @@ export const ContextualHelp: React.FC<ContextualHelpProps> = ({
           e.stopPropagation();
           setIsOpen(!isOpen);
         }}
-        className={`w-3.5 h-3.5 rounded-[4px] border text-[9px] font-mono flex items-center justify-center transition-all ${
+        className={`w-3.5 h-3.5 rounded-2xl border text-[9px] font-mono flex items-center justify-center transition-all ${
           isOpen
             ? 'border-white bg-white text-black font-bold'
-            : 'border-neutral-700 text-neutral-400 hover:text-white hover:border-neutral-400 bg-neutral-900'
+            : 'border-neutral-700 text-neutral-400 hover:text-stone-900 hover:border-neutral-400 bg-neutral-900'
         }`}
         aria-label={`Help info for ${title}`}
         title={`What is ${title}?`}
@@ -53,7 +53,7 @@ export const ContextualHelp: React.FC<ContextualHelpProps> = ({
 
       {isOpen && (
         <div
-          className={`absolute z-50 w-64 p-3 bg-neutral-900 border border-neutral-700 rounded-[4px] shadow-2xl text-left animate-fadeIn ${
+          className={`absolute z-50 w-64 p-3 bg-neutral-900 border border-neutral-700 rounded-2xl shadow-2xl text-left animate-fadeIn ${
             placement === 'top'
               ? 'bottom-full mb-1.5 left-1/2 -translate-x-1/2'
               : placement === 'left'
@@ -65,12 +65,12 @@ export const ContextualHelp: React.FC<ContextualHelpProps> = ({
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-start justify-between gap-2 border-b border-neutral-800 pb-1.5 mb-1.5">
-            <span className="text-[10px] font-bold text-white tracking-wide uppercase font-mono">
+            <span className="text-[10px] font-bold text-stone-900 tracking-wide uppercase font-mono">
               {title}
             </span>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-neutral-500 hover:text-white p-0.5"
+              className="text-neutral-500 hover:text-stone-900 p-0.5"
             >
               <X className="w-3 h-3" />
             </button>

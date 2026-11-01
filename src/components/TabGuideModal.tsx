@@ -73,20 +73,20 @@ export const TabGuideModal: React.FC<TabGuideModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
       <div 
-        className="w-full max-w-md bg-neutral-950 border border-neutral-800 rounded-[4px]-t-2xl sm:rounded-[4px] p-5 shadow-2xl text-left animate-slideUp font-sans"
+        className="w-full max-w-md bg-neutral-950 border border-neutral-800 rounded-2xl-t-2xl sm:rounded-2xl p-5 shadow-2xl text-left animate-slideUp font-sans"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
         <div className="flex items-start justify-between pb-3 border-b border-neutral-850">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-[4px] bg-neutral-900 border border-neutral-750 flex items-center justify-center text-white shrink-0">
-              <Info className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 rounded-2xl bg-neutral-900 border border-neutral-750 flex items-center justify-center text-stone-900 shrink-0">
+              <Info className="w-4 h-4 text-stone-900" />
             </div>
             <div>
               <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-400 block">
                 {data.badge} Guide
               </span>
-              <h3 className="text-base font-bold text-white tracking-tight">
+              <h3 className="text-base font-bold text-stone-900 tracking-tight">
                 {data.title}
               </h3>
             </div>
@@ -94,7 +94,7 @@ export const TabGuideModal: React.FC<TabGuideModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-[4px] text-neutral-400 hover:text-white hover:bg-neutral-900 transition-colors"
+            className="p-1.5 rounded-2xl text-neutral-400 hover:text-stone-900 hover:bg-neutral-900 transition-colors"
             title="Close Guide"
           >
             <X className="w-5 h-5" />
@@ -108,8 +108,8 @@ export const TabGuideModal: React.FC<TabGuideModalProps> = ({
           </p>
 
           {/* Primary Action Callout */}
-          <div className="p-3 rounded-[4px] bg-neutral-900 border border-neutral-800 space-y-1">
-            <span className="text-[10px] uppercase font-bold text-white tracking-wider block">
+          <div className="p-3 rounded-2xl bg-neutral-900 border border-neutral-800 space-y-1">
+            <span className="text-[10px] uppercase font-bold text-stone-900 tracking-wider block">
               What to do on this screen:
             </span>
             <p className="text-xs text-neutral-300 leading-relaxed font-medium">
@@ -135,7 +135,7 @@ export const TabGuideModal: React.FC<TabGuideModalProps> = ({
         <div className="pt-2">
           <button
             onClick={onClose}
-            className="w-full py-3 rounded-[4px] bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-[0.98] flex items-center justify-center gap-1.5"
+            className="w-full py-3 rounded-2xl bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-all active:scale-[0.98] flex items-center justify-center gap-1.5"
           >
             <span>Got It, Let's Go</span>
             <ArrowRight className="w-3.5 h-3.5" />

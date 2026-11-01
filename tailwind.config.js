@@ -8,89 +8,109 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Dark Slate Navy Base (#0B132B)
-        navy: {
-          950: '#060B1A',
-          900: '#0B132B',
-          850: '#111D42',
-          800: '#1C2541',
-          700: '#3A506B',
+        // Warm Off-White / Alabaster Editorial Canvas
+        alabaster: {
+          50: '#FDFCFB',
+          100: '#FBF9F5',
+          200: '#F5F2EB',
+          300: '#EBE6DC',
+          400: '#DED7C9',
+          500: '#C7BDB0',
         },
-        // Electric Mint & Soft Violet Palette
-        mint: {
-          400: '#33FFA0',
-          DEFAULT: '#00FF87',
-          500: '#00FF87',
-          600: '#00CC6C',
+        // Warm Sand & Terracotta Primary Palette (Wellness & Active Training)
+        terracotta: {
+          50: '#FFF7ED',
+          100: '#FFEDD5',
+          200: '#FED7AA',
+          300: '#FDBA74',
+          400: '#FB923C',
+          500: '#EA580C',
+          600: '#C2410C',
+          700: '#9A3412',
+          DEFAULT: '#C2410C',
         },
-        violet: {
-          400: '#A354F5',
-          DEFAULT: '#8A2BE2',
-          500: '#8A2BE2',
-          600: '#6E1CB8',
+        // Forest Sage (Nutrition & Vitality)
+        sage: {
+          50: '#F0FDF4',
+          100: '#DCFCE7',
+          200: '#BBF7D0',
+          300: '#86EFAC',
+          400: '#4ADE80',
+          500: '#22C55E',
+          600: '#16A34A',
+          700: '#15803D',
+          DEFAULT: '#15803D',
         },
-        // Soft Dark Slate Base (Eliminates OLED Halation & Eye Strain)
-        slate: {
-          950: '#0B1120',
-          900: '#0F172A',
-          850: '#162036',
-          800: '#1E293B',
-          750: '#28354D',
-          700: '#334155',
-          600: '#475569',
-          500: '#64748B',
-          400: '#94A3B8',
-          300: '#CBD5E1',
-          200: '#E2E8F0',
-          100: '#F1F5F9',
+        // Ocean Mist / Cerulean (Hydration)
+        ocean: {
+          50: '#F0F9FF',
+          100: '#E0F2FE',
+          200: '#BAE6FD',
+          300: '#7DD3FC',
+          400: '#38BDF8',
+          500: '#0284C7',
+          600: '#0369A1',
+          DEFAULT: '#0284C7',
+        },
+        // Warm Charcoal / Plum Slate (Progress & Deep Accents)
+        charcoal: {
           50: '#F8FAFC',
-        },
-        // Mapped neutral to soft slate/charcoal scale
-        neutral: {
-          950: '#0B1120',
-          900: '#0F172A',
-          850: '#162036',
-          800: '#1E293B',
-          750: '#28354D',
-          700: '#334155',
-          600: '#475569',
-          500: '#64748B',
-          400: '#94A3B8',
-          300: '#CBD5E1',
-          200: '#E2E8F0',
           100: '#F1F5F9',
-          50: '#F8FAFC',
+          200: '#E2E8F0',
+          300: '#CBD5E1',
+          400: '#94A3B8',
+          500: '#64748B',
+          600: '#475569',
+          700: '#334155',
+          800: '#1E293B',
+          900: '#0F172A',
+          950: '#0A0F1D',
+          DEFAULT: '#1C1917',
+        },
+        // Warm Stone Neutrals for Cards, Borders and Text
+        stone: {
+          50: '#FAFAF9',
+          100: '#F5F5F4',
+          200: '#E7E5E4',
+          300: '#D6D3D1',
+          400: '#A8A29E',
+          500: '#78716C',
+          600: '#57534E',
+          700: '#44403C',
+          800: '#292524',
+          900: '#1C1917',
+          950: '#0C0A09',
         },
         // Zone-Specific Vibrancy Accents
         workout: {
-          light: '#FDE68A',
-          DEFAULT: '#F59E0B',
-          coral: '#F97316',
-          dark: '#B45309',
+          light: '#FFEDD5',
+          DEFAULT: '#C2410C',
+          coral: '#EA580C',
+          dark: '#9A3412',
         },
         fuel: {
-          light: '#A7F3D0',
-          DEFAULT: '#14B8A6',
-          mint: '#10B981',
-          dark: '#0F766E',
+          light: '#DCFCE7',
+          DEFAULT: '#15803D',
+          mint: '#16A34A',
+          dark: '#14532D',
         },
         hydration: {
-          light: '#BAE6FD',
-          DEFAULT: '#0EA5E9',
-          blue: '#3B82F6',
-          dark: '#0369A1',
+          light: '#E0F2FE',
+          DEFAULT: '#0284C7',
+          blue: '#0369A1',
+          dark: '#075985',
         },
         progress: {
-          light: '#DDD6FE',
-          DEFAULT: '#A855F7',
-          indigo: '#6366F1',
-          dark: '#7E22CE',
+          light: '#F3E8FF',
+          DEFAULT: '#7E22CE',
+          indigo: '#6B21A8',
+          dark: '#581C87',
         }
       },
       fontFamily: {
-        heading: ['Space Grotesk', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        sans: ['Space Grotesk', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'SF Pro Display', 'sans-serif'],
-        mono: ['JetBrains Mono', 'SF Mono', 'Menlo', 'Monaco', 'monospace']
+        heading: ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'sans-serif'],
+        mono: ['JetBrains Mono', 'SF Mono', 'Menlo', 'monospace']
       },
       borderWidth: {
         'hairline': '0.5px'

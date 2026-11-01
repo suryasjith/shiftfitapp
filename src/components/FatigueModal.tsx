@@ -120,24 +120,24 @@ export const FatigueModal: React.FC<FatigueModalProps> = ({
         aria-modal="true"
         aria-labelledby="fatigue-modal-title"
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-sm rounded-[4px] glass-card border border-amber-500/30 shadow-2xl p-6 text-left relative"
+        className="w-full max-w-sm rounded-2xl glass-card border border-amber-500/30 shadow-2xl p-6 text-left relative"
       >
         <div className="flex items-center justify-between pb-4 border-b border-slate-800">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-[4px] bg-[#00FF87]/15 border border-amber-500/30 text-[#00FF87]">
-              <Activity className="w-4 h-4 text-[#00FF87]" aria-hidden="true" />
+            <div className="p-2 rounded-2xl bg-terracotta/15 border border-amber-500/30 text-terracotta">
+              <Activity className="w-4 h-4 text-terracotta" aria-hidden="true" />
             </div>
             <div>
-              <h3 id="fatigue-modal-title" className="text-sm font-bold text-slate-100 font-mono uppercase tracking-wider">
+              <h3 id="fatigue-modal-title" className="text-sm font-bold text-stone-900 font-mono uppercase tracking-wider">
                 Pre-Workout Check-In
               </h3>
-              <p className="text-[11px] text-slate-400 font-mono">Rate fatigue (1-10) to scale volume</p>
+              <p className="text-[11px] text-stone-500 font-mono">Rate fatigue (1-10) to scale volume</p>
             </div>
           </div>
           <button 
             type="button"
             onClick={onClose}
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 hover:text-white transition-colors focus:outline-none focus:ring-1 focus:ring-amber-400 rounded-[4px]"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-500 hover:text-stone-900 transition-colors focus:outline-none focus:ring-1 focus:ring-amber-400 rounded-2xl"
             aria-label="Close pre-workout fatigue modal"
           >
             <X className="w-5 h-5" aria-hidden="true" />
@@ -146,21 +146,21 @@ export const FatigueModal: React.FC<FatigueModalProps> = ({
 
         {/* Current Score Display */}
         <div className="mt-6 text-center">
-          <div className="text-[10px] uppercase font-mono tracking-widest text-slate-400 mb-1">
+          <div className="text-[10px] uppercase font-mono tracking-widest text-stone-500 mb-1">
             Current Fatigue Rating
           </div>
           <div className="flex items-baseline justify-center gap-1.5 font-mono">
-            <span className="text-6xl font-black text-[#00FF87]">{score}</span>
+            <span className="text-6xl font-black text-terracotta">{score}</span>
             <span className="text-2xl text-slate-500 font-bold">/ 10</span>
           </div>
-          <span className="inline-block mt-3 px-3 py-1 rounded-[4px] text-[11px] font-mono font-bold border border-amber-500/30 bg-[#00FF87]/10 text-[#00FF87]">
+          <span className="inline-block mt-3 px-3 py-1 rounded-2xl text-[11px] font-mono font-bold border border-amber-500/30 bg-terracotta/10 text-terracotta">
             {readiness.badge}
           </span>
         </div>
 
         {/* Tactile Grayscale Slider with Touch Padding */}
         <div className="mt-6 px-1">
-          <div className="flex justify-between text-[10px] font-mono font-bold text-slate-400 mb-2">
+          <div className="flex justify-between text-[10px] font-mono font-bold text-stone-500 mb-2">
             <span>1: FRESH</span>
             <span>5: SHIFT FATIGUE</span>
             <span>10: EXHAUSTED</span>
@@ -180,25 +180,25 @@ export const FatigueModal: React.FC<FatigueModalProps> = ({
               aria-valuemax={10}
               aria-valuenow={score}
               aria-valuetext={`${score} out of 10, ${readiness.tier}`}
-              className="w-full h-3 bg-slate-800 rounded-[4px] appearance-none cursor-pointer accent-amber-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+              className="w-full h-3 bg-stone-50 rounded-2xl appearance-none cursor-pointer accent-amber-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
             />
           </div>
-          <div className="flex justify-between px-1 mt-1 text-[10px] text-slate-400 font-mono">
+          <div className="flex justify-between px-1 mt-1 text-[10px] text-stone-500 font-mono">
             <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
             <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
           </div>
         </div>
 
         {/* Impact Card */}
-        <div className="mt-5 p-4 rounded-[4px] bg-slate-800/80 border border-amber-500/20 transition-all">
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-100 font-mono mb-1">
+        <div className="mt-5 p-4 rounded-2xl bg-stone-50/80 border border-amber-500/20 transition-all">
+          <div className="text-xs font-bold uppercase tracking-wider text-stone-900 font-mono mb-1">
             {readiness.tier}
           </div>
-          <p className="text-xs text-slate-300 leading-relaxed font-sans">
+          <p className="text-xs text-stone-600 leading-relaxed font-sans">
             {readiness.desc}
           </p>
-          <div className="mt-2.5 pt-2.5 border-t border-slate-700/60 flex items-center gap-2 text-[11px] text-slate-400 font-mono">
-            <Check className="w-3.5 h-3.5 text-[#00FF87] shrink-0" aria-hidden="true" />
+          <div className="mt-2.5 pt-2.5 border-t border-slate-700/60 flex items-center gap-2 text-[11px] text-stone-500 font-mono">
+            <Check className="w-3.5 h-3.5 text-terracotta shrink-0" aria-hidden="true" />
             <span>Rule: {readiness.action}</span>
           </div>
         </div>
@@ -208,14 +208,14 @@ export const FatigueModal: React.FC<FatigueModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="min-h-[48px] flex-1 py-3 px-4 rounded-[4px] btn-tactile-secondary text-white text-xs font-heading font-black uppercase tracking-wider focus:outline-none focus:ring-1 focus:ring-white"
+            className="min-h-[48px] flex-1 py-3 px-4 rounded-2xl btn-tactile-secondary text-stone-900 text-xs font-heading font-black uppercase tracking-wider focus:outline-none focus:ring-1 focus:ring-white"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleConfirm}
-            className="min-h-[48px] flex-1 py-3 px-4 rounded-[4px] btn-tactile-primary text-black text-xs font-heading font-black uppercase tracking-wider flex items-center justify-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-[#00FF87]"
+            className="min-h-[48px] flex-1 py-3 px-4 rounded-2xl btn-tactile-primary text-black text-xs font-heading font-black uppercase tracking-wider flex items-center justify-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-[#00FF87]"
           >
             <span>Confirm & Start</span>
           </button>
