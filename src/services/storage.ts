@@ -57,6 +57,15 @@ export const DEFAULT_PROFILE: UserProfile = {
     carbsGrams: 200,
     calories: 2170,
   },
+  cycleSettings: {
+    enabled: false,
+    cycleLengthDays: 28,
+  },
+  notificationSettings: {
+    enabled: false,
+    dailyQuoteTime: '08:00',
+    hydrationIntervalHours: 2,
+  },
 };
 
 class StorageService {

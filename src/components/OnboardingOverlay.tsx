@@ -30,6 +30,11 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
     profile.twoWeekTemplate || ROTA_PRESETS.fourOnThreeOff
   );
 
+  // Cycle Periodization State
+  const [cycleEnabled, setCycleEnabled] = useState<boolean>(profile.cycleSettings?.enabled || false);
+  const [lastPeriodDate, setLastPeriodDate] = useState<string>(profile.cycleSettings?.lastPeriodStartDate || '');
+  const [cycleLength, setCycleLength] = useState<number>(profile.cycleSettings?.cycleLengthDays || 28);
+
   useEffect(() => {
     if (isOpen) {
       setStep(0);
@@ -40,6 +45,9 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
       setDesiredWeightStr(profile.desiredWeightKg ? String(profile.desiredWeightKg) : '');
       setSelectedGoal(profile.fitnessGoal || 'body_recomposition');
       setTwoWeekTemplate(profile.twoWeekTemplate || ROTA_PRESETS.fourOnThreeOff);
+      setCycleEnabled(profile.cycleSettings?.enabled || false);
+      setLastPeriodDate(profile.cycleSettings?.lastPeriodStartDate || '');
+      setCycleLength(profile.cycleSettings?.cycleLengthDays || 28);
     }
   }, [isOpen, profile]);
 
@@ -95,6 +103,13 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
         proteinGrams: targetProtein,
         fatsGrams: shiftDayFats,
         carbsGrams: shiftDayCarbs,
+      },
+      cycleSettings: {
+        enabled: gender === 'female' && cycleEnabled,
+        lastPeriodStartDate: lastPeriodDate || undefined,
+        cycleLengthDays: cycleLength || 28,
+        phaseOverride: profile.cycleSettings?.phaseOverride,
+        overrideDate: profile.cycleSettings?.overrideDate,
       },
     };
     localStorage.setItem('shiftfit_onboarded_v2', 'true');
@@ -211,6 +226,55 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
                     </div>
                   )}
                 </div>
+
+                {/* Optional Cycle-Aware Periodization Opt-In (Females Only) */}
+                {gender === 'female' && (
+                  <div className="mt-2 p-2.5 rounded-xl bg-stone-100/80 dark:bg-stone-900/80 border border-stone-200 dark:border-white/10 space-y-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={cycleEnabled}
+                        onChange={(e) => setCycleEnabled(e.target.checked)}
+                        className="w-4 h-4 rounded text-orange-500 focus:ring-orange-400 bg-white dark:bg-stone-800 border-stone-300 dark:border-white/20"
+                      />
+                      <span className="text-xs font-bold text-stone-900 dark:text-white">
+                        Enable Cycle-Aware Periodization
+                      </span>
+                    </label>
+                    <p className="text-[10px] text-stone-500 dark:text-stone-400 leading-tight">
+                      Adapts hydration targets (+400ml in luteal phase) and highlights high-estrogen PR strength windows. 100% private to device.
+                    </p>
+
+                    {cycleEnabled && (
+                      <div className="pt-2 grid grid-cols-2 gap-2 border-t border-stone-200 dark:border-white/10">
+                        <div>
+                          <label className="text-[9px] text-stone-500 uppercase font-mono block mb-1">
+                            Last Period Start:
+                          </label>
+                          <input
+                            type="date"
+                            value={lastPeriodDate}
+                            onChange={(e) => setLastPeriodDate(e.target.value)}
+                            className="w-full bg-white dark:bg-black border border-stone-200 dark:border-white/20 rounded-xl px-2 py-1 text-[11px] font-mono text-stone-900 dark:text-white focus:outline-none focus:border-orange-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[9px] text-stone-500 uppercase font-mono block mb-1">
+                            Cycle Length (Days):
+                          </label>
+                          <input
+                            type="number"
+                            min="21"
+                            max="35"
+                            value={cycleLength}
+                            onChange={(e) => setCycleLength(parseInt(e.target.value, 10) || 28)}
+                            className="w-full bg-white dark:bg-black border border-stone-200 dark:border-white/20 rounded-xl px-2 py-1 text-[11px] font-mono text-stone-900 dark:text-white focus:outline-none focus:border-orange-500"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Gym Experience / Proficiency Level Selector */}

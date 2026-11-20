@@ -9,6 +9,7 @@ import {
 import { RotaEngine } from '../../services/rotaEngine';
 import { FoodApiService, FoodSearchResult, FIXED_SHIFT_MEALS } from '../../services/foodApi';
 import { ActivityEngine } from '../../services/activityEngine';
+import { CycleEngine } from '../../services/cycleEngine';
 import { 
   RotateCcw,
   Search,
@@ -226,9 +227,14 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
     setShowClearConfirm(false);
   }, [todayStr, effectiveTargetProtein, effectiveTargetFats, effectiveTargetCarbs, effectiveTargetCalories, onSaveNutrition]);
 
+  // Cycle periodization phase info for hydration tuning
+  const cyclePhaseInfo = useMemo(() => {
+    return CycleEngine.getPhaseInfo(todayStr, profile.cycleSettings, profile.gender);
+  }, [todayStr, profile.cycleSettings, profile.gender]);
+
   // Water handlers
   const currentWater = hydration?.currentMl || 0;
-  const targetWater = hydration?.targetMl || profile.dailyWaterTargetMl || 3800;
+  const targetWater = (hydration?.targetMl || profile.dailyWaterTargetMl || 3800) + cyclePhaseInfo.hydrationBumpMl;
 
   const handleAddWater = useCallback((ml: number) => {
     soundManager.playTap();
@@ -375,8 +381,13 @@ export const NutritionTab: React.FC<NutritionTabProps> = ({
               <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block font-bold">
                 Hydration Tracker
               </span>
-              <h3 id="hydration-card-title" className="text-base font-bold text-stone-900 dark:text-white tracking-tight">
-                {(currentWater / 1000).toFixed(1)}L <span className="text-xs text-stone-500 font-normal">/ {(targetWater / 1000).toFixed(1)}L</span>
+              <h3 id="hydration-card-title" className="text-base font-bold text-stone-900 dark:text-white tracking-tight flex items-center gap-2 flex-wrap">
+                <span>{(currentWater / 1000).toFixed(1)}L <span className="text-xs text-stone-500 font-normal">/ {(targetWater / 1000).toFixed(1)}L</span></span>
+                {cyclePhaseInfo.hydrationBumpMl > 0 && (
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-purple-950/60 border border-purple-500/40 text-purple-300">
+                    +{cyclePhaseInfo.hydrationBumpMl}ml {cyclePhaseInfo.shortLabel}
+                  </span>
+                )}
               </h3>
             </div>
           </div>

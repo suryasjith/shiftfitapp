@@ -21,6 +21,8 @@ import { FloatingRestTimer } from './components/FloatingRestTimer';
 import { InstallBanner } from './components/InstallBanner';
 import { OnboardingOverlay } from './components/OnboardingOverlay';
 import { LegalStandardsModal } from './components/LegalStandardsModal';
+import { NotificationPermissionModal } from './components/NotificationPermissionModal';
+import { NotificationService } from './services/notificationService';
 import { DashboardTab } from './components/tabs/DashboardTab';
 import { WorkoutTab } from './components/tabs/WorkoutTab';
 import { NutritionTab } from './components/tabs/NutritionTab';
@@ -49,6 +51,7 @@ export const App: React.FC = () => {
   // Modals & Contextual Overlays
   const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(false);
   const [isLegalConsentOpen, setIsLegalConsentOpen] = useState<boolean>(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState<boolean>(false);
   const [isFatigueModalOpen, setIsFatigueModalOpen] = useState<boolean>(false);
   const [fatigueModalSuccessCallback, setFatigueModalSuccessCallback] = useState<(() => void) | null>(null);
   const [restTimerState, setRestTimerState] = useState<{
@@ -107,16 +110,114 @@ export const App: React.FC = () => {
   const handleAgreeLegal = useCallback(() => {
     localStorage.setItem('shiftfit_legal_agreed_v1', 'true');
     setIsLegalConsentOpen(false);
+
+    // Prompt for mobile push notifications if supported & not yet prompted
+    const notifPrompted = localStorage.getItem('shiftfit_notif_prompted');
+    if (!notifPrompted && NotificationService.isSupported()) {
+      setIsNotificationModalOpen(true);
+    } else {
+      const hasOnboarded = localStorage.getItem('shiftfit_onboarded_v2');
+      if (!hasOnboarded) {
+        setIsOnboardingOpen(true);
+      }
+    }
+  }, []);
+
+  const handleCloseNotificationModal = useCallback(async (granted: boolean) => {
+    localStorage.setItem('shiftfit_notif_prompted', 'true');
+    setIsNotificationModalOpen(false);
+
+    if (granted) {
+      const updatedProfile = {
+        ...profile,
+        notificationSettings: {
+          ...profile.notificationSettings,
+          enabled: true,
+          dailyQuoteTime: profile.notificationSettings?.dailyQuoteTime || '08:00',
+          hydrationIntervalHours: profile.notificationSettings?.hydrationIntervalHours || 2,
+        },
+      };
+      setProfile(updatedProfile);
+      await storage.saveProfile(updatedProfile);
+    }
+
     const hasOnboarded = localStorage.getItem('shiftfit_onboarded_v2');
     if (!hasOnboarded) {
       setIsOnboardingOpen(true);
     }
-  }, []);
+  }, [profile]);
 
   const handleDismissOnboarding = useCallback(() => {
     setIsOnboardingOpen(false);
     localStorage.setItem('shiftfit_onboarded_v2', 'true');
   }, []);
+
+  // Automated 8:00 AM Morning Quote & Smart Hydration Push Notifications Runner
+  useEffect(() => {
+    if (!isReady || !profile.notificationSettings?.enabled) return;
+
+    const checkNotifications = async () => {
+      const now = new Date();
+      const currentHours = now.getHours();
+      const currentMinutes = now.getMinutes();
+
+      // 1. Morning 8:00 AM Quote (Fires once per day in the 08:00-08:30 window)
+      if (currentHours === 8 && currentMinutes < 30) {
+        if (profile.notificationSettings?.lastQuoteDate !== todayStr) {
+          const sent = await NotificationService.sendMorningQuoteNotification();
+          if (sent) {
+            const updated = {
+              ...profile,
+              notificationSettings: {
+                ...profile.notificationSettings,
+                enabled: true,
+                dailyQuoteTime: profile.notificationSettings?.dailyQuoteTime || '08:00',
+                hydrationIntervalHours: profile.notificationSettings?.hydrationIntervalHours || 2,
+                lastQuoteDate: todayStr,
+              },
+            };
+            setProfile(updated);
+            await storage.saveProfile(updated);
+          }
+        }
+      }
+
+      // 2. Smart Hydration Reminder (every N hours during wake window 08:00-22:00)
+      if (currentHours >= 8 && currentHours <= 22) {
+        const intervalMs = (profile.notificationSettings?.hydrationIntervalHours || 2) * 60 * 60 * 1000;
+        const lastPrompt = profile.notificationSettings?.lastHydrationNotificationTimestamp || 0;
+        const timeSinceLast = Date.now() - lastPrompt;
+
+        if (timeSinceLast >= intervalMs) {
+          const todayWater = allHydration[todayStr]?.currentMl || 0;
+          const targetWater = profile.dailyWaterTargetMl || 3800;
+
+          // Only fires if target is NOT met
+          if (todayWater < targetWater) {
+            const sent = await NotificationService.sendHydrationReminder(todayWater, targetWater);
+            if (sent) {
+              const updated = {
+                ...profile,
+                notificationSettings: {
+                  ...profile.notificationSettings,
+                  enabled: true,
+                  dailyQuoteTime: profile.notificationSettings?.dailyQuoteTime || '08:00',
+                  hydrationIntervalHours: profile.notificationSettings?.hydrationIntervalHours || 2,
+                  lastHydrationNotificationTimestamp: Date.now(),
+                },
+              };
+              setProfile(updated);
+              await storage.saveProfile(updated);
+            }
+          }
+        }
+      }
+    };
+
+    checkNotifications();
+    const timer = setInterval(checkNotifications, 60000);
+    return () => clearInterval(timer);
+  }, [isReady, profile, todayStr, allHydration]);
 
   // Selected Date Lookups (Vercel React Best Practices - Memoized Date Switching)
   const currentDateFatigue = dailyFatigueLogs[selectedDate] ?? 3;
@@ -318,6 +419,8 @@ export const App: React.FC = () => {
         currentTab={currentTab}
         onSelectDate={setSelectedDate}
         onExportBackup={handleExportBackup}
+        onOpenNotifications={() => setIsNotificationModalOpen(true)}
+        notificationsEnabled={profile.notificationSettings?.enabled ?? false}
       />
 
       {/* Main Content Area: 4 Distinct Accessible Tabs for Selected Date */}
@@ -379,6 +482,7 @@ export const App: React.FC = () => {
               onOpenFatigueModal={() => setIsFatigueModalOpen(true)}
               onSaveShift={handleSaveShift}
               onUpdateTemplate={handleUpdateTemplate}
+              onUpdateProfile={handleUpdateProfile}
             />
           </div>
         )}
@@ -473,6 +577,12 @@ export const App: React.FC = () => {
       <LegalStandardsModal
         isOpen={isLegalConsentOpen}
         onClose={handleAgreeLegal}
+      />
+
+      {/* Mobile Push Notification Permission Prompt */}
+      <NotificationPermissionModal
+        isOpen={isNotificationModalOpen}
+        onClose={handleCloseNotificationModal}
       />
 
       {/* First-Time Onboarding & Profile Setup Overlay */}

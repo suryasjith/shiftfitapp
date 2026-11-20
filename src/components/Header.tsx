@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserProfile, ShiftDay } from '../types';
 import { NavTab } from './Navbar';
-import { Info, Database, ChevronLeft, ChevronRight, Calendar as CalendarIcon, RotateCcw, Moon, Sun } from 'lucide-react';
+import { Info, Database, ChevronLeft, ChevronRight, Calendar as CalendarIcon, RotateCcw, Moon, Sun, Bell } from 'lucide-react';
 import { TabGuideModal } from './TabGuideModal';
 import { LegalStandardsModal } from './LegalStandardsModal';
 import { RotaEngine } from '../services/rotaEngine';
@@ -15,6 +15,8 @@ interface HeaderProps {
   currentTab: NavTab;
   onSelectDate: (dateStr: string) => void;
   onExportBackup: () => void;
+  onOpenNotifications?: () => void;
+  notificationsEnabled?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -24,6 +26,8 @@ export const Header: React.FC<HeaderProps> = ({
   currentTab,
   onSelectDate,
   onExportBackup,
+  onOpenNotifications,
+  notificationsEnabled = false,
 }) => {
   const [isTabGuideOpen, setIsTabGuideOpen] = useState<boolean>(false);
   const [isLegalModalOpen, setIsLegalModalOpen] = useState<boolean>(false);
@@ -154,6 +158,18 @@ export const Header: React.FC<HeaderProps> = ({
               <Database className="w-3.5 h-3.5 text-terracotta" aria-hidden="true" />
               <span>Offline DB</span>
             </button>
+
+            {/* Push Notifications Toggle */}
+            {onOpenNotifications && (
+              <button
+                onClick={onOpenNotifications}
+                className="min-h-[44px] min-w-[44px] w-9 h-9 rounded-xl border border-stone-200/80 dark:border-white/15 bg-white/70 dark:bg-stone-900/90 backdrop-blur-md hover:bg-white dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200 flex items-center justify-center transition-all active:scale-95 shadow-xs focus:outline-none focus:ring-2 focus:ring-orange-200"
+                title={notificationsEnabled ? 'Push Alerts Active: 8:00 AM Quotes & Hydration' : 'Enable Mobile Push Alerts'}
+                aria-label="Push Notification Settings"
+              >
+                <Bell className={`w-4 h-4 stroke-[2.2px] ${notificationsEnabled ? 'text-orange-500' : 'text-stone-700 dark:text-stone-200'}`} aria-hidden="true" />
+              </button>
+            )}
 
             {/* Contextual Tab Guide ('i' Icon) */}
             <button

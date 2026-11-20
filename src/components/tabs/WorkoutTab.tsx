@@ -25,9 +25,13 @@ import {
   Calendar,
   Sparkles,
   Info,
-  Play
+  Play,
+  Droplets
 } from 'lucide-react';
 import { soundManager } from '../../services/audioTimer';
+import { CycleEngine } from '../../services/cycleEngine';
+import { CyclePhaseModal } from '../CyclePhaseModal';
+import { CyclePhase } from '../../types';
 
 interface WorkoutTabProps {
   todayStr: string;
@@ -40,6 +44,7 @@ interface WorkoutTabProps {
   onOpenFatigueModal: () => void;
   onSaveShift?: (shift: ShiftDay) => void;
   onUpdateTemplate?: (template: ShiftType[]) => void;
+  onUpdateProfile?: (profile: UserProfile) => void;
 }
 
 export const WorkoutTab: React.FC<WorkoutTabProps> = ({
@@ -53,6 +58,7 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
   onOpenFatigueModal: _onOpenFatigueModal,
   onSaveShift,
   onUpdateTemplate,
+  onUpdateProfile,
 }) => {
   const [activeSwapExerciseIndex, setActiveSwapExerciseIndex] = useState<number | null>(null);
   const [expandedExerciseIndex, setExpandedExerciseIndex] = useState<number | null>(0);
@@ -62,6 +68,26 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
   const [showRotaManager, setShowRotaManager] = useState<boolean>(false);
   const [showTimingManager, setShowTimingManager] = useState<boolean>(false);
   const [frameToggle, setFrameToggle] = useState<boolean>(false);
+  const [isCycleModalOpen, setIsCycleModalOpen] = useState<boolean>(false);
+
+  const cyclePhaseInfo = useMemo(() => {
+    return CycleEngine.getPhaseInfo(todayStr, profile.cycleSettings, profile.gender);
+  }, [todayStr, profile.cycleSettings, profile.gender]);
+
+  const handleOverridePhase = useCallback((phase?: CyclePhase) => {
+    if (!onUpdateProfile) return;
+    const updatedSettings = {
+      ...profile.cycleSettings,
+      enabled: profile.cycleSettings?.enabled ?? true,
+      cycleLengthDays: profile.cycleSettings?.cycleLengthDays ?? 28,
+      phaseOverride: phase,
+      overrideDate: phase ? todayStr : undefined,
+    };
+    onUpdateProfile({
+      ...profile,
+      cycleSettings: updatedSettings,
+    });
+  }, [onUpdateProfile, profile, todayStr]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -281,9 +307,20 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
             <h2 id="active-session-title" className="text-2xl font-black text-stone-900 dark:text-white tracking-tight mt-1 font-heading">
               {workout.title}
             </h2>
-            <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5 font-mono">
-              Target: ~{workout.targetDurationMin || 45} mins • RPE Fatigue: {currentFatigue}/10
-            </p>
+            <div className="text-xs text-stone-500 dark:text-stone-400 mt-1 font-mono flex items-center gap-2 flex-wrap">
+              <span>Target: ~{workout.targetDurationMin || 45} mins • RPE Fatigue: {currentFatigue}/10</span>
+              {cyclePhaseInfo.isActive && (
+                <button
+                  type="button"
+                  onClick={() => setIsCycleModalOpen(true)}
+                  aria-label={`Cycle phase: ${cyclePhaseInfo.phaseTitle}. Tap to override.`}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-bold font-sans transition-all active:scale-95 shadow-xs ${cyclePhaseInfo.badgeColor.bg} ${cyclePhaseInfo.badgeColor.border} ${cyclePhaseInfo.badgeColor.text}`}
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>{cyclePhaseInfo.shortLabel} ({cyclePhaseInfo.cycleDay}/{cyclePhaseInfo.totalCycleDays})</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Action: Start Fresh Button (min 44px touch target) */}
@@ -296,6 +333,32 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
             <span>Start Fresh</span>
           </button>
         </div>
+
+        {/* Peak Strength Window Banner */}
+        {cyclePhaseInfo.isPeakStrength && (
+          <div className="p-3 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-amber-300 text-xs font-mono flex items-start gap-2.5">
+            <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5 animate-pulse" />
+            <div>
+              <strong className="font-bold text-amber-400 font-sans uppercase tracking-wide block text-[11px]">
+                ⚡ Peak Neuromuscular Window Active
+              </strong>
+              <span>Highest estrogen & recovery efficiency of your cycle. Prime opportunity for progressive overload or PR attempts on primary compound movements.</span>
+            </div>
+          </div>
+        )}
+
+        {/* High Progesterone Luteal Window Banner */}
+        {cyclePhaseInfo.isHighProgesterone && (
+          <div className="p-3 rounded-2xl bg-purple-950/40 border border-purple-500/40 text-purple-300 text-xs font-mono flex items-start gap-2.5">
+            <Droplets className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+            <div>
+              <strong className="font-bold text-purple-400 font-sans uppercase tracking-wide block text-[11px]">
+                💧 High Progesterone Window (Hydration Focus)
+              </strong>
+              <span>Core body temp is ~0.4°C higher and perceived exertion rises. Rest intervals auto-adapted; drink water steadily between sets.</span>
+            </div>
+          </div>
+        )}
 
         {/* Start Fresh Confirmation Dialog */}
         {showResetConfirm && (
@@ -903,6 +966,15 @@ export const WorkoutTab: React.FC<WorkoutTabProps> = ({
           isOpen={true}
         />
       )}
+
+      {/* 1-Tap Cycle Phase Override Modal */}
+      <CyclePhaseModal
+        isOpen={isCycleModalOpen}
+        currentPhase={cyclePhaseInfo.phase}
+        isOverride={Boolean(profile.cycleSettings?.phaseOverride && profile.cycleSettings?.overrideDate === todayStr)}
+        onSelectPhase={handleOverridePhase}
+        onClose={() => setIsCycleModalOpen(false)}
+      />
     </div>
   );
 };

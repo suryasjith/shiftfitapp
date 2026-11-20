@@ -190,6 +190,24 @@ export type ProficiencyLevel =
 
 export type Gender = 'male' | 'female';
 
+export type CyclePhase = 'menstrual' | 'follicular' | 'ovulatory' | 'luteal';
+
+export interface CycleSettings {
+  enabled: boolean;
+  lastPeriodStartDate?: string; // YYYY-MM-DD
+  cycleLengthDays: number; // typically 28 (21-35)
+  phaseOverride?: CyclePhase;
+  overrideDate?: string; // YYYY-MM-DD when override was set
+}
+
+export interface NotificationSettings {
+  enabled: boolean;
+  dailyQuoteTime: string; // "08:00"
+  hydrationIntervalHours: number; // e.g. 2 or 3
+  lastQuoteDate?: string; // YYYY-MM-DD
+  lastHydrationNotificationTimestamp?: number;
+}
+
 export interface UserProfile {
   name: string;
   // User Profiling & Physics Engine
@@ -212,6 +230,10 @@ export interface UserProfile {
   // Base Macros
   offDayMacros: MacroGoals;
   shiftDayMacros: MacroGoals;
+
+  // Cycle & Notifications Opt-in Configurations
+  cycleSettings?: CycleSettings;
+  notificationSettings?: NotificationSettings;
 }
 
 export interface WeeklyAnalyticsReport {
